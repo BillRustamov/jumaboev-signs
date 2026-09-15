@@ -1,4 +1,4 @@
-import { createInterface } from "node:readline/promises";
+import { createInterface } from "node:readline";
 import { stdin as input, stdout as output } from "node:process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
@@ -372,17 +372,26 @@ async function runTelegram(token: string) {
   await bot.start();
 }
 
-async function runMock() {
+async function readLines(): Promise<AsyncIterator<string>> {
+  const rl = createInterface({
+    input,
+    output,
+    terminal: Boolean(input.isTTY),
+    crlfDelay: Infinity,
+  });
+  return rl[Symbol.asyncIterator]();
+}
+
+async function playTurns(script?: string[]) {
   console.log("");
   console.log("TELEGRAM_BOT_TOKEN is unset — mock Telegram conversation.");
   console.log("Type like a driver. Buttons are shown as [n] labels.");
   console.log("Commands: /start  /help  /quit");
+  if (script) console.log("Running --demo scripted order.");
   console.log("");
 
-  const rl = createInterface({ input, output });
   let draft = newDraft();
-  let lastButtons: { id: string; label: string }[] = [];
-
+  let lastButtons: Button[] = [];
   const chat: Chat = {
     send: (text, extra) => {
       console.log(`\nbot: ${text}`);
@@ -395,14 +404,30 @@ async function runMock() {
 
   await handleText(draft, "/start", chat);
 
+  const iterator = script
+    ? script[Symbol.iterator]()
+    : await readLines();
+
   while (true) {
-    const line = (await rl.question("you> ")).trim();
-    if (!line) continue;
-    if (line === "/quit" || line === "/exit") {
+    let line: string | undefined;
+    if (script) {
+      const next = (iterator as Iterator<string>).next();
+      if (next.done) break;
+      line = next.value;
+      console.log(`you> ${line}`);
+    } else {
+      process.stdout.write("you> ");
+      const next = await (iterator as AsyncIterator<string>).next();
+      if (next.done) break;
+      line = next.value;
+    }
+    const trimmed = (line ?? "").trim();
+    if (!trimmed) continue;
+    if (trimmed === "/quit" || trimmed === "/exit") {
       console.log("mock session closed");
       break;
     }
-    const asNumber = Number(line);
+    const asNumber = Number(trimmed);
     if (
       Number.isInteger(asNumber) &&
       asNumber >= 1 &&
@@ -414,10 +439,8 @@ async function runMock() {
         continue;
       }
     }
-    draft = await handleText(draft, line, chat);
+    draft = await handleText(draft, trimmed, chat);
   }
-
-  rl.close();
 }
 
 async function main() {
@@ -425,7 +448,23 @@ async function main() {
     await runTelegram(TOKEN);
     return;
   }
-  await runMock();
+  const demo = process.argv.includes("--demo");
+  await playTurns(
+    demo
+      ? [
+          "1",
+          "elbrus_dispatch",
+          "ELBRUS",
+          "ELBRUS FREIGHTLINES LLC",
+          "20179229",
+          "796405",
+          "1",
+          "1",
+          "1",
+          "/quit",
+        ]
+      : undefined,
+  );
 }
 
 main().catch((error) => {
