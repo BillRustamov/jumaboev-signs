@@ -150,8 +150,8 @@ export function CheckoutDesk() {
               the sleeper door
             </h2>
             <p className="text-sm text-muted-foreground">
-              Same layout as the sample: lettering on the door, zoomed inset so
-              you can read it.
+              Click the door or the zoom to pull up a larger picture. Lettering
+              stays inside the rounded square.
             </p>
           </div>
           <WhiteSemiTruck fields={item.fields} />
