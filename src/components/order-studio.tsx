@@ -94,17 +94,6 @@ export function OrderStudio() {
     if (sample) applySample(sample);
   }, [requestedSample]);
 
-  const previewReady = useMemo(
-    () =>
-      Boolean(
-        fields.companyName.trim() ||
-          fields.legalName.trim() ||
-          fields.dotNumber.trim() ||
-          fields.mcNumber.trim() ||
-          fields.logoDataUrl,
-      ),
-    [fields],
-  );
   const contrastNotes = useMemo(
     () => contrastWarnings(fields.colors),
     [fields.colors],
@@ -280,7 +269,7 @@ export function OrderStudio() {
                 Live 24×24 vinyl
               </p>
               <p className="text-xs text-muted-foreground">
-                {previewReady
+                {fields.companyName.trim() || fields.dotNumber.trim()
                   ? "This is what prints. Finish lettering, colors, and layout on the ticket."
                   : "Sample look is on. Type your MCS-150 name and USDOT to replace the ghost type."}
               </p>
@@ -612,7 +601,11 @@ export function OrderStudio() {
               </MustSection>
             </CardContent>
             <CardFooter className="flex-col items-stretch gap-2 sm:flex-row sm:items-center">
-              <Button type="submit" disabled={submitting}>
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="h-auto min-h-9 whitespace-normal sm:whitespace-nowrap"
+              >
                 {submitting ? (
                   <>
                     <Loader2 className="animate-spin" />
