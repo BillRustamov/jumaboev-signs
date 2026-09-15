@@ -1,3 +1,4 @@
+import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 import { clampLogoSize, logoBox } from "@/lib/logo-size";
 import { defaultStyle, type SignPalette } from "@/lib/sign-style";
@@ -125,10 +126,11 @@ function paletteOf(fields: SignFields): SignPalette {
 export function TruckSign({
   fields,
   className,
+  ...props
 }: {
   fields: SignFields;
   className?: string;
-}) {
+} & HTMLAttributes<HTMLDivElement>) {
   const colors = paletteOf(fields);
   const company = fields.companyName.trim().toUpperCase();
   const legal = fields.legalName.trim().toUpperCase();
@@ -144,6 +146,7 @@ export function TruckSign({
     <div
       className={cn("aspect-square w-full select-none", className)}
       style={{ containerType: "inline-size", backgroundColor: colors.face }}
+      {...props}
     >
       <div
         className="h-full w-full"

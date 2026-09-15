@@ -40,13 +40,19 @@ export function SampleGallery({
               className={cn(
                 "min-w-[9.5rem] shrink-0 rounded-xl border bg-white p-2 text-left shadow-sm transition sm:min-w-0",
                 selected
-                  ? "border-[var(--navy)] ring-2 ring-[var(--navy)]/25"
+                  ? "border-[var(--navy)] ring-2 ring-[var(--navy)] ring-offset-2"
                   : "border-border hover:border-[var(--navy)]/40 hover:shadow-md",
               )}
+              aria-pressed={selected}
             >
               <TruckSign fields={sample.fields} className="shadow-none" />
               <p className="mt-2 text-sm font-medium text-[var(--navy)]">
                 {sample.label}
+                {selected ? (
+                  <span className="ml-1.5 text-[11px] font-normal text-muted-foreground">
+                    in use
+                  </span>
+                ) : null}
               </p>
               <p className="text-[11px] leading-snug text-muted-foreground">
                 {sample.hint}

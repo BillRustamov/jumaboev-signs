@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { AlertCircle, CheckCircle2, ImagePlus, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -41,7 +43,7 @@ import {
   type SignFields,
   type SignOrder,
 } from "@/lib/order";
-import { sampleById, type DriverSample } from "@/lib/samples";
+import { sampleById, DRIVER_SAMPLES, type DriverSample } from "@/lib/samples";
 import {
   STYLE_PRESETS,
   applyPreset,
@@ -53,24 +55,30 @@ const MAX_LOGO_BYTES = 4 * 1024 * 1024;
 const SAMPLE_QUERY = "sample";
 
 export function OrderStudio() {
+  const searchParams = useSearchParams();
+  const start =
+    sampleById(searchParams.get(SAMPLE_QUERY)) ?? DRIVER_SAMPLES[0];
   const storedUsername = useUsername();
   const [createdUsername, setCreatedUsername] = useState("");
   const username = createdUsername || storedUsername;
   const [usernameDraft, setUsernameDraft] = useState("");
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [askUsername, setAskUsername] = useState(false);
-  const [fields, setFields] = useState<SignFields>(emptySign());
-  const [activeSample, setActiveSample] = useState<string | null>(null);
+  const [fields, setFields] = useState<SignFields>(start.fields);
+  const [activeSample, setActiveSample] = useState<string | null>(start.id);
   const [logoError, setLogoError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [placed, setPlaced] = useState<SignOrder | null>(null);
 
+  const requestedSample = searchParams.get(SAMPLE_QUERY);
+
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const sample = sampleById(params.get(SAMPLE_QUERY));
+    const sample = sampleById(requestedSample);
     if (sample) applySample(sample);
-  }, []);
+    // Gallery clicks do not change the URL, so only react to the query string.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestedSample]);
 
   const previewReady = useMemo(
     () =>
@@ -228,11 +236,12 @@ export function OrderStudio() {
             <TruckSign
               fields={fields}
               className="mx-auto max-w-[560px] shadow-lg"
+              data-testid="live-vinyl"
             />
           </div>
         </div>
 
-        <form className="space-y-4" onSubmit={onPlaceClick}>
+        <form className="space-y-4" onSubmit={onPlaceClick} autoComplete="off">
           <Card>
             <CardHeader className="border-b">
               <CardTitle>Print ticket</CardTitle>
@@ -306,7 +315,7 @@ export function OrderStudio() {
                   <Field
                     id="fleetNumber"
                     label="Fleet / unit number (optional)"
-                    placeholder="104"
+                    placeholder="A12"
                     value={fields.fleetNumber}
                     onChange={(value) => update("fleetNumber", value)}
                   />
@@ -488,20 +497,20 @@ export function OrderStudio() {
                     />
                   </div>
                 </TabsContent>
-              </Tabs>
-              <div className="flex flex-wrap gap-2 pt-4">
-                <Button type="submit" disabled={submitting}>
-                  {submitting ? (
-                    <>
-                      <Loader2 className="animate-spin" />
-                      Sending to the shop
-                    </>
-                  ) : (
-                    "Place vinyl order"
-                  )}
-                </Button>
-              </div>
+            </Tabs>
             </CardContent>
+            <CardFooter className="justify-start gap-2">
+              <Button type="submit" disabled={submitting}>
+                {submitting ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    Sending to the shop
+                  </>
+                ) : (
+                  "Place vinyl order"
+                )}
+              </Button>
+            </CardFooter>
           </Card>
         </form>
       </div>
@@ -612,9 +621,11 @@ function Field({
       {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
       <Input
         id={id}
+        name={`vinyl-${id}`}
         value={value}
         placeholder={placeholder}
         inputMode={inputMode}
+        autoComplete="off"
         onChange={(event) => onChange(event.target.value)}
       />
     </div>

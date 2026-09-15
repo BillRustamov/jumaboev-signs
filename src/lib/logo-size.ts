@@ -1,6 +1,6 @@
 export type LogoSize = 1 | 2 | 3 | 4 | 5;
 
-export const DEFAULT_LOGO_SIZE: LogoSize = 3;
+export const DEFAULT_LOGO_SIZE: LogoSize = 4;
 
 export const LOGO_SIZE_OPTIONS: {
   value: LogoSize;

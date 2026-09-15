@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { OrderStudio } from "@/components/order-studio";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata: Metadata = {
   title: "Design 24×24 door vinyl",
@@ -21,7 +23,18 @@ export default function OrderPage() {
           asked only when you place the order.
         </p>
       </div>
-      <OrderStudio />
+      <Suspense fallback={<DeskFallback />}>
+        <OrderStudio />
+      </Suspense>
     </main>
+  );
+}
+
+function DeskFallback() {
+  return (
+    <div className="grid gap-6 lg:grid-cols-2">
+      <Skeleton className="h-40 rounded-xl" />
+      <Skeleton className="aspect-square rounded-xl" />
+    </div>
   );
 }
