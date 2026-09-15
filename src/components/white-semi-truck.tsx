@@ -1,13 +1,13 @@
-import { TruckSign } from "@/components/truck-sign";
+import { defaultStyle, type SignPalette } from "@/lib/sign-style";
 import type { SignFields } from "@/lib/order";
 import { cn } from "@/lib/utils";
 
-/** Visible crop of the studio Cascadia, in source-image pixels. */
-const CROP = { x: 50, y: 90, w: 760, h: 540 };
-const SRC = { w: 1280, h: 720 };
+/** Cropped Roadway-style Cascadia template. */
+const SRC = { w: 1460, h: 860 };
 
-/** Lower rounded hatch. Height matches the panel; width is the 11×20 stretch. */
-const HATCH = { left: 70.55, top: 57.4, width: 18.2, height: 8.52 };
+/** Covers the zoomed lettering inset in the template. */
+const INSET = { left: 48.8, top: 0, width: 51.2, height: 56.5 };
+const DOOR = { left: 43.5, top: 63.2, width: 12.2, height: 13.4 };
 
 export function WhiteSemiTruck({
   fields,
@@ -25,66 +25,108 @@ export function WhiteSemiTruck({
     >
       <div
         className="relative overflow-hidden"
-        style={{ aspectRatio: `${CROP.w} / ${CROP.h}` }}
+        style={{ aspectRatio: `${SRC.w} / ${SRC.h}` }}
       >
-        {/* Studio photo; CSS crop keeps the original file sharp. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/white-cascadia-side.jpg"
-          alt="White Freightliner Cascadia with vinyl in the lower sleeper hatch"
-          className="absolute max-w-none"
-          style={{
-            width: `${(SRC.w / CROP.w) * 100}%`,
-            left: `${(-CROP.x / CROP.w) * 100}%`,
-            top: `${(-CROP.y / CROP.h) * 100}%`,
-          }}
+          src="/cascadia-template.jpg"
+          alt="Cascadia sleeper door with USDOT vinyl"
+          className="absolute inset-0 h-full w-full object-cover"
         />
-        <HatchVinyl fields={fields} />
-        <div className="absolute right-2 top-2 z-10 hidden w-[min(24%,14rem)] sm:block">
-          <div className="rounded-md border-[3px] border-[var(--navy)] bg-white p-1 shadow-lg">
-            <TruckSign fields={fields} className="shadow-none" />
-          </div>
+        <div
+          className="absolute z-10"
+          style={{
+            left: `${DOOR.left}%`,
+            top: `${DOOR.top}%`,
+            width: `${DOOR.width}%`,
+            height: `${DOOR.height}%`,
+          }}
+        >
+          <DoorDecal fields={fields} />
         </div>
-      </div>
-      <div className="border-t border-black/10 bg-white p-3 sm:hidden">
-        <div className="mx-auto max-w-xs">
-          <div className="rounded-md border-[3px] border-[var(--navy)] bg-white p-1">
-            <TruckSign fields={fields} className="shadow-none" />
+        <div
+          className="absolute z-10 overflow-hidden bg-white"
+          style={{
+            left: `${INSET.left}%`,
+            top: `${INSET.top}%`,
+            width: `${INSET.width}%`,
+            height: `${INSET.height}%`,
+            border: "7px solid #2f7dff",
+          }}
+        >
+          <div className="h-full w-full p-[3%]">
+            <DoorDecal fields={fields} />
           </div>
-          <p className="pt-2 text-center text-[11px] font-medium text-[var(--navy)]">
-            Each door is 11×20 in on the 24×24 print sheet
-          </p>
         </div>
       </div>
     </div>
   );
 }
 
-function HatchVinyl({ fields }: { fields: SignFields }) {
-  const boxW = (HATCH.width / 100) * CROP.w;
-  const boxH = (HATCH.height / 100) * CROP.h;
-  const scaleX = boxW / boxH;
+function paletteOf(fields: SignFields): SignPalette {
+  return { ...defaultStyle().colors, ...fields.colors };
+}
+
+/** Lettering layout from the Roadway template, filled with this order’s logo. */
+function DoorDecal({ fields }: { fields: SignFields }) {
+  const colors = paletteOf(fields);
+  const company = fields.companyName.trim().toUpperCase() || "COMPANY";
+  const legal = fields.legalName.trim().toUpperCase();
+  const dot = fields.dotNumber.trim() || "00000000";
+  const mc = fields.mcNumber.trim();
+  const printMc = fields.showMc !== false && Boolean(mc);
+  const nameFontClass =
+    fields.nameFont === "condensed" ? "font-sign-condensed" : "font-sign-serif";
+
   return (
     <div
-      className="absolute overflow-hidden shadow-[0_4px_10px_rgba(20,24,28,0.22)] ring-1 ring-black/10"
+      className="flex h-full w-full flex-col items-center justify-center overflow-hidden px-[6%] py-[8%] text-center"
       style={{
-        left: `${HATCH.left}%`,
-        top: `${HATCH.top}%`,
-        width: `${HATCH.width}%`,
-        height: `${HATCH.height}%`,
-        borderRadius: "999px",
+        containerType: "inline-size",
+        backgroundColor: colors.face,
+        color: colors.name,
+        borderRadius: "18% / 42%",
       }}
     >
-      <div
-        className="absolute top-0 h-full"
-        style={{
-          left: "50%",
-          width: `${(boxH / boxW) * 100}%`,
-          transform: `translateX(-50%) scaleX(${scaleX})`,
-        }}
+      {fields.logoDataUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={fields.logoDataUrl}
+          alt=""
+          className="mb-[2cqw] max-h-[18cqw] max-w-[36cqw] object-contain"
+        />
+      ) : null}
+      <p
+        className={cn(
+          "max-w-full font-bold leading-[0.88] tracking-tight",
+          nameFontClass,
+        )}
+        style={{ fontSize: company.length > 12 ? "13cqw" : company.length > 8 ? "16cqw" : "19cqw" }}
       >
-        <TruckSign fields={fields} className="h-full shadow-none" />
-      </div>
+        {company}
+      </p>
+      {legal ? (
+        <p
+          className="font-sign-condensed mt-[1.6cqw] max-w-full font-semibold leading-none tracking-[0.12em]"
+          style={{ fontSize: "6.4cqw", color: colors.legal }}
+        >
+          {legal}
+        </p>
+      ) : null}
+      <p
+        className="font-sign-condensed mt-[4.2cqw] font-semibold leading-none"
+        style={{ fontSize: "7.2cqw", color: colors.legal }}
+      >
+        USDOT {dot}
+      </p>
+      {printMc ? (
+        <p
+          className="font-sign-condensed mt-[1.8cqw] font-semibold leading-none"
+          style={{ fontSize: "7.2cqw", color: colors.legal }}
+        >
+          MC {mc}
+        </p>
+      ) : null}
     </div>
   );
 }

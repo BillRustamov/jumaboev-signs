@@ -13,11 +13,11 @@ export default function CheckoutPage() {
           Checkout
         </p>
         <h1 className="font-heading mt-1 text-3xl font-semibold tracking-tight text-[var(--navy)]">
-          Vinyl on a white semi
+          Vinyl on the sleeper door
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Close-up of a white Cascadia sleeper. The vinyl sits in the lower
-          rounded hatch. Tag the ticket and send the pair to the shop.
+          Same Cascadia mockup as the shop sample. Your lettering replaces
+          ROADWAY on the door and in the zoom.
         </p>
       </div>
       <CheckoutDesk />

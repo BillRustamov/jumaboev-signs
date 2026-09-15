@@ -147,11 +147,11 @@ export function CheckoutDesk() {
           <div>
             <h2 className="font-heading text-lg font-semibold text-[var(--navy)]">
               {item.fields.companyName.trim().toUpperCase() || "Door pair"} on
-              a white Cascadia
+              the sleeper door
             </h2>
             <p className="text-sm text-muted-foreground">
-              Each logo is 11×20 in, stretched along the lower rounded hatch.
-              The inset is the readable face.
+              Same layout as the sample: lettering on the door, zoomed inset so
+              you can read it.
             </p>
           </div>
           <WhiteSemiTruck fields={item.fields} />
