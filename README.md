@@ -2,16 +2,16 @@
 
 Khurshid Jumaboev’s shop slice: **24×24 inch vinyl USDOT truck door decals** that follow FMCSA 49 CFR 390.21. Typical job is a matched pair for both cab sides — MCS-150 name, USDOT number, optional MC/fleet/logo.
 
-Drivers start from a **visual sample** (Elbrus, USDOT-only, Gold plates, Red line), put their numbers on it, and set **how large the logo prints** on the vinyl.
+Drivers start from a **visual sample** (Elbrus, USDOT-only, Gold plates, Red line). That sample is the look only. The print ticket requires **lettering, colors, and layout** before vinyl is cut — your MCS-150 name and USDOT, not the shop demo — plus **how large the logo prints**.
 
 This repo is the web designer plus a Telegram bot. Instagram is out of scope for this slice. Telegram is the main customer channel.
 
 ## What you can do
 
-- Land on the shop, tap a sample door, and open the print desk with that layout loaded.
-- Type lettering and recut colors while a live 24×24 preview updates.
+- Land on the shop, tap a sample door, and open the print desk with that look loaded.
+- Fill required lettering, tap a color set, and confirm layout (logo size, MC plate, chevrons).
 - Upload a logo and choose size: Small, Medium, Large, Extra large, or Full face.
-- Place the order. A shop handle is asked only at submit (no password). Tickets sit in memory on the server while it is running, and a copy stays in the browser.
+- Place the order only after those three ticket steps. A shop handle is asked at submit (no password).
 - Run the same questions in Telegram in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, or Ukrainian.
 
 ## Web app

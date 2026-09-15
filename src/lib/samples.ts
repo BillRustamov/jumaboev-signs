@@ -94,3 +94,26 @@ export function sampleById(id: string | null | undefined): DriverSample | undefi
   if (id === BLANK_SAMPLE.id) return BLANK_SAMPLE;
   return DRIVER_SAMPLES.find((sample) => sample.id === id);
 }
+
+/** Keep the sample look (colors, logo, plates) but clear shop lettering. */
+export function lookFromSample(sample: DriverSample): SignFields {
+  return {
+    ...sample.fields,
+    companyName: "",
+    legalName: "",
+    dotNumber: "",
+    mcNumber: "",
+    fleetNumber: "",
+  };
+}
+
+export function isDemoLettering(fields: SignFields): boolean {
+  const name = fields.companyName.trim().toUpperCase();
+  const dot = fields.dotNumber.trim();
+  if (!name || !dot) return false;
+  return DRIVER_SAMPLES.some(
+    (sample) =>
+      sample.fields.companyName.toUpperCase() === name &&
+      sample.fields.dotNumber === dot,
+  );
+}

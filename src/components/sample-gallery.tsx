@@ -25,7 +25,8 @@ export function SampleGallery({
             Tap a sample
           </h2>
           <p className="text-sm text-muted-foreground">
-            Start from a shop door, then put your name and USDOT on it.
+            This is the look. Your name, colors, and layout get set on the
+            print ticket before we cut vinyl.
           </p>
         </div>
       </div>

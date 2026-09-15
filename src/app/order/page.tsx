@@ -15,12 +15,12 @@ export default function OrderPage() {
           Print desk
         </p>
         <h1 className="font-heading mt-2 text-3xl font-semibold tracking-tight text-[var(--navy)]">
-          Pick a sample, then send the pair
+          Pick a look, then fill the ticket
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Tap a shop door, drop in the MCS-150 name and USDOT, and set how large
-          the logo prints on the 24×24 vinyl. MC is optional. Shop handle is
-          asked only when you place the order.
+          A sample is only the style. Before vinyl is cut you must set
+          lettering, colors, and layout on the print ticket — your MCS-150 name
+          and USDOT, not the shop demo.
         </p>
       </div>
       <Suspense fallback={<DeskFallback />}>
