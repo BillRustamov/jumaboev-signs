@@ -145,8 +145,8 @@ export function CheckoutDesk() {
               a white Cascadia
             </h2>
             <p className="text-sm text-muted-foreground">
-              Vinyl sits on the sleeper door, same place as a DOT door job.
-              The inset is the 24×24 close-up.
+              Close-up of the sleeper door, like a shop mockup. The inset is
+              the 24×24 so you can read the lettering.
             </p>
           </div>
           <WhiteSemiTruck fields={item.fields} />
