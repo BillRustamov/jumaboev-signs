@@ -67,12 +67,6 @@ export function validateSign(fields: SignFields): string[] {
   if (fields.showMc && !/^\d{4,10}$/.test(fields.mcNumber.trim())) {
     errors.push("MC number should be 4–10 digits, or turn the MC plate off.");
   }
-  if (
-    fields.fleetNumber.trim() &&
-    !/^[A-Za-z0-9-]{1,16}$/.test(fields.fleetNumber.trim())
-  ) {
-    errors.push("Fleet number should be up to 16 letters, digits, or hyphens.");
-  }
   return errors;
 }
 

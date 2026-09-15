@@ -29,15 +29,16 @@ export default function HomePage() {
             </h1>
             <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
               Jumaboev Signs prints a matched 24×24 pair for both cab sides.
-              MCS-150 name and USDOT are required. MC, fleet, and logo size are
-              yours to set. Letters still have to read from 50 feet in daylight.
+              MCS-150 name and USDOT are required. MC and logo size are yours
+              to set. Unit numbers are a separate small print, not this 24×24
+              door. Letters still have to read from 50 feet in daylight.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" asChild>
                 <Link href="/order">Open the print desk</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="#samples">Browse samples</Link>
+                <Link href="/samples">Browse samples</Link>
               </Button>
             </div>
           </div>
@@ -77,9 +78,9 @@ export default function HomePage() {
           What prints on the vinyl
         </h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Required by FMCSA on both sides: the MCS-150 name and USDOT. MC,
-          fleet, and logo are extra. Typical print is 24×24 outdoor vinyl, two
-          copies.
+          Required by FMCSA on both sides: the MCS-150 name and USDOT. MC and
+          logo are extra. Unit numbers print as a separate small sticker.
+          Typical door print is 24×24 outdoor vinyl, two copies.
         </p>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Spec
@@ -91,8 +92,8 @@ export default function HomePage() {
             body="Prints as USDOT plus the digits. Required. Letters must stay readable from 50 feet in daylight."
           />
           <Spec
-            title="MC, fleet, logo"
-            body="Optional. Set how large the logo prints on the door. Turn the MC plate off if you only run USDOT."
+            title="MC and logo"
+            body="Optional. Set how large the logo prints on the door. Turn the MC plate off if you only run USDOT. Unit numbers are not on this vinyl."
           />
           <Spec
             title="Colors you can recut"
@@ -119,8 +120,8 @@ export default function HomePage() {
         />
         <Step
           icon={<Smartphone className="size-4" />}
-          title="2. Confirm the pair"
-          body="Place the order here or finish the same questions in the Telegram bot. You get an order ID either way."
+          title="2. Add to cart"
+          body="The pair goes in your cart. Checkout shows it on a white semi before you send it to the shop."
         />
         <Step
           icon={<MessageCircle className="size-4" />}

@@ -1,17 +1,16 @@
 # Jumaboev Signs
 
-Khurshid Jumaboev’s shop slice: **24×24 inch vinyl USDOT truck door decals** that follow FMCSA 49 CFR 390.21. Typical job is a matched pair for both cab sides — MCS-150 name, USDOT number, optional MC/fleet/logo.
+Khurshid Jumaboev’s shop slice: **24×24 inch vinyl USDOT truck door decals** that follow FMCSA 49 CFR 390.21. Typical job is a matched pair for both cab sides — MCS-150 name, USDOT number, optional MC and logo. **Unit numbers are a separate small print** and do not go on the 24×24 door.
 
-Drivers start from a **visual sample** (Elbrus, USDOT-only, Gold plates, Red line). That sample is the look only. The print ticket requires **lettering, colors, and layout** before vinyl is cut — your MCS-150 name and USDOT, not the shop demo — plus **how large the logo prints**.
+Drivers start from a **visual sample**, fill the print ticket, add the pair to the **cart**, then check the vinyl on a **white semi** at checkout.
 
 This repo is the web designer plus a Telegram bot. Instagram is out of scope for this slice. Telegram is the main customer channel.
 
 ## What you can do
 
-- Land on the shop, tap a sample door, and open the print desk with that look loaded.
-- Fill required lettering, tap a color set, and confirm layout (logo size, MC plate, chevrons). On a phone the live door stays on screen while you type.
-- Upload a logo and choose size: Small, Medium, Large, Extra large, or Full face.
-- Place the order only after those three ticket steps. A shop handle is asked at submit (no password).
+- Browse samples, open the print desk, and keep a live door on screen on a phone.
+- Fill required lettering, colors, and layout. Add the pair to the cart.
+- Open the cart, then checkout to see the logo on a full-size white semi before sending it to the shop.
 - Run the same questions in Telegram in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, or Ukrainian.
 
 ## Web app
@@ -23,11 +22,14 @@ npm run dev
 
 Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0:43147`.
 
-- `/` — shop landing and sample doors
-- `/order` — live designer (`/order?sample=elbrus` loads a sample)
+- `/` — shop landing
+- `/samples` — door samples
+- `/order` — live designer (`/order?sample=elbrus` loads a look)
+- `/cart` — shopping cart
+- `/checkout` — white semi preview and send to the shop
 - `/orders` — tickets from this server and this browser
 
-There is no database and no login. Restarting the Next.js process clears the in-memory shop list; local browser copies remain.
+There is no database and no login. Restarting the Next.js process clears the in-memory shop list; local browser copies and the cart remain.
 
 ## Telegram bot
 

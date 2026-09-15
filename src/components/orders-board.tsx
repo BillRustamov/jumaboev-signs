@@ -87,13 +87,13 @@ export function OrdersBoard() {
             </CardTitle>
             <CardDescription>
               {username
-                ? `Nothing on file for ${username}. Design a 24×24 pair and it will land here.`
-                : "Create a username on the design desk, then place the first vinyl pair."}
+                ? `Nothing on file for ${username}. Add a 24×24 pair to the cart and check out.`
+                : "Design a door, add it to the cart, and check out. The ticket lands here."}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild>
-              <Link href="/order">Design doors</Link>
+              <Link href="/order">Print desk</Link>
             </Button>
           </CardContent>
         </Card>

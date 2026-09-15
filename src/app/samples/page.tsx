@@ -1,26 +1,27 @@
 import type { Metadata } from "next";
-import { OrdersBoard } from "@/components/orders-board";
+import { HomeSampleGrid } from "@/components/home-sample-grid";
 
 export const metadata: Metadata = {
-  title: "Shop orders",
+  title: "Door samples",
 };
 
-export default function OrdersPage() {
+export default function SamplesPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
       <div className="mb-8 max-w-2xl">
         <p className="text-xs font-semibold tracking-[0.14em] text-[var(--gold)] uppercase">
-          Queue
+          Samples
         </p>
         <h1 className="font-heading mt-1 text-3xl font-semibold tracking-tight text-[var(--navy)]">
-          Shop orders
+          Tap a shop door
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Tickets sent from checkout and Telegram. Design a door, add it to the
-          cart, then check it on a white semi before it lands here.
+          These are looks only. Open one on the print desk, put your MCS-150
+          name and USDOT on it, then add the pair to your cart. Unit numbers
+          are a separate small print — they do not go on this 24×24 door.
         </p>
       </div>
-      <OrdersBoard />
+      <HomeSampleGrid />
     </main>
   );
 }

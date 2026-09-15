@@ -8,12 +8,17 @@ export default function NotFound() {
         That page is not in the shop
       </h1>
       <p className="mt-2 text-muted-foreground">
-        Use the door designer or the order list. Nothing else is wired in this
-        first slice.
+        Use samples, the print desk, the cart, or the order list.
       </p>
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4 flex flex-wrap gap-2">
         <Button asChild>
-          <Link href="/order">Design doors</Link>
+          <Link href="/samples">Samples</Link>
+        </Button>
+        <Button asChild>
+          <Link href="/order">Print desk</Link>
+        </Button>
+        <Button variant="outline" asChild>
+          <Link href="/cart">Cart</Link>
         </Button>
         <Button variant="outline" asChild>
           <Link href="/">Home</Link>

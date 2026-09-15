@@ -7,7 +7,6 @@ import {
   AlertCircle,
   CheckCircle2,
   ImagePlus,
-  Loader2,
   Palette,
   Type,
   LayoutTemplate,
@@ -37,19 +36,11 @@ import { Switch } from "@/components/ui/switch";
 import { LogoSizeControl } from "@/components/logo-size-control";
 import { LiveVinylDock } from "@/components/live-vinyl-dock";
 import { SampleGallery } from "@/components/sample-gallery";
-import {
-  useUsername,
-  writeLocalOrder,
-  writeUsername,
-} from "@/lib/client-session";
+import { addToCart, type CartItem } from "@/lib/cart";
 import { clampLogoSize, type LogoSize } from "@/lib/logo-size";
 import {
-  createOrderId,
-  emptySign,
   validateSign,
-  validateUsername,
   type SignFields,
-  type SignOrder,
 } from "@/lib/order";
 import {
   DRIVER_SAMPLES,
@@ -72,20 +63,13 @@ export function OrderStudio() {
   const searchParams = useSearchParams();
   const start =
     sampleById(searchParams.get(SAMPLE_QUERY)) ?? DRIVER_SAMPLES[0];
-  const storedUsername = useUsername();
-  const [createdUsername, setCreatedUsername] = useState("");
-  const username = createdUsername || storedUsername;
-  const [usernameDraft, setUsernameDraft] = useState("");
-  const [usernameError, setUsernameError] = useState<string | null>(null);
-  const [askUsername, setAskUsername] = useState(false);
   const [fields, setFields] = useState<SignFields>(lookFromSample(start));
   const [activeSample, setActiveSample] = useState<string | null>(start.id);
   const [colorPicked, setColorPicked] = useState(false);
   const [layoutReady, setLayoutReady] = useState(false);
   const [logoError, setLogoError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [placed, setPlaced] = useState<SignOrder | null>(null);
+  const [added, setAdded] = useState<CartItem | null>(null);
 
   const requestedSample = searchParams.get(SAMPLE_QUERY);
 
@@ -141,21 +125,6 @@ export function OrderStudio() {
     setFormError(null);
   }
 
-  function saveUsernameFromDialog(event: React.FormEvent) {
-    event.preventDefault();
-    const error = validateUsername(usernameDraft);
-    if (error) {
-      setUsernameError(error);
-      return;
-    }
-    const next = usernameDraft.trim();
-    writeUsername(next);
-    setCreatedUsername(next);
-    setUsernameError(null);
-    setAskUsername(false);
-    void placeOrder(next);
-  }
-
   async function onLogo(file: File | undefined) {
     setLogoError(null);
     if (!file) return;
@@ -205,51 +174,12 @@ export function OrderStudio() {
       });
       return;
     }
-    if (!username) {
-      setAskUsername(true);
-      return;
-    }
-    void placeOrder(username);
-  }
-
-  async function placeOrder(ticketName: string) {
-    setSubmitting(true);
-    setFormError(null);
-    const order: SignOrder = {
+    const item = addToCart({
       ...fields,
+      fleetNumber: "",
       logoSize: clampLogoSize(fields.logoSize),
-      id: createOrderId(),
-      username: ticketName,
-      source: "web",
-      createdAt: new Date().toISOString(),
-      status: "received",
-    };
-    try {
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(order),
-      });
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as
-          | { error?: string }
-          | null;
-        throw new Error(payload?.error ?? "The shop could not take that order.");
-      }
-      const saved = (await response.json()) as SignOrder;
-      writeLocalOrder(saved);
-      setPlaced(saved);
-    } catch (err) {
-      writeLocalOrder(order);
-      setPlaced(order);
-      setFormError(
-        err instanceof Error
-          ? `${err.message} Saved on this device so the shop copy is not lost.`
-          : "Saved on this device after a network error.",
-      );
-    } finally {
-      setSubmitting(false);
-    }
+    });
+    setAdded(item);
   }
 
   return (
@@ -272,23 +202,11 @@ export function OrderStudio() {
             <CardHeader className="border-b">
               <CardTitle>Print ticket</CardTitle>
               <CardDescription className="hidden sm:block">
-                Do these three before we cut vinyl. A sample is only a look —
-                your MCS-150 name, USDOT, colors, and layout have to be set
-                here.
-                {username ? (
-                  <>
-                    {" "}
-                    Ticket as{" "}
-                    <span className="font-medium text-foreground">
-                      @{username}
-                    </span>
-                    .
-                  </>
-                ) : null}
+                Do these three, then add the pair to your cart. Unit numbers
+                are a separate small print and do not go on this 24×24 door.
               </CardDescription>
               <CardDescription className="sm:hidden">
-                Required before print.
-                {username ? ` Ticket as @${username}.` : ""}
+                Required before the cart.
               </CardDescription>
               <ol className="mt-3 grid grid-cols-3 gap-1 text-xs sm:gap-2 sm:text-sm">
                 <CheckItem done={letteringDone} label="1. Lettering" />
@@ -352,13 +270,6 @@ export function OrderStudio() {
                   inputMode="numeric"
                   value={fields.mcNumber}
                   onChange={(value) => update("mcNumber", value)}
-                />
-                <Field
-                  id="fleetNumber"
-                  label="Fleet / unit number (optional)"
-                  placeholder="A12"
-                  value={fields.fleetNumber}
-                  onChange={(value) => update("fleetNumber", value)}
                 />
                 <div className="space-y-2">
                   <Label htmlFor="logo">Logo (optional)</Label>
@@ -587,108 +498,44 @@ export function OrderStudio() {
             <CardFooter className="flex-col items-stretch gap-2 sm:flex-row sm:items-center">
               <Button
                 type="submit"
-                disabled={submitting}
                 className="h-auto min-h-9 whitespace-normal sm:whitespace-nowrap"
               >
-                {submitting ? (
-                  <>
-                    <Loader2 className="animate-spin" />
-                    Sending to the shop
-                  </>
-                ) : canPrint ? (
-                  "Place vinyl order"
-                ) : (
-                  "Finish required steps first"
-                )}
+                {canPrint ? "Add pair to cart" : "Finish required steps first"}
               </Button>
               {!canPrint ? (
                 <p className="text-xs text-muted-foreground">
-                  Vinyl does not cut until lettering, colors, and layout are
-                  set.
+                  Vinyl does not go in the cart until lettering, colors, and
+                  layout are set.
                 </p>
-              ) : null}
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Checkout shows this door on a white semi.
+                </p>
+              )}
             </CardFooter>
           </Card>
         </form>
     </div>
 
-      <Dialog open={askUsername} onOpenChange={setAskUsername}>
-        <DialogContent>
-          <form onSubmit={saveUsernameFromDialog}>
-            <DialogHeader>
-              <DialogTitle>Tag this ticket</DialogTitle>
-              <DialogDescription>
-                No password. Khurshid uses this handle to find the pair in
-                Telegram or on this site.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-3 py-4">
-              {usernameError ? (
-                <Alert variant="destructive">
-                  <AlertCircle />
-                  <AlertTitle>Username not accepted</AlertTitle>
-                  <AlertDescription>{usernameError}</AlertDescription>
-                </Alert>
-              ) : null}
-              <div className="space-y-2">
-                <Label htmlFor="username">Shop username</Label>
-                <Input
-                  id="username"
-                  autoComplete="username"
-                  placeholder="elbrus_dispatch"
-                  value={usernameDraft}
-                  onChange={(event) => {
-                    setUsernameDraft(event.target.value);
-                    setUsernameError(null);
-                  }}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setAskUsername(false)}
-              >
-                Keep designing
-              </Button>
-              <Button type="submit">Place order</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={Boolean(placed)} onOpenChange={() => setPlaced(null)}>
+      <Dialog open={Boolean(added)} onOpenChange={() => setAdded(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CheckCircle2 className="size-5 text-[var(--forest)]" />
-              Order {placed?.id} received
+              Pair in the cart
             </DialogTitle>
             <DialogDescription>
-              {placed
-                ? `${placed.companyName} · USDOT ${placed.dotNumber}${
-                    placed.showMc && placed.mcNumber
-                      ? ` · MC ${placed.mcNumber}`
-                      : ""
-                  }. Two 24×24 vinyl doors for @${placed.username}.`
+              {added
+                ? `${added.fields.companyName} · USDOT ${added.fields.dotNumber}. Two 24×24 doors. Checkout shows them on a white semi.`
                 : null}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" asChild>
-              <Link href="/orders">View shop orders</Link>
+              <Link href="/cart">View cart</Link>
             </Button>
-            <Button
-              onClick={() => {
-                setPlaced(null);
-                setFields(emptySign());
-                setActiveSample("blank");
-                setColorPicked(false);
-                setLayoutReady(false);
-              }}
-            >
-              Design another door
+            <Button asChild>
+              <Link href="/checkout">Checkout</Link>
             </Button>
           </DialogFooter>
         </DialogContent>

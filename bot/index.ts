@@ -28,7 +28,6 @@ type Step =
   | "legal"
   | "dot"
   | "mc"
-  | "fleet"
   | "logo"
   | "style"
   | "confirm";
@@ -220,17 +219,6 @@ async function handleText(
       }
       draft.fields.mcNumber = trimmed;
       draft.fields.showMc = true;
-      draft.step = "fleet";
-      await chat.send(t(draft.lang, "askFleet"), skipKeyboard(draft.lang));
-      return draft;
-    }
-    case "fleet": {
-      draft.fields.fleetNumber = trimmed;
-      const issues = validateSign({ ...draft.fields, fleetNumber: trimmed });
-      if (issues.length && trimmed) {
-        await chat.send(issues[0] ?? t(draft.lang, "askFleet"));
-        return draft;
-      }
       draft.step = "logo";
       await chat.send(t(draft.lang, "askLogo"), skipKeyboard(draft.lang));
       return draft;
@@ -281,12 +269,6 @@ async function handleCallback(
   if (data === "skip" && draft.step === "mc") {
     draft.fields.mcNumber = "";
     draft.fields.showMc = false;
-    draft.step = "fleet";
-    await chat.send(t(draft.lang, "askFleet"), skipKeyboard(draft.lang));
-    return draft;
-  }
-  if (data === "skip" && draft.step === "fleet") {
-    draft.fields.fleetNumber = "";
     draft.step = "logo";
     await chat.send(t(draft.lang, "askLogo"), skipKeyboard(draft.lang));
     return draft;
@@ -496,7 +478,6 @@ async function main() {
           "ELBRUS FREIGHTLINES LLC",
           "20179229",
           "796405",
-          "1",
           "1",
           "1",
           "1",

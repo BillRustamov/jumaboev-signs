@@ -5,6 +5,17 @@ import type { SignOrder } from "@/lib/order";
 
 const USER_KEY = "jumaboev-username";
 const ORDERS_KEY = "jumaboev-orders";
+const USER_EVENT = "jumaboev-username-change";
+
+function subscribeUsername(onChange: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("storage", onChange);
+  window.addEventListener(USER_EVENT, onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(USER_EVENT, onChange);
+  };
+}
 
 export function readUsername(): string {
   if (typeof window === "undefined") return "";
@@ -13,6 +24,7 @@ export function readUsername(): string {
 
 export function writeUsername(username: string): void {
   window.localStorage.setItem(USER_KEY, username);
+  window.dispatchEvent(new Event(USER_EVENT));
 }
 
 export function readLocalOrders(): SignOrder[] {
@@ -33,9 +45,5 @@ export function writeLocalOrder(order: SignOrder): void {
 }
 
 export function useUsername(): string {
-  return useSyncExternalStore(
-    () => () => {},
-    readUsername,
-    () => "",
-  );
+  return useSyncExternalStore(subscribeUsername, readUsername, () => "");
 }

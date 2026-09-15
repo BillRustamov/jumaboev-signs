@@ -232,15 +232,6 @@ export function TruckSign({
                 plateText={colors.plateText}
               />
             ) : null}
-            {fields.fleetNumber.trim() ? (
-              <NumberPlate
-                label="UNIT"
-                value={fields.fleetNumber}
-                placeholder=""
-                plate={colors.plate}
-                plateText={colors.plateText}
-              />
-            ) : null}
             {fields.showChevrons !== false ? (
               <Chevrons rule={colors.rule} accent={colors.accent} />
             ) : (

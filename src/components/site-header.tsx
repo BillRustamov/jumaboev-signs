@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CartButton } from "@/components/cart-button";
 import { Button } from "@/components/ui/button";
 
 export function SiteHeader() {
@@ -15,12 +16,13 @@ export function SiteHeader() {
           </p>
         </Link>
         <nav className="flex items-center gap-1">
-          <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
-            <Link href="/#samples">Samples</Link>
-          </Button>
           <Button variant="ghost" size="sm" asChild>
+            <Link href="/samples">Samples</Link>
+          </Button>
+          <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
             <Link href="/orders">Orders</Link>
           </Button>
+          <CartButton />
           <Button size="sm" asChild>
             <Link href="/order">Print desk</Link>
           </Button>

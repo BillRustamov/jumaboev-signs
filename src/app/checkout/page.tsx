@@ -1,26 +1,26 @@
 import type { Metadata } from "next";
-import { OrdersBoard } from "@/components/orders-board";
+import { CheckoutDesk } from "@/components/checkout-desk";
 
 export const metadata: Metadata = {
-  title: "Shop orders",
+  title: "Checkout",
 };
 
-export default function OrdersPage() {
+export default function CheckoutPage() {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
       <div className="mb-8 max-w-2xl">
         <p className="text-xs font-semibold tracking-[0.14em] text-[var(--gold)] uppercase">
-          Queue
+          Checkout
         </p>
         <h1 className="font-heading mt-1 text-3xl font-semibold tracking-tight text-[var(--navy)]">
-          Shop orders
+          Vinyl on a white semi
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Tickets sent from checkout and Telegram. Design a door, add it to the
-          cart, then check it on a white semi before it lands here.
+          This is the cab door at truck size. Confirm the look, tag the ticket,
+          and send the pair to the shop.
         </p>
       </div>
-      <OrdersBoard />
+      <CheckoutDesk />
     </main>
   );
 }

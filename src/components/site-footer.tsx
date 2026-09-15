@@ -20,8 +20,13 @@ export function SiteFooter() {
             </Link>
           </p>
           <p className="mt-1">
-            <Link className="underline-offset-4 hover:underline" href="/#samples">
+            <Link className="underline-offset-4 hover:underline" href="/samples">
               Browse door samples
+            </Link>
+          </p>
+          <p className="mt-1">
+            <Link className="underline-offset-4 hover:underline" href="/cart">
+              Open cart
             </Link>
           </p>
           <p className="mt-1">

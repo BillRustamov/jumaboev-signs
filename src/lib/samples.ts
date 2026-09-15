@@ -59,7 +59,7 @@ export const DRIVER_SAMPLES: DriverSample[] = [
       legalName: "GOLD LINE CARRIERS LLC",
       dotNumber: "91244018",
       mcNumber: "441902",
-      fleetNumber: "104",
+      fleetNumber: "",
       logoDataUrl: "",
       ...applyPreset("gold-navy"),
       logoSize: DEFAULT_LOGO_SIZE,
