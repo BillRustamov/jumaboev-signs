@@ -1,3 +1,5 @@
+import { DEFAULT_LOGO_SIZE } from "@/lib/logo-size";
+
 export type NameFont = "serif" | "condensed";
 
 export type SignPalette = {
@@ -18,6 +20,7 @@ export type SignStyle = {
   showMc: boolean;
   paletteId: string;
   colors: SignPalette;
+  logoSize: number;
 };
 
 export const ELBRUS_PALETTE: SignPalette = {
@@ -111,6 +114,7 @@ export function defaultStyle(): SignStyle {
     showMc: true,
     paletteId: "elbrus",
     colors: { ...ELBRUS_PALETTE },
+    logoSize: DEFAULT_LOGO_SIZE,
   };
 }
 
@@ -122,6 +126,7 @@ export function applyPreset(id: string): SignStyle {
     showMc: true,
     paletteId: preset.id,
     colors: { ...preset.colors },
+    logoSize: DEFAULT_LOGO_SIZE,
   };
 }
 

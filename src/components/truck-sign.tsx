@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { clampLogoSize, logoBox } from "@/lib/logo-size";
 import { defaultStyle, type SignPalette } from "@/lib/sign-style";
 import type { SignFields } from "@/lib/order";
 
@@ -105,13 +106,16 @@ function Chevrons({ rule, accent }: { rule: string; accent: string }) {
   );
 }
 
-function displaySize(name: string): string {
+function displaySize(name: string, logoSize: number): string {
   const len = name.length;
-  if (len <= 7) return "13.6cqw";
-  if (len <= 10) return "11.2cqw";
-  if (len <= 14) return "8.6cqw";
-  if (len <= 18) return "6.8cqw";
-  return "5.5cqw";
+  let size = 5.5;
+  if (len <= 7) size = 13.6;
+  else if (len <= 10) size = 11.2;
+  else if (len <= 14) size = 8.6;
+  else if (len <= 18) size = 6.8;
+  if (logoSize >= 5) size *= 0.82;
+  else if (logoSize >= 4) size *= 0.9;
+  return `${size}cqw`;
 }
 
 function paletteOf(fields: SignFields): SignPalette {
@@ -133,6 +137,8 @@ export function TruckSign({
   const nameFontClass =
     fields.nameFont === "condensed" ? "font-sign-condensed" : "font-sign-serif";
   const printMc = fields.showMc !== false;
+  const logoSize = clampLogoSize(fields.logoSize);
+  const mark = logoBox(logoSize);
 
   return (
     <div
@@ -160,7 +166,8 @@ export function TruckSign({
             style={{
               backgroundColor: colors.face,
               borderRadius: "3.2%",
-              padding: "6.6% 6.2% 3.6%",
+              padding: logoSize >= 4 ? "4.4% 5.4% 3.2%" : "6.6% 6.2% 3.6%",
+              overflow: "hidden",
             }}
           >
             {fields.logoDataUrl ? (
@@ -171,9 +178,9 @@ export function TruckSign({
                 alt=""
                 className="object-contain"
                 style={{
-                  marginBottom: "1.4cqw",
-                  maxHeight: "9cqw",
-                  maxWidth: "28%",
+                  marginBottom: "1.1cqw",
+                  maxHeight: mark.maxHeight,
+                  maxWidth: mark.maxWidth,
                 }}
               />
             ) : null}
@@ -185,7 +192,7 @@ export function TruckSign({
               )}
               style={{
                 color: colors.name,
-                fontSize: displaySize(displayName),
+                fontSize: displaySize(displayName, logoSize),
                 transform: "scaleX(0.96)",
               }}
             >

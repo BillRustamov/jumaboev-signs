@@ -1,3 +1,4 @@
+import { clampLogoSize } from "@/lib/logo-size";
 import {
   applyPreset,
   defaultStyle,
@@ -95,5 +96,6 @@ export function normalizeSign(input: Partial<SignFields>): SignFields {
     showMc: input.showMc !== false,
     paletteId: String(input.paletteId ?? base.paletteId),
     colors: { ...base.colors, ...input.colors },
+    logoSize: clampLogoSize(input.logoSize ?? base.logoSize),
   };
 }

@@ -1,16 +1,17 @@
 # Jumaboev Signs
 
-Khurshid Jumaboev’s shop slice: **24×24 inch vinyl USDOT truck door decals** that follow FMCSA 49 CFR 390.21. Typical job is a matched pair for both cab sides — MCS-150 name, USDOT number, optional MC/fleet/logo — starting from the ELBRUS gold-and-navy layout, with live color and layout edits.
+Khurshid Jumaboev’s shop slice: **24×24 inch vinyl USDOT truck door decals** that follow FMCSA 49 CFR 390.21. Typical job is a matched pair for both cab sides — MCS-150 name, USDOT number, optional MC/fleet/logo.
+
+Drivers start from a **visual sample** (Elbrus, USDOT-only, Gold plates, Red line), put their numbers on it, and set **how large the logo prints** on the vinyl.
 
 This repo is the web designer plus a Telegram bot. Instagram is out of scope for this slice. Telegram is the main customer channel.
 
 ## What you can do
 
-- Land on the shop site, read the real print offer, and open the door designer.
-- Create a username (no password). It only tags the ticket.
-- Type lettering and recut colors while a live 24×24 preview updates (USDOT plate, optional MC, fonts, chevrons).
-- Upload an optional logo. Empty, loading, and error states are wired on the designer and the order list.
-- Place the order. Tickets sit in memory on the server while it is running, and a copy stays in the browser.
+- Land on the shop, tap a sample door, and open the print desk with that layout loaded.
+- Type lettering and recut colors while a live 24×24 preview updates.
+- Upload a logo and choose size: Small, Medium, Large, Extra large, or Full face.
+- Place the order. A shop handle is asked only at submit (no password). Tickets sit in memory on the server while it is running, and a copy stays in the browser.
 - Run the same questions in Telegram in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, or Ukrainian.
 
 ## Web app
@@ -22,8 +23,8 @@ npm run dev
 
 Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0:43147`.
 
-- `/` — shop landing and ELBRUS sample pair
-- `/order` — username + live designer
+- `/` — shop landing and sample doors
+- `/order` — live designer (`/order?sample=elbrus` loads a sample)
 - `/orders` — tickets from this server and this browser
 
 There is no database and no login. Restarting the Next.js process clears the in-memory shop list; local browser copies remain.
@@ -53,7 +54,7 @@ The mock path is the default. Missing credentials never block local work.
 
 ## Print layout
 
-The live sign starts from the physical ELBRUS pair and now prints **USDOT** (not `DOT:`) per 390.21. MCS-150 name is required; MC is optional. Recolor face, name, plates, and borders in the designer. Sample numbers: USDOT `20179229`, MC `796405`.
+The live sign starts from the physical ELBRUS pair and prints **USDOT** (not `DOT:`) per 390.21. MCS-150 name is required; MC is optional. Recolor face, name, plates, and borders in the designer. Logo size is a 1–5 scale on the 24×24 face. Sample numbers: USDOT `20179229`, MC `796405`.
 
 ## Stack
 

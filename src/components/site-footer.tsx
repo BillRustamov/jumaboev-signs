@@ -16,7 +16,12 @@ export function SiteFooter() {
         <div className="text-sm text-white/80">
           <p>
             <Link className="underline-offset-4 hover:underline" href="/order">
-              Order on the site
+              Open the print desk
+            </Link>
+          </p>
+          <p className="mt-1">
+            <Link className="underline-offset-4 hover:underline" href="/#samples">
+              Browse door samples
             </Link>
           </p>
           <p className="mt-1">

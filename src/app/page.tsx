@@ -11,47 +11,66 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { HomeSampleGrid } from "@/components/home-sample-grid";
 import { SignPair } from "@/components/truck-sign";
-import { SAMPLE_SIGN } from "@/lib/order";
+import { DRIVER_SAMPLES } from "@/lib/samples";
+
+const HERO = DRIVER_SAMPLES[0].fields;
 
 export default function HomePage() {
   return (
     <main>
       <section className="border-b bg-[color-mix(in_oklch,var(--navy),white_94%)]">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:py-16">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.9fr)] lg:py-14">
           <div>
             <Badge variant="secondary">Set of two · 24 in × 24 in</Badge>
-            <h1 className="font-heading mt-4 text-3xl font-semibold tracking-tight text-[var(--navy)] sm:text-5xl">
-              USDOT doors that follow FMCSA 390.21.
+            <h1 className="font-heading mt-4 text-3xl font-semibold tracking-tight text-[var(--navy)] sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
+              Tap a shop door. Put your USDOT on it.
             </h1>
             <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
-              Jumaboev Signs prints a matched 24×24 pair for both sides of the
-              cab: MCS-150 name, USDOT number, and optional MC, fleet, and logo.
-              Recolor the Elbrus gold-and-navy layout live — letters still have
-              to read from 50 feet in daylight.
+              Jumaboev Signs prints a matched 24×24 pair for both cab sides.
+              MCS-150 name and USDOT are required. MC, fleet, and logo size are
+              yours to set. Letters still have to read from 50 feet in daylight.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" asChild>
-                <Link href="/order">Design your doors</Link>
+                <Link href="/order">Open the print desk</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="#telegram">Order on Telegram</Link>
+                <Link href="#samples">Browse samples</Link>
               </Button>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">
-              Most customers already write on Telegram. Instagram sends traffic;
-              the shop answers in Telegram.
-            </p>
           </div>
-          <div className="mx-auto w-full max-w-md">
-            <SignPair fields={SAMPLE_SIGN} />
+          <div className="mx-auto w-full max-w-sm">
+            <SignPair fields={HERO} />
             <p className="mt-3 text-center text-xs text-muted-foreground">
-              Sample layout: ELBRUS / ELBRUS FREIGHTLINES LLC · USDOT 20179229 ·
-              MC 796405
+              Elbrus sample · USDOT 20179229 · MC 796405
             </p>
           </div>
         </div>
       </section>
+
+      <section
+        id="samples"
+        className="mx-auto max-w-6xl px-4 py-12 sm:px-6"
+      >
+        <div className="mb-6 max-w-2xl">
+          <p className="text-xs font-semibold tracking-[0.14em] text-[var(--gold)] uppercase">
+            For drivers
+          </p>
+          <h2 className="font-heading mt-2 text-2xl font-semibold text-[var(--navy)]">
+            Pick a sample, then swap in your numbers
+          </h2>
+          <p className="mt-2 text-muted-foreground">
+            Each card is a real 24×24 layout. Tap one to open the designer with
+            that door loaded. Change the logo size on the vinyl before you send
+            the pair to the shop.
+          </p>
+        </div>
+        <HomeSampleGrid />
+      </section>
+
+      <Separator />
 
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <h2 className="font-heading text-2xl font-semibold text-[var(--navy)]">
@@ -60,7 +79,7 @@ export default function HomePage() {
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Required by FMCSA on both sides: the MCS-150 name and USDOT. MC,
           fleet, and logo are extra. Typical print is 24×24 outdoor vinyl, two
-          copies. Recolor the shop layout in the designer.
+          copies.
         </p>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Spec
@@ -73,7 +92,7 @@ export default function HomePage() {
           />
           <Spec
             title="MC, fleet, logo"
-            body="Optional. FMCSA does not require an MC plate. Turn it off if you only run USDOT."
+            body="Optional. Set how large the logo prints on the door. Turn the MC plate off if you only run USDOT."
           />
           <Spec
             title="Colors you can recut"
@@ -95,25 +114,22 @@ export default function HomePage() {
       <section className="mx-auto grid max-w-6xl gap-6 px-4 py-12 sm:px-6 md:grid-cols-3">
         <Step
           icon={<Printer className="size-4" />}
-          title="1. Put the lettering in"
-          body="Create a username, paste the MCS-150 name and USDOT, then recolor the 24×24 door."
+          title="1. Tap a sample"
+          body="Open a shop door that is close to yours. Swap the name and USDOT. Set logo size on the vinyl."
         />
         <Step
           icon={<Smartphone className="size-4" />}
           title="2. Confirm the pair"
-          body="Place the order on this site or finish the same questions in the Telegram bot. You get an order ID either way."
+          body="Place the order here or finish the same questions in the Telegram bot. You get an order ID either way."
         />
         <Step
           icon={<MessageCircle className="size-4" />}
           title="3. Print with Khurshid"
-          body="The shop prints from that ticket. Questions, address, and payment stay on Telegram — the channel drivers already use."
+          body="The shop prints from that ticket. Questions, address, and payment stay on Telegram."
         />
       </section>
 
-      <section
-        id="telegram"
-        className="border-t bg-[var(--navy)] text-white"
-      >
+      <section id="telegram" className="border-t bg-[var(--navy)] text-white">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
           <h2 className="font-heading text-2xl font-semibold">
             Telegram is the main counter
