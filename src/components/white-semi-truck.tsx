@@ -26,11 +26,11 @@ export function WhiteSemiTruck({
         />
         <div
           className="absolute"
-          style={{ left: "48.44%", top: "46.94%", width: "6.09%" }}
+          style={{ left: "47.5%", top: "55.42%", width: "3.75%" }}
         >
           <TruckSign
             fields={fields}
-            className="shadow-[0_6px_14px_rgba(20,24,28,0.22)] ring-1 ring-black/10"
+            className="shadow-[0_3px_8px_rgba(20,24,28,0.18)] ring-1 ring-black/10"
           />
         </div>
         <div className="absolute right-3 top-3 z-10 hidden w-[min(26%,15rem)] sm:block">
