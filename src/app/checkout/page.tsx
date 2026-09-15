@@ -16,8 +16,8 @@ export default function CheckoutPage() {
           Vinyl on a white semi
         </h1>
         <p className="mt-2 text-muted-foreground">
-          This is the cab door at truck size. Confirm the look, tag the ticket,
-          and send the pair to the shop.
+          Your 24×24 is on a white full-size semi. Confirm the door, tag the
+          ticket, and send the pair to the shop.
         </p>
       </div>
       <CheckoutDesk />

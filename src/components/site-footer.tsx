@@ -30,6 +30,16 @@ export function SiteFooter() {
             </Link>
           </p>
           <p className="mt-1">
+            <Link className="underline-offset-4 hover:underline" href="/orders">
+              Shop orders
+            </Link>
+          </p>
+          <p className="mt-1">
+            <Link className="underline-offset-4 hover:underline" href="/checkout">
+              Checkout on the truck
+            </Link>
+          </p>
+          <p className="mt-1">
             Telegram bot: <code className="text-white/95">npm run bot</code>
           </p>
           <p className="mt-1">Typical print: 24 in × 24 in, set of two</p>

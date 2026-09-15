@@ -19,7 +19,7 @@ export function SiteHeader() {
           <Button variant="ghost" size="sm" asChild>
             <Link href="/samples">Samples</Link>
           </Button>
-          <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
+          <Button variant="ghost" size="sm" asChild>
             <Link href="/orders">Orders</Link>
           </Button>
           <CartButton />
