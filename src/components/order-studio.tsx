@@ -109,11 +109,6 @@ export function OrderStudio() {
   }, [fields]);
   const letteringDone = letteringIssues.length === 0;
   const canPrint = letteringDone && colorPicked && layoutReady;
-  const remaining = [
-    !letteringDone ? "lettering" : null,
-    !colorPicked ? "colors" : null,
-    !layoutReady ? "layout" : null,
-  ].filter(Boolean) as string[];
 
   function applySample(sample: DriverSample) {
     setFields(lookFromSample(sample));
@@ -614,7 +609,7 @@ export function OrderStudio() {
                 ) : canPrint ? (
                   "Place vinyl order"
                 ) : (
-                  `Finish ${remaining.join(", ")} first`
+                  "Finish required steps first"
                 )}
               </Button>
               {!canPrint ? (
