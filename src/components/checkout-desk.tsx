@@ -145,7 +145,7 @@ export function CheckoutDesk() {
               a white semi
             </h2>
             <p className="text-sm text-muted-foreground">
-              Full-size cab door. This is how the vinyl sits on a white truck.
+              White tractor-trailer. Close-up is the 24×24 on the cab door.
             </p>
           </div>
           <WhiteSemiTruck fields={item.fields} />

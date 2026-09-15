@@ -59,20 +59,20 @@ export function WhiteSemiTruck({
         overlay={{
           src: "/white-semi-full.jpg",
           alt: "White full-size semi truck with trailer",
-          left: "22.3%",
-          top: "50.7%",
-          width: "4.3%",
+          left: "19.92%",
+          top: "52.78%",
+          width: "3.75%",
         }}
       />
       <div className="grid gap-0 border-t border-black/10 sm:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
         <TruckPhoto
           fields={fields}
           overlay={{
-            src: "/white-semi-door.jpg",
-            alt: "Cab door of a white semi with 24 by 24 vinyl",
-            left: "20.5%",
-            top: "55.9%",
-            width: "13.1%",
+          src: "/white-semi-door.jpg",
+          alt: "Cab door of a white semi with 24 by 24 vinyl",
+          left: "13.1%",
+          top: "60.29%",
+          width: "11.43%",
           }}
         />
         <div className="flex flex-col justify-center bg-white px-4 py-4 sm:px-5">
