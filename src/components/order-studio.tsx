@@ -76,8 +76,6 @@ export function OrderStudio() {
   useEffect(() => {
     const sample = sampleById(requestedSample);
     if (sample) applySample(sample);
-    // Gallery clicks do not change the URL, so only react to the query string.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [requestedSample]);
 
   const previewReady = useMemo(
