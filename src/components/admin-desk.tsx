@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TruckSign } from "@/components/truck-sign";
+import { SignPreview } from "@/components/sign-preview";
 import { readLocalOrders } from "@/lib/client-session";
 import type { SignOrder } from "@/lib/order";
 
@@ -70,15 +70,15 @@ export function AdminDesk() {
         <CardHeader>
           <CardTitle>Cutter sheet</CardTitle>
           <CardDescription>
-            Physical sheet is 24×24 in. Each download places two logos — left
-            and right — in 11×20 in cells.
+            Physical pair is ~10×20 in on each cab side. Download places both
+            logos — left and right — on one sheet.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Button variant="outline" asChild>
             <Link href="/admin/print/sample">
               <Printer className="size-4" />
-              Open sample 24×24 sheet
+              Open sample print sheet
             </Link>
           </Button>
         </CardContent>
@@ -92,8 +92,9 @@ export function AdminDesk() {
               No tickets to print
             </CardTitle>
             <CardDescription>
-              When a driver checks out, the pair lands here for a 24×24 sheet
-              with two 11×20 doors. The sample sheet above is always available.
+              When a driver checks out — or the Telegram bot posts a ticket —
+              the pair lands here for a ~10×20 left and right print. The sample
+              sheet above is always available.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -107,17 +108,21 @@ export function AdminDesk() {
                     <CardTitle>{order.id}</CardTitle>
                     <CardDescription>
                       @{order.username} · {order.source}
+                      {order.language ? ` · ${order.language}` : ""}
+                      {order.telegramChatId
+                        ? ` · chat ${order.telegramChatId}`
+                        : ""}
                     </CardDescription>
                   </div>
                   <Badge variant="secondary">{order.status}</Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                <TruckSign fields={order} />
+                <SignPreview fields={order} />
                 <Button className="w-full" asChild>
                   <Link href={`/admin/print/${order.id}`}>
                     <Printer className="size-4" />
-                    Download 24×24 print sheet
+                    Download print sheet
                   </Link>
                 </Button>
               </CardContent>

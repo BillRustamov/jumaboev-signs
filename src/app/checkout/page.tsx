@@ -16,8 +16,8 @@ export default function CheckoutPage() {
           Vinyl on the sleeper door
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Same Cascadia mockup as the shop sample. Your lettering replaces
-          ROADWAY on the door and in the zoom.
+          Each item is approximately 10×20 in for each side of the cab. Checkout
+          shows the vinyl on a white semi before you send it to the shop.
         </p>
       </div>
       <CheckoutDesk />

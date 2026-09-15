@@ -1,4 +1,6 @@
-import { TruckSign } from "@/components/truck-sign";
+"use client";
+
+import { SignPreview } from "@/components/sign-preview";
 import type { SignFields } from "@/lib/order";
 
 export function LiveVinylDock({ fields }: { fields: SignFields }) {
@@ -16,7 +18,7 @@ export function LiveVinylDock({ fields }: { fields: SignFields }) {
       <div className="mb-3 hidden lg:flex lg:items-end lg:justify-between lg:gap-3">
         <div>
           <p className="text-sm font-medium text-[var(--navy)]">
-            Live 24×24 vinyl
+            Live vinyl
           </p>
           <p className="text-xs text-muted-foreground">
             {name || dot
@@ -25,15 +27,14 @@ export function LiveVinylDock({ fields }: { fields: SignFields }) {
           </p>
         </div>
         <p className="text-xs font-medium tracking-wide text-muted-foreground">
-          24 in × 24 in
+          ~10×20 in each side
         </p>
       </div>
       <div className="flex items-center gap-3 lg:block">
         <div className="w-[7.75rem] shrink-0 rounded-lg bg-neutral-100 p-1.5 ring-1 ring-black/10 sm:w-[9rem] lg:w-full lg:max-w-[560px] lg:rounded-xl lg:bg-neutral-100 lg:p-5">
-          <TruckSign
+          <SignPreview
             fields={fields}
-            className="shadow-md"
-            data-testid="live-vinyl"
+            signClassName="shadow-md"
           />
         </div>
         <div className="min-w-0 lg:hidden">

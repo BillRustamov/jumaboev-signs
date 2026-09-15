@@ -4,7 +4,7 @@ import { OrderStudio } from "@/components/order-studio";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata: Metadata = {
-  title: "Design 24×24 door vinyl",
+  title: "Design door vinyl",
 };
 
 export default function OrderPage() {

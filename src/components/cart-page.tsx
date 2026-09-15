@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { TruckSign } from "@/components/truck-sign";
+import { SignPreview } from "@/components/sign-preview";
 import { removeFromCart, useCart } from "@/lib/cart";
 
 export function CartPage() {
@@ -26,8 +26,8 @@ export function CartPage() {
             Cart is empty
           </CardTitle>
           <CardDescription>
-            Add a 24×24 door pair from the print desk. You can check the look
-            on a white semi at checkout.
+            Add a ~10×20 door pair from the print desk. You can preview the
+            sign here, then check both cab sides at checkout.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
@@ -51,7 +51,7 @@ export function CartPage() {
               {item.fields.companyName.trim().toUpperCase() || "Door pair"}
             </CardTitle>
             <CardDescription>
-              Set of two · 24 in × 24 in
+              Set of two · ~10×20 in each side
               {item.fields.showMc && item.fields.mcNumber
                 ? ` · MC ${item.fields.mcNumber}`
                 : ""}
@@ -59,10 +59,14 @@ export function CartPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-[8.5rem_1fr] sm:items-center">
-            <TruckSign fields={item.fields} className="max-w-[8.5rem]" />
+            <SignPreview
+              fields={item.fields}
+              className="max-w-[8.5rem]"
+              signClassName="max-w-[8.5rem]"
+            />
             <p className="text-sm text-muted-foreground">
-              Matched left and right cab doors. Unit numbers are not on this
-              vinyl — that is a separate small print.
+              Approximately 10×20 in for each side of the cab. Click the sign
+              to preview. Unit numbers are a separate small print.
             </p>
           </CardContent>
           <CardFooter className="justify-between">

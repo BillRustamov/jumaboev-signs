@@ -13,11 +13,11 @@ export default function AdminPage() {
           Admin
         </p>
         <h1 className="font-heading mt-1 text-3xl font-semibold tracking-tight text-[var(--navy)]">
-          24×24 print sheets
+          Print sheets
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Khurshid’s cutter sheet is 24×24 in. Each download has two logos —
-          left and right — in 11×20 in cells on that sheet.
+          Each download is a matched pair — approximately 10×20 in for the
+          left cab and 10×20 in for the right cab.
         </p>
       </div>
       <AdminDesk />

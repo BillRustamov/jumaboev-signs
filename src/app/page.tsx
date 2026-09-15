@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { HomeSampleGrid } from "@/components/home-sample-grid";
+import { SignPreview } from "@/components/sign-preview";
 import { SignPair } from "@/components/truck-sign";
 import { DRIVER_SAMPLES } from "@/lib/samples";
 
@@ -23,15 +24,15 @@ export default function HomePage() {
       <section className="border-b bg-[color-mix(in_oklch,var(--navy),white_94%)]">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.9fr)] lg:py-14">
           <div>
-            <Badge variant="secondary">Set of two · 24 in × 24 in</Badge>
+            <Badge variant="secondary">Set of two · ~10×20 in each side</Badge>
             <h1 className="font-heading mt-4 text-3xl font-semibold tracking-tight text-[var(--navy)] sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
               Tap a shop door. Put your USDOT on it.
             </h1>
             <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
-              Jumaboev Signs prints a matched 24×24 pair for both cab sides.
-              MCS-150 name and USDOT are required. MC and logo size are yours
-              to set. Unit numbers are a separate small print, not this 24×24
-              door. Letters still have to read from 50 feet in daylight.
+              Jumaboev Signs prints a matched pair — approximately 10×20 in for
+              each side of the cab. MCS-150 name and USDOT are required. MC and
+              logo size are yours to set. Unit numbers are a separate small
+              print. Letters still have to read from 50 feet in daylight.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" asChild>
@@ -43,9 +44,11 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mx-auto w-full max-w-sm">
-            <SignPair fields={HERO} />
+            <SignPreview fields={HERO}>
+              <SignPair fields={HERO} />
+            </SignPreview>
             <p className="mt-3 text-center text-xs text-muted-foreground">
-              Elbrus sample · USDOT 20179229 · MC 796405
+              Click the sign to preview · ~10×20 in each cab side
             </p>
           </div>
         </div>
@@ -63,7 +66,7 @@ export default function HomePage() {
             Pick a sample, then swap in your numbers
           </h2>
           <p className="mt-2 text-muted-foreground">
-            Each card is a real 24×24 layout. Tap one to open the designer with
+            Each card is a real door layout. Tap one to open the designer with
             that door loaded. Change the logo size on the vinyl before you send
             the pair to the shop.
           </p>
@@ -80,7 +83,7 @@ export default function HomePage() {
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Required by FMCSA on both sides: the MCS-150 name and USDOT. MC and
           logo are extra. Unit numbers print as a separate small sticker.
-          Typical door print is 24×24 outdoor vinyl, two copies.
+          Each door is approximately 10×20 in outdoor vinyl, one per cab side.
         </p>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Spec

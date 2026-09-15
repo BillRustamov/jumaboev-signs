@@ -28,8 +28,8 @@ export function LogoSizeControl({
           <Label htmlFor="logo-size">Logo size on the vinyl</Label>
           <p className="text-xs text-muted-foreground">
             {disabled
-              ? "Upload a logo first, then set how large it prints on the 24×24 door."
-              : "How large the mark prints on the 24×24 door."}
+              ? "Upload a logo first, then set how large it prints on the door."
+              : "How large the mark prints on the door."}
           </p>
         </div>
         <p className="text-sm font-medium text-[var(--navy)]">{logoSizeLabel(size)}</p>

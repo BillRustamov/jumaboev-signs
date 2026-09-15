@@ -203,7 +203,7 @@ export function OrderStudio() {
               <CardTitle>Print ticket</CardTitle>
               <CardDescription className="hidden sm:block">
                 Do these three, then add the pair to your cart. Unit numbers
-                are a separate small print and do not go on this 24×24 door.
+                are a separate small print.
               </CardDescription>
               <CardDescription className="sm:hidden">
                 Required before the cart.
@@ -526,7 +526,7 @@ export function OrderStudio() {
             </DialogTitle>
             <DialogDescription>
               {added
-                ? `${added.fields.companyName} · USDOT ${added.fields.dotNumber}. Two 24×24 doors. Checkout shows them on a white semi.`
+                ? `${added.fields.companyName} · USDOT ${added.fields.dotNumber}. Approximately 10×20 in for each cab side. Checkout shows them on the truck.`
                 : null}
             </DialogDescription>
           </DialogHeader>

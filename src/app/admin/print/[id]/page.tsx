@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AdminPrintDesk } from "@/components/admin-print-desk";
 
 export const metadata: Metadata = {
-  title: "24×24 print sheet",
+  title: "Print sheet",
 };
 
 export default function AdminPrintPage() {

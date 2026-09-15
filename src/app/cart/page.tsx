@@ -16,8 +16,9 @@ export default function CartRoute() {
           What you are printing
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Each item is a matched 24×24 pair for both cab doors. Checkout shows
-          the vinyl on a white semi before you send it to the shop.
+          Each item is approximately 10×20 in for each side of the cab.
+          Checkout shows the vinyl on a white semi before you send it to the
+          shop.
         </p>
       </div>
       <CartPage />

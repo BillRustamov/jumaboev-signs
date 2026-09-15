@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TruckSign } from "@/components/truck-sign";
+import { SignPreview } from "@/components/sign-preview";
 import {
   readLocalOrders,
   useUsername,
@@ -87,7 +87,7 @@ export function OrdersBoard() {
             </CardTitle>
             <CardDescription>
               {username
-                ? `Nothing on file for ${username}. Add a 24×24 pair to the cart and check out.`
+                ? `Nothing on file for ${username}. Add a ~10×20 pair to the cart and check out.`
                 : "Design a door, add it to the cart, and check out. The ticket lands here."}
             </CardDescription>
           </CardHeader>
@@ -107,19 +107,20 @@ export function OrdersBoard() {
                     <CardTitle>{order.id}</CardTitle>
                     <CardDescription>
                       @{order.username} · {order.source}
+                      {order.language ? ` · ${order.language}` : ""}
                     </CardDescription>
                   </div>
                   <Badge variant="secondary">{order.status}</Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                <TruckSign fields={order} />
+                <SignPreview fields={order} />
                 <p className="text-xs text-muted-foreground">
                   {new Date(order.createdAt).toLocaleString()}
                 </p>
                 <Button className="w-full" variant="outline" asChild>
                   <Link href={`/admin/print/${order.id}`}>
-                    24×24 print sheet
+                    Print sheet
                   </Link>
                 </Button>
               </CardContent>

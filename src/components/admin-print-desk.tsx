@@ -101,14 +101,13 @@ export function AdminPrintDesk() {
           </Button>
           <Button onClick={downloadSheet}>
             <Download className="size-4" />
-            Download 24×24 sheet
+            Download print sheet
           </Button>
         </div>
       </div>
       <p className="print-hide max-w-2xl text-sm text-muted-foreground">
-        One 24×24 in sheet, two doors. Each logo sits in an 11×20 in cell —
-        left and right. In the print dialog set paper to 24×24 in (or tabloid
-        and 100% scale). Turn off “fit to page”.
+        Two doors, ~10×20 in each. Left and right. In the print dialog use
+        100% scale and turn off “fit to page”.
       </p>
       <div className="print-hide overflow-auto rounded-xl border bg-neutral-200 p-3">
         <div className="h-[8.16in] sm:h-[9.12in]">

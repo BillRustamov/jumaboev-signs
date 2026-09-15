@@ -21,6 +21,7 @@ export type SignOrder = SignFields & {
   username: string;
   source: OrderSource;
   language?: string;
+  telegramChatId?: number;
   createdAt: string;
   status: "received";
 };

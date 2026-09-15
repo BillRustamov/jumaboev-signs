@@ -10,6 +10,7 @@ import {
   type SignOrder,
 } from "@/lib/order";
 import { listOrders, saveOrder } from "@/lib/store";
+import { notifyShop } from "@/lib/telegram";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -38,15 +39,23 @@ export async function POST(request: Request) {
   }
 
   const source: OrderSource = input.source === "telegram" ? "telegram" : "web";
+  const telegramChatId =
+    typeof input.telegramChatId === "number" &&
+    Number.isFinite(input.telegramChatId)
+      ? input.telegramChatId
+      : undefined;
   const order: SignOrder = {
     ...fields,
     id: input.id?.startsWith("JS-") ? input.id : createOrderId(),
     username,
     source,
     language: input.language,
+    telegramChatId,
     createdAt: input.createdAt ?? new Date().toISOString(),
     status: "received",
   };
 
-  return NextResponse.json(saveOrder(order));
+  const saved = saveOrder(order);
+  void notifyShop(saved);
+  return NextResponse.json(saved);
 }

@@ -18,7 +18,7 @@ export default function SamplesPage() {
         <p className="mt-2 text-muted-foreground">
           These are looks only. Open one on the print desk, put your MCS-150
           name and USDOT on it, then add the pair to your cart. Unit numbers
-          are a separate small print — they do not go on this 24×24 door.
+          are a separate small print.
         </p>
       </div>
       <HomeSampleGrid />

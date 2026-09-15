@@ -1,17 +1,17 @@
 # Jumaboev Signs
 
-Khurshid Jumaboev’s shop slice: **24×24 inch vinyl USDOT truck door decals** that follow FMCSA 49 CFR 390.21. Typical job is a matched pair for both cab sides — MCS-150 name, USDOT number, optional MC and logo. **Unit numbers are a separate small print** and do not go on the 24×24 door.
+Khurshid Jumaboev’s shop slice: vinyl USDOT truck door decals that follow FMCSA 49 CFR 390.21. Each item is approximately **10×20 in for each side of the cab** — MCS-150 name, USDOT number, optional MC and logo. **Unit numbers are a separate small print** and do not go on this vinyl.
 
-Drivers start from a **visual sample**, fill the print ticket, add the pair to the **cart**, then check the vinyl on a **white semi** at checkout.
+Drivers start from a visual sample, fill the print ticket, add the pair to the cart, then check the vinyl on a white semi at checkout. Click any door sign to preview it larger.
 
 This repo is the web designer plus a Telegram bot. Instagram is out of scope for this slice. Telegram is the main customer channel.
 
 ## What you can do
 
 - Browse samples, open the print desk, and keep a live door on screen on a phone.
-- Fill required lettering, colors, and layout. Add the pair to the cart.
-- Open the cart, then checkout to see the logo on a full-size white semi before sending it to the shop.
-- Run the same questions in Telegram in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, or Ukrainian.
+- Fill required lettering, colors, and layout. Click the live door to preview. Add the pair to the cart.
+- Open the cart, click a sign to preview, then checkout to see the logo on a white Cascadia sleeper before sending it to the shop.
+- Run the same questions in Telegram in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, or Ukrainian. Confirmed tickets POST to the shop list.
 
 ## Web app
 
@@ -25,12 +25,14 @@ Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0
 - `/` — shop landing
 - `/samples` — door samples
 - `/order` — live designer (`/order?sample=elbrus` loads a look)
-- `/cart` — shopping cart
+- `/cart` — shopping cart (click the sign to preview)
 - `/checkout` — white Cascadia sleeper-door preview and send to the shop
 - `/orders` — tickets from this server and this browser
-- `/admin` — shop print desk (also in the header). Download a **24×24 in** cutter sheet with **two 11×20 in** logos, left and right. `/admin/print/sample` opens a sample sheet without an order.
+- `/admin` — shop print desk. Download a cutter sheet with two ~10×20 in logos, left and right. `/admin/print/sample` opens a sample sheet without an order.
+- `/api/health` — `{ ok: true }` for the Telegram bot to ping
+- `/api/orders` — GET the shop list, POST a confirmed ticket
 
-There is no database and no login. Restarting the Next.js process clears the in-memory shop list; local browser copies and the cart remain.
+Tickets persist in `data/orders.json` so a restart does not wipe the print desk. That file is gitignored. There is no login.
 
 ## Telegram bot
 
@@ -38,7 +40,7 @@ There is no database and no login. Restarting the Next.js process clears the in-
 npm run bot
 ```
 
-If `TELEGRAM_BOT_TOKEN` is **unset**, the command starts a **mock chat in the terminal**. Pick a language with `1`, `2`, … then answer like a driver. `/start` resets, `/quit` exits. `npm run bot:demo` walks an ELBRUS sample order without typing.
+If `TELEGRAM_BOT_TOKEN` is **unset**, the command starts a **mock chat in the terminal**. Pick a language with `1`, `2`, … then answer like a driver. Type `Skip` on optional fields (MC, logo) instead of tapping the button. `/start` resets, `/quit` exits. `npm run bot:demo` walks an ELBRUS sample order without typing and POSTs it to `/api/orders` when the site is up.
 
 To talk to real Telegram:
 
@@ -48,18 +50,19 @@ To talk to real Telegram:
 ```bash
 TELEGRAM_BOT_TOKEN=your-bot-token
 APP_URL=http://127.0.0.1:43147
+TELEGRAM_SHOP_CHAT_ID=           # optional: shop ping for every ticket
 ```
 
 3. Keep `npm run dev` running so confirmed tickets can POST to `/api/orders`.
 4. Run `npm run bot` in a second terminal.
 
-The mock path is the default. Missing credentials never block local work.
+The bot loads `.env` itself, pings `/api/health` on start, and retries the shop POST a few times. The mock path is the default. Missing credentials never block local work.
 
 ## Print layout
 
-The live sign starts from the physical ELBRUS pair and prints **USDOT** (not `DOT:`) per 390.21. MCS-150 name is required; MC is optional. Recolor face, name, plates, and borders in the designer. Logo size is a 1–5 scale on the 24×24 face. Sample numbers: USDOT `20179229`, MC `796405`.
+The live sign starts from the physical ELBRUS pair and prints **USDOT** (not `DOT:`) per 390.21. MCS-150 name is required; MC is optional. Recolor face, name, plates, and borders in the designer. Logo size is a 1–5 scale on the vinyl. Sample numbers: USDOT `20179229`, MC `796405`.
 
-Admin download: one **24×24 in** sheet, two doors. Each logo fills an **11×20 in** cell (left and right). In the print dialog set paper to 24×24 in, 100% scale, and turn off “fit to page”.
+Admin download: two doors on one sheet, each approximately **10×20 in** (left and right). In the print dialog set 100% scale and turn off “fit to page”.
 
 ## Stack
 

@@ -20,7 +20,7 @@ export function clampLogoSize(value: unknown): LogoSize {
   return Math.min(5, Math.max(1, Math.round(n))) as LogoSize;
 }
 
-/** How large the mark prints on the 24×24 vinyl (container query units). */
+/** How large the mark prints on the vinyl (container query units). */
 export function logoBox(size: unknown): { maxHeight: string; maxWidth: string } {
   const map: Record<LogoSize, { maxHeight: string; maxWidth: string }> = {
     1: { maxHeight: "11cqw", maxWidth: "36%" },

@@ -29,11 +29,11 @@ const signCondensed = Oswald({
 
 export const metadata: Metadata = {
   title: {
-    default: "Jumaboev Signs — 24×24 FMCSA USDOT door vinyl",
+    default: "Jumaboev Signs — USDOT door vinyl",
     template: "%s · Jumaboev Signs",
   },
   description:
-    "Khurshid Jumaboev prints 24×24 vinyl USDOT door decals. Live preview, color edits, Telegram bot.",
+    "Khurshid Jumaboev prints vinyl USDOT truck door decals, about 10×20 in each cab side. Live preview, color edits, Telegram bot.",
 };
 
 export const viewport: Viewport = {

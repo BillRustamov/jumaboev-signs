@@ -35,6 +35,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# shop tickets (local file store)
+/data/orders.json
+
 # vercel
 .vercel
 

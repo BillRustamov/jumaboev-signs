@@ -98,14 +98,14 @@ export function CheckoutDesk() {
             Order received
           </CardTitle>
           <CardDescription>
-            {placed.map((order) => order.id).join(", ")} · two 11×20 doors on a
-            24×24 sheet for @{placed[0]?.username}.
+            {placed.map((order) => order.id).join(", ")} · ~10×20 in each cab
+            side for @{placed[0]?.username}.
           </CardDescription>
         </CardHeader>
         <CardFooter className="flex-wrap gap-2">
           <Button asChild>
             <Link href={`/admin/print/${placed[0].id}`}>
-              Download 24×24 print sheet
+              Download print sheet
             </Link>
           </Button>
           <Button variant="outline" asChild>

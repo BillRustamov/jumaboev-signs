@@ -1,5 +1,6 @@
 import { createInterface } from "node:readline";
 import { stdin as input, stdout as output } from "node:process";
+import { existsSync, readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { Bot, InlineKeyboard, type Context } from "grammy";
@@ -8,13 +9,13 @@ import {
   LANG_LABELS,
   LANGS,
   isLang,
+  isSkipText,
   t,
   type Lang,
 } from "./i18n";
 import {
   createOrderId,
   emptySign,
-  validateSign,
   validateUsername,
   type SignFields,
   type SignOrder,
@@ -37,9 +38,35 @@ type Draft = {
   step: Step;
   fields: SignFields;
   username: string;
+  telegramChatId?: number;
 };
 
-const APP_URL = process.env.APP_URL ?? "http://127.0.0.1:43147";
+function loadDotEnv() {
+  const envPath = path.join(process.cwd(), ".env");
+  if (!existsSync(envPath)) return;
+  for (const raw of readFileSync(envPath, "utf8").split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || line.startsWith("#")) continue;
+    const eq = line.indexOf("=");
+    if (eq <= 0) continue;
+    const key = line.slice(0, eq).trim();
+    let value = line.slice(eq + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    if (process.env[key] === undefined) process.env[key] = value;
+  }
+}
+
+loadDotEnv();
+
+const APP_URL = (process.env.APP_URL ?? "http://127.0.0.1:43147").replace(
+  /\/$/,
+  "",
+);
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN?.trim();
 
 type Button = { id: string; label: string };
@@ -98,40 +125,60 @@ function summary(draft: Draft): string {
     t(draft.lang, "confirmBody", {
       username: draft.username,
       company: draft.fields.companyName,
-      legal: draft.fields.legalName,
+      legal: draft.fields.legalName || "—",
       dot: draft.fields.dotNumber,
-      mc: draft.fields.mcNumber,
-      fleet: draft.fields.fleetNumber || "—",
+      mc: draft.fields.showMc && draft.fields.mcNumber ? draft.fields.mcNumber : "—",
       logo: draft.fields.logoDataUrl ? "yes" : "—",
       style: draft.fields.paletteId,
     }),
   ].join("\n");
 }
 
-async function postOrder(draft: Draft): Promise<{ order: SignOrder; shopOk: boolean }> {
+function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function pingShop(): Promise<boolean> {
+  try {
+    const response = await fetch(`${APP_URL}/api/health`, { cache: "no-store" });
+    if (!response.ok) return false;
+    const body = (await response.json()) as { ok?: boolean };
+    return body.ok === true;
+  } catch {
+    return false;
+  }
+}
+
+async function postOrder(
+  draft: Draft,
+): Promise<{ order: SignOrder; shopOk: boolean }> {
   const order: SignOrder = {
     ...draft.fields,
     id: createOrderId(),
     username: draft.username,
     source: "telegram",
     language: draft.lang,
+    telegramChatId: draft.telegramChatId,
     createdAt: new Date().toISOString(),
     status: "received",
   };
-  try {
-    const response = await fetch(`${APP_URL}/api/orders`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(order),
-    });
-    if (!response.ok) {
-      return { order, shopOk: false };
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const response = await fetch(`${APP_URL}/api/orders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(order),
+      });
+      if (response.ok) {
+        const saved = (await response.json()) as SignOrder;
+        return { order: saved, shopOk: true };
+      }
+    } catch {
+      /* retry */
     }
-    const saved = (await response.json()) as SignOrder;
-    return { order: saved, shopOk: true };
-  } catch {
-    return { order, shopOk: false };
+    if (attempt < 3) await wait(400 * 2 ** attempt);
   }
+  return { order, shopOk: false };
 }
 
 async function fileToDataUrl(filePath: string): Promise<string> {
@@ -197,7 +244,7 @@ async function handleText(
       return draft;
     }
     case "legal": {
-      draft.fields.legalName = trimmed;
+      draft.fields.legalName = isSkipText(trimmed, draft.lang) ? "" : trimmed;
       draft.step = "dot";
       await chat.send(t(draft.lang, "askDot"));
       return draft;
@@ -213,6 +260,13 @@ async function handleText(
       return draft;
     }
     case "mc": {
+      if (!trimmed || isSkipText(trimmed, draft.lang)) {
+        draft.fields.mcNumber = "";
+        draft.fields.showMc = false;
+        draft.step = "logo";
+        await chat.send(t(draft.lang, "askLogo"), skipKeyboard(draft.lang));
+        return draft;
+      }
       if (!/^\d{4,10}$/.test(trimmed)) {
         await chat.send(t(draft.lang, "numbersOnly"));
         return draft;
@@ -224,7 +278,18 @@ async function handleText(
       return draft;
     }
     case "logo": {
-      if (trimmed.startsWith("/") || trimmed.endsWith(".png") || trimmed.endsWith(".jpg") || trimmed.endsWith(".jpeg") || trimmed.endsWith(".webp")) {
+      if (!trimmed || isSkipText(trimmed, draft.lang)) {
+        draft.step = "style";
+        await chat.send(t(draft.lang, "askStyle"), styleKeyboard());
+        return draft;
+      }
+      if (
+        trimmed.startsWith("/") ||
+        trimmed.endsWith(".png") ||
+        trimmed.endsWith(".jpg") ||
+        trimmed.endsWith(".jpeg") ||
+        trimmed.endsWith(".webp")
+      ) {
         try {
           draft.fields.logoDataUrl = await fileToDataUrl(trimmed);
         } catch {
@@ -293,6 +358,7 @@ async function handleCallback(
     const lang = draft.lang;
     const next = newDraft();
     next.lang = lang;
+    next.telegramChatId = draft.telegramChatId;
     next.step = "username";
     await chat.send(`${t(lang, "cancelled")}\n\n${t(lang, "askUsername")}`);
     return next;
@@ -300,9 +366,12 @@ async function handleCallback(
   if (data === "confirm" && draft.step === "confirm") {
     const { order, shopOk } = await postOrder(draft);
     await chat.send(t(draft.lang, "placed", { id: order.id }));
-    if (!shopOk) await chat.send(t(draft.lang, "shopUnreachable"));
+    await chat.send(
+      shopOk ? t(draft.lang, "shopPosted") : t(draft.lang, "shopUnreachable"),
+    );
     const next = newDraft();
     next.lang = draft.lang;
+    next.telegramChatId = draft.telegramChatId;
     next.step = "username";
     return next;
   }
@@ -331,13 +400,16 @@ async function runTelegram(token: string) {
     const existing = sessions.get(id);
     if (existing) return existing;
     const created = newDraft();
+    created.telegramChatId = id;
     sessions.set(id, created);
     return created;
   }
 
   bot.command("start", async (ctx) => {
     const chatId = ctx.chat.id;
-    sessions.set(chatId, newDraft());
+    const draft = newDraft();
+    draft.telegramChatId = chatId;
+    sessions.set(chatId, draft);
     await ctx.reply(COPY.en.chooseLanguage, {
       reply_markup: languageKeyboard().keyboard,
     });
@@ -464,6 +536,13 @@ async function playTurns(script?: string[]) {
 }
 
 async function main() {
+  const shopUp = await pingShop();
+  console.log(
+    shopUp
+      ? `Shop API is up at ${APP_URL}`
+      : `Shop API at ${APP_URL} is not reachable. Confirmed tickets retry, then stay in this chat if the site is down.`,
+  );
+
   if (TOKEN) {
     await runTelegram(TOKEN);
     return;
