@@ -9,7 +9,7 @@ export function SiteHeader() {
           <p className="font-heading text-sm font-semibold tracking-wide text-[var(--navy)] sm:text-base">
             Jumaboev Signs
           </p>
-          <p className="truncate text-[11px] text-muted-foreground sm:text-xs">
+          <p className="hidden truncate text-[11px] text-muted-foreground sm:block sm:text-xs">
             24×24 vinyl DOT door decals
           </p>
         </Link>

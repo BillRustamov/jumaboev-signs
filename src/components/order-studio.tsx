@@ -24,7 +24,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TruckSign } from "@/components/truck-sign";
 import {
-  useIsClient,
   useUsername,
   writeLocalOrder,
   writeUsername,
@@ -43,7 +42,6 @@ const MAX_LOGO_BYTES = 4 * 1024 * 1024;
 
 export function OrderStudio() {
   const storedUsername = useUsername();
-  const isClient = useIsClient();
   const [createdUsername, setCreatedUsername] = useState("");
   const username = createdUsername || storedUsername;
   const [usernameDraft, setUsernameDraft] = useState("");
@@ -149,27 +147,6 @@ export function OrderStudio() {
     } finally {
       setSubmitting(false);
     }
-  }
-
-  if (!isClient) {
-    return (
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
-        <Card>
-          <CardHeader>
-            <CardTitle>Loading your desk</CardTitle>
-            <CardDescription>
-              Restoring the last username used in this browser.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="h-8 animate-pulse rounded-lg bg-muted" />
-            <div className="h-8 animate-pulse rounded-lg bg-muted" />
-            <div className="h-8 animate-pulse rounded-lg bg-muted" />
-          </CardContent>
-        </Card>
-        <div className="aspect-square animate-pulse rounded-[4%] bg-muted" />
-      </div>
-    );
   }
 
   if (!username) {

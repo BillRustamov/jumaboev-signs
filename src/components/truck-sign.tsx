@@ -9,16 +9,32 @@ const RED = "#b83a2f";
 function GoldRedRule() {
   return (
     <div
-      className="mx-auto mt-[1.1cqw] mb-[1.4cqw] flex w-[74%] items-center gap-[1.1cqw]"
       aria-hidden
+      className="mx-auto"
+      style={{
+        width: "74%",
+        height: "max(4px, 0.85cqw)",
+        marginTop: "1.15cqw",
+        marginBottom: "1.55cqw",
+        display: "flex",
+        gap: "1.1cqw",
+      }}
     >
-      <span
-        className="h-[0.55cqw] flex-[3.2] rounded-full"
-        style={{ backgroundColor: GOLD }}
+      <div
+        style={{
+          width: "72%",
+          height: "100%",
+          borderRadius: 999,
+          backgroundColor: GOLD,
+        }}
       />
-      <span
-        className="h-[0.55cqw] flex-1 rounded-full"
-        style={{ backgroundColor: RED }}
+      <div
+        style={{
+          width: "22%",
+          height: "100%",
+          borderRadius: 999,
+          backgroundColor: RED,
+        }}
       />
     </div>
   );
@@ -36,16 +52,24 @@ function NavyPlate({
   const filled = value.trim();
   return (
     <div
-      className={cn(
-        "mt-[2.1%] flex w-full items-center rounded-[2.4cqw] px-[4.2%] py-[2.2%]",
-        !filled && "opacity-35",
-      )}
-      style={{ backgroundColor: NAVY }}
+      className={cn("flex w-full items-center", !filled && "opacity-35")}
+      style={{
+        marginTop: "2.1%",
+        backgroundColor: NAVY,
+        borderRadius: "2.4cqw",
+        padding: "2.3% 4.2%",
+      }}
     >
-      <span className="font-sign-condensed shrink-0 text-[6.4cqw] font-semibold leading-none tracking-wide text-white">
+      <span
+        className="font-sign-condensed shrink-0 font-semibold leading-none tracking-wide text-white"
+        style={{ fontSize: "6.4cqw" }}
+      >
         {label}
       </span>
-      <span className="ml-[2.2%] min-w-0 font-sign-condensed text-[11.8cqw] font-bold leading-none tracking-wide text-white">
+      <span
+        className="font-sign-condensed min-w-0 font-bold leading-none tracking-wide text-white"
+        style={{ fontSize: "11.8cqw", marginLeft: "2.2%" }}
+      >
         {filled || placeholder}
       </span>
     </div>
@@ -55,14 +79,26 @@ function NavyPlate({
 function Chevrons() {
   return (
     <div
-      className="mt-auto mb-[0.6%] flex items-end justify-center gap-[0.75cqw] pt-[2.5%]"
       aria-hidden
+      className="flex items-end justify-center"
+      style={{
+        marginTop: "auto",
+        paddingTop: "3.2%",
+        marginBottom: "0.4%",
+        gap: "0.9cqw",
+      }}
     >
       {[GOLD, RED, GOLD].map((color, i) => (
         <span
           key={`${color}-${i}`}
-          className="inline-block h-[1.2cqw] w-[6.6cqw] -skew-x-[32deg] rounded-[0.15cqw]"
-          style={{ backgroundColor: color }}
+          style={{
+            display: "inline-block",
+            height: "max(4px, 1.35cqw)",
+            width: "7.2cqw",
+            backgroundColor: color,
+            transform: "skewX(-32deg)",
+            borderRadius: "0.2cqw",
+          }}
         />
       ))}
     </div>
@@ -92,27 +128,44 @@ export function TruckSign({
 
   return (
     <div
-      className={cn(
-        "@container aspect-square w-full select-none bg-white",
-        className,
-      )}
+      className={cn("aspect-square w-full select-none bg-white", className)}
+      style={{ containerType: "inline-size" }}
     >
       <div
-        className="h-full w-full rounded-[4.8%] p-[1.55%]"
-        style={{ backgroundColor: GOLD }}
+        className="h-full w-full"
+        style={{
+          backgroundColor: GOLD,
+          borderRadius: "4.8%",
+          padding: "1.55%",
+        }}
       >
         <div
-          className="h-full w-full rounded-[4%] p-[1.05%]"
-          style={{ backgroundColor: NAVY }}
+          className="h-full w-full"
+          style={{
+            backgroundColor: NAVY,
+            borderRadius: "4%",
+            padding: "1.05%",
+          }}
         >
-          <div className="flex h-full w-full flex-col items-center rounded-[3.2%] bg-white px-[6.2%] pt-[6.4%] pb-[3.4%]">
+          <div
+            className="flex h-full w-full flex-col items-center bg-white"
+            style={{
+              borderRadius: "3.2%",
+              padding: "6.6% 6.2% 3.6%",
+            }}
+          >
             {fields.logoDataUrl ? (
               // Data-URL logos from the order form; next/image does not fit this flow.
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={fields.logoDataUrl}
                 alt=""
-                className="mb-[1.4cqw] max-h-[9cqw] max-w-[28%] object-contain"
+                className="object-contain"
+                style={{
+                  marginBottom: "1.4cqw",
+                  maxHeight: "9cqw",
+                  maxWidth: "28%",
+                }}
               />
             ) : null}
             <p
@@ -131,10 +184,10 @@ export function TruckSign({
             <GoldRedRule />
             <p
               className={cn(
-                "font-sign-condensed px-[2%] text-center text-[3.05cqw] font-semibold leading-none tracking-[0.22em]",
+                "font-sign-condensed px-[2%] text-center font-semibold leading-none tracking-[0.22em]",
                 !legal && "opacity-35",
               )}
-              style={{ color: NAVY }}
+              style={{ color: NAVY, fontSize: "3.15cqw" }}
             >
               {displayLegal}
             </p>
@@ -174,9 +227,10 @@ export function SignPair({
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 rounded-md bg-neutral-100 p-2 shadow-xl ring-1 ring-black/10 sm:gap-3 sm:p-3",
+        "flex flex-col rounded-md bg-neutral-100 shadow-xl ring-1 ring-black/10",
         className,
       )}
+      style={{ gap: "0.35rem", padding: "0.65rem" }}
     >
       <TruckSign fields={fields} />
       <TruckSign fields={fields} />
