@@ -11,6 +11,10 @@ export type CartItem = {
 
 const CART_KEY = "jumaboev-cart";
 const CART_EVENT = "jumaboev-cart-change";
+const EMPTY_CART: CartItem[] = [];
+
+let cachedRaw = "";
+let cachedItems: CartItem[] = EMPTY_CART;
 
 function canUseStore(): boolean {
   return typeof window !== "undefined";
@@ -21,19 +25,26 @@ function emitCartChange(): void {
 }
 
 export function readCart(): CartItem[] {
-  if (!canUseStore()) return [];
+  if (!canUseStore()) return EMPTY_CART;
+  const raw = window.localStorage.getItem(CART_KEY) ?? "";
+  if (raw === cachedRaw) return cachedItems;
   try {
-    const raw = window.localStorage.getItem(CART_KEY);
-    if (!raw) return [];
     const parsed = JSON.parse(raw) as CartItem[];
-    return Array.isArray(parsed) ? parsed : [];
+    cachedRaw = raw;
+    cachedItems = Array.isArray(parsed) ? parsed : EMPTY_CART;
+    return cachedItems;
   } catch {
-    return [];
+    cachedRaw = raw;
+    cachedItems = EMPTY_CART;
+    return cachedItems;
   }
 }
 
 function writeCart(items: CartItem[]): void {
-  window.localStorage.setItem(CART_KEY, JSON.stringify(items));
+  const raw = JSON.stringify(items);
+  cachedRaw = raw;
+  cachedItems = items;
+  window.localStorage.setItem(CART_KEY, raw);
   emitCartChange();
 }
 
@@ -52,7 +63,7 @@ export function removeFromCart(id: string): void {
 }
 
 export function clearCart(): void {
-  writeCart([]);
+  writeCart(EMPTY_CART);
 }
 
 function subscribeCart(onChange: () => void): () => void {
@@ -66,7 +77,7 @@ function subscribeCart(onChange: () => void): () => void {
 }
 
 export function useCart(): CartItem[] {
-  return useSyncExternalStore(subscribeCart, readCart, () => []);
+  return useSyncExternalStore(subscribeCart, readCart, () => EMPTY_CART);
 }
 
 export function useCartCount(): number {
