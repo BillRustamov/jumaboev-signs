@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TELEGRAM_BOT_URL } from "@/lib/telegram";
 
 export function SiteFooter() {
   return (
@@ -40,7 +41,14 @@ export function SiteFooter() {
             </Link>
           </p>
           <p className="mt-1">
-            Telegram bot: <code className="text-white/95">npm run bot</code>
+            <a
+              className="underline-offset-4 hover:underline"
+              href={TELEGRAM_BOT_URL}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Order on Telegram
+            </a>
           </p>
           <p className="mt-1">
             <Link className="underline-offset-4 hover:underline" href="/admin">

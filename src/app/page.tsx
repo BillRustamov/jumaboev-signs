@@ -15,6 +15,7 @@ import { HomeSampleGrid } from "@/components/home-sample-grid";
 import { SignPreview } from "@/components/sign-preview";
 import { SignPair } from "@/components/truck-sign";
 import { DRIVER_SAMPLES } from "@/lib/samples";
+import { TELEGRAM_BOT_URL } from "@/lib/telegram";
 
 const HERO = DRIVER_SAMPLES[0].fields;
 
@@ -141,12 +142,19 @@ export default function HomePage() {
           <p className="mt-3 max-w-2xl text-white/80">
             The bot asks for language first, then the same print fields as this
             site. It runs in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, and
-            Ukrainian. If no bot token is set, it still runs locally as a mock
-            chat so you can walk the flow without Telegram credentials.
+            Ukrainian. Confirmed tickets land on the shop print desk.
           </p>
-          <p className="mt-4 font-mono text-sm text-[var(--gold)]">
-            npm run bot
-          </p>
+          <div className="mt-6">
+            <Button
+              size="lg"
+              className="bg-[var(--gold)] text-[var(--navy)] hover:bg-[var(--gold)]/90"
+              asChild
+            >
+              <a href={TELEGRAM_BOT_URL} target="_blank" rel="noreferrer">
+                Open the shop on Telegram
+              </a>
+            </Button>
+          </div>
         </div>
       </section>
     </main>

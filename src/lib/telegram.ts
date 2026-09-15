@@ -1,5 +1,9 @@
 import type { SignOrder } from "@/lib/order";
 
+/** Public Telegram handle for this shop. The token stays in `.env`. */
+export const TELEGRAM_BOT_USERNAME = "usprinter_bot";
+export const TELEGRAM_BOT_URL = `https://t.me/${TELEGRAM_BOT_USERNAME}`;
+
 export function shopTicketText(order: SignOrder): string {
   const lines = [
     `New ${order.source} ticket ${order.id}`,
