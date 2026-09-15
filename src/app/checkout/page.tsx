@@ -16,8 +16,8 @@ export default function CheckoutPage() {
           Vinyl on a white semi
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Your 24×24 is on the sleeper door of a white Cascadia. Confirm the
-          look, tag the ticket, and send the pair to the shop.
+          Close-up of a white Cascadia sleeper door. Confirm the 24×24, tag
+          the ticket, and send the pair to the shop.
         </p>
       </div>
       <CheckoutDesk />

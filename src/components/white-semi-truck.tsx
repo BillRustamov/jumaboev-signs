@@ -45,24 +45,22 @@ export function WhiteSemiTruck({
             className="shadow-[0_4px_10px_rgba(20,24,28,0.22)] ring-1 ring-black/10"
           />
         </div>
-        <div className="absolute right-2 top-2 z-10 hidden w-[min(32%,18rem)] sm:block">
-          <VinylCallout fields={fields} />
+        <div className="absolute right-2 top-2 z-10 hidden w-[min(24%,14rem)] sm:block">
+          <div className="rounded-md border-[3px] border-[var(--navy)] bg-white p-1 shadow-lg">
+            <TruckSign fields={fields} className="shadow-none" />
+          </div>
         </div>
       </div>
       <div className="border-t border-black/10 bg-white p-3 sm:hidden">
-        <VinylCallout fields={fields} />
+        <div className="mx-auto max-w-xs">
+          <div className="rounded-md border-[3px] border-[var(--navy)] bg-white p-1">
+            <TruckSign fields={fields} className="shadow-none" />
+          </div>
+          <p className="pt-2 text-center text-[11px] font-medium text-[var(--navy)]">
+            24×24 sleeper door · set of two
+          </p>
+        </div>
       </div>
-    </div>
-  );
-}
-
-function VinylCallout({ fields }: { fields: SignFields }) {
-  return (
-    <div className="rounded-lg border-2 border-[var(--navy)] bg-white p-1.5 shadow-lg">
-      <TruckSign fields={fields} className="shadow-none" />
-      <p className="px-1 pb-0.5 pt-1.5 text-center text-[11px] font-medium text-[var(--navy)]">
-        24×24 sleeper door · set of two
-      </p>
     </div>
   );
 }
