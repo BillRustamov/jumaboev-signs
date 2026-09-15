@@ -17,6 +17,10 @@ export function saveOrder(order: SignOrder): SignOrder {
   return order;
 }
 
+export function getOrder(id: string): SignOrder | undefined {
+  return ordersMap().get(id);
+}
+
 export function listOrders(username?: string): SignOrder[] {
   const all = Array.from(ordersMap().values()).sort((a, b) =>
     b.createdAt.localeCompare(a.createdAt),

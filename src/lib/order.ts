@@ -35,6 +35,19 @@ export const SAMPLE_SIGN: SignFields = {
   ...applyPreset("elbrus"),
 };
 
+export const SAMPLE_PRINT_ID = "sample";
+
+export function samplePrintOrder(): SignOrder {
+  return {
+    ...SAMPLE_SIGN,
+    id: SAMPLE_PRINT_ID,
+    username: "shop",
+    source: "web",
+    createdAt: "2026-01-01T00:00:00.000Z",
+    status: "received",
+  };
+}
+
 export function emptySign(): SignFields {
   return {
     companyName: "",

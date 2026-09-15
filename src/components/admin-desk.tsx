@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, Inbox } from "lucide-react";
+import { AlertCircle, Inbox, Printer } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,14 +15,10 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TruckSign } from "@/components/truck-sign";
-import {
-  readLocalOrders,
-  useUsername,
-} from "@/lib/client-session";
+import { readLocalOrders } from "@/lib/client-session";
 import type { SignOrder } from "@/lib/order";
 
-export function OrdersBoard() {
-  const username = useUsername();
+export function AdminDesk() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [orders, setOrders] = useState<SignOrder[]>([]);
@@ -30,29 +26,21 @@ export function OrdersBoard() {
   useEffect(() => {
     const local = readLocalOrders();
     let cancelled = false;
-
     async function load() {
       try {
         const response = await fetch("/api/orders", { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error("The shop list is unavailable right now.");
-        }
+        if (!response.ok) throw new Error("Shop list unavailable.");
         const payload = (await response.json()) as { orders: SignOrder[] };
         if (cancelled) return;
         setOrders(mergeOrders(payload.orders, local));
       } catch (err) {
         if (cancelled) return;
         setOrders(local);
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Could not reach the shop list.",
-        );
+        setError(err instanceof Error ? err.message : "Could not reach the shop list.");
       } finally {
         if (!cancelled) setLoading(false);
       }
     }
-
     void load();
     return () => {
       cancelled = true;
@@ -78,24 +66,36 @@ export function OrdersBoard() {
         </Alert>
       ) : null}
 
+      <Card>
+        <CardHeader>
+          <CardTitle>Cutter sheet</CardTitle>
+          <CardDescription>
+            Physical sheet is 24×24 in. Each download places two logos — left
+            and right — in 11×20 in cells.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button variant="outline" asChild>
+            <Link href="/admin/print/sample">
+              <Printer className="size-4" />
+              Open sample 24×24 sheet
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+
       {orders.length === 0 ? (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Inbox className="size-4" />
-              No door orders yet
+              No tickets to print
             </CardTitle>
             <CardDescription>
-              {username
-                ? `Nothing on file for ${username}. Add a 24×24 pair to the cart and check out.`
-                : "Design a door, add it to the cart, and check out. The ticket lands here."}
+              When a driver checks out, the pair lands here for a 24×24 sheet
+              with two 11×20 doors. The sample sheet above is always available.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Button asChild>
-              <Link href="/order">Print desk</Link>
-            </Button>
-          </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -114,12 +114,10 @@ export function OrdersBoard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <TruckSign fields={order} />
-                <p className="text-xs text-muted-foreground">
-                  {new Date(order.createdAt).toLocaleString()}
-                </p>
-                <Button className="w-full" variant="outline" asChild>
+                <Button className="w-full" asChild>
                   <Link href={`/admin/print/${order.id}`}>
-                    24×24 print sheet
+                    <Printer className="size-4" />
+                    Download 24×24 print sheet
                   </Link>
                 </Button>
               </CardContent>

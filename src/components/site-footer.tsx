@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t bg-[var(--navy)] text-white">
+    <footer className="mt-auto border-t bg-[var(--navy)] text-white print:hidden">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 sm:flex-row sm:items-start sm:justify-between sm:px-6">
         <div>
           <p className="font-heading text-sm font-semibold tracking-wide">
@@ -42,7 +42,11 @@ export function SiteFooter() {
           <p className="mt-1">
             Telegram bot: <code className="text-white/95">npm run bot</code>
           </p>
-          <p className="mt-1">Typical print: 24 in × 24 in, set of two</p>
+          <p className="mt-1">
+            <Link className="underline-offset-4 hover:underline" href="/admin">
+              Admin print sheets
+            </Link>
+          </p>
         </div>
       </div>
     </footer>

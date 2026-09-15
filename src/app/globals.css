@@ -144,3 +144,26 @@
     scroll-padding-top: 6rem;
   }
 }
+
+@media print {
+  @page {
+    size: 24in 24in;
+    margin: 0;
+  }
+
+  html,
+  body {
+    background: white !important;
+  }
+
+  .print-hide {
+    display: none !important;
+  }
+
+  .print-sheet {
+    position: absolute;
+    left: 0;
+    top: 0;
+    box-shadow: none;
+  }
+}

@@ -28,7 +28,7 @@ export function WhiteSemiTruck({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/white-cascadia-side.jpg"
-          alt="White Freightliner Cascadia with 24 by 24 vinyl on the sleeper door"
+          alt="White Freightliner Cascadia with vinyl in the lower sleeper hatch"
           className="absolute max-w-none"
           style={{
             width: `${(SRC.w / CROP.w) * 100}%`,
@@ -36,9 +36,10 @@ export function WhiteSemiTruck({
             top: `${(-CROP.y / CROP.h) * 100}%`,
           }}
         />
+        {/* Lower rounded hatch, not the handle door above it. */}
         <div
           className="absolute"
-          style={{ left: "74.2%", top: "37.2%", width: "9.2%" }}
+          style={{ left: "76.6%", top: "57.4%", width: "6.05%" }}
         >
           <TruckSign
             fields={fields}
@@ -57,7 +58,7 @@ export function WhiteSemiTruck({
             <TruckSign fields={fields} className="shadow-none" />
           </div>
           <p className="pt-2 text-center text-[11px] font-medium text-[var(--navy)]">
-            24×24 sleeper door · set of two
+            24×24 pair · 11×20 each on the print sheet
           </p>
         </div>
       </div>

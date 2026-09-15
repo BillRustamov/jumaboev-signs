@@ -98,16 +98,21 @@ export function CheckoutDesk() {
             Order received
           </CardTitle>
           <CardDescription>
-            {placed.map((order) => order.id).join(", ")} · two 24×24 doors each
-            for @{placed[0]?.username}.
+            {placed.map((order) => order.id).join(", ")} · two 11×20 doors on a
+            24×24 sheet for @{placed[0]?.username}.
           </CardDescription>
         </CardHeader>
         <CardFooter className="flex-wrap gap-2">
           <Button asChild>
-            <Link href="/orders">View shop orders</Link>
+            <Link href={`/admin/print/${placed[0].id}`}>
+              Download 24×24 print sheet
+            </Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/order">Design another door</Link>
+            <Link href="/admin">Admin print desk</Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/orders">View shop orders</Link>
           </Button>
         </CardFooter>
       </Card>
@@ -145,8 +150,8 @@ export function CheckoutDesk() {
               a white Cascadia
             </h2>
             <p className="text-sm text-muted-foreground">
-              Close-up of the sleeper door, like a shop mockup. The inset is
-              the 24×24 so you can read the lettering.
+              Logo sits in the lower rounded sleeper hatch. The inset is the
+              24×24 so you can read the lettering.
             </p>
           </div>
           <WhiteSemiTruck fields={item.fields} />

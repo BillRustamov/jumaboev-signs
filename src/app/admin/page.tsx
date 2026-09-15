@@ -1,26 +1,26 @@
 import type { Metadata } from "next";
-import { CheckoutDesk } from "@/components/checkout-desk";
+import { AdminDesk } from "@/components/admin-desk";
 
 export const metadata: Metadata = {
-  title: "Checkout",
+  title: "Shop print desk",
 };
 
-export default function CheckoutPage() {
+export default function AdminPage() {
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
       <div className="mb-8 max-w-2xl">
         <p className="text-xs font-semibold tracking-[0.14em] text-[var(--gold)] uppercase">
-          Checkout
+          Admin
         </p>
         <h1 className="font-heading mt-1 text-3xl font-semibold tracking-tight text-[var(--navy)]">
-          Vinyl on a white semi
+          24×24 print sheets
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Close-up of a white Cascadia sleeper. The vinyl sits in the lower
-          rounded hatch. Tag the ticket and send the pair to the shop.
+          Khurshid’s cutter sheet is 24×24 in. Each download has two logos —
+          left and right — in 11×20 in cells on that sheet.
         </p>
       </div>
-      <CheckoutDesk />
+      <AdminDesk />
     </main>
   );
 }

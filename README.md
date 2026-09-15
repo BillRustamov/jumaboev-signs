@@ -28,6 +28,7 @@ Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0
 - `/cart` — shopping cart
 - `/checkout` — white Cascadia sleeper-door preview and send to the shop
 - `/orders` — tickets from this server and this browser
+- `/admin` — shop print desk (also in the header). Download a **24×24 in** cutter sheet with **two 11×20 in** logos, left and right. `/admin/print/sample` opens a sample sheet without an order.
 
 There is no database and no login. Restarting the Next.js process clears the in-memory shop list; local browser copies and the cart remain.
 
@@ -57,6 +58,8 @@ The mock path is the default. Missing credentials never block local work.
 ## Print layout
 
 The live sign starts from the physical ELBRUS pair and prints **USDOT** (not `DOT:`) per 390.21. MCS-150 name is required; MC is optional. Recolor face, name, plates, and borders in the designer. Logo size is a 1–5 scale on the 24×24 face. Sample numbers: USDOT `20179229`, MC `796405`.
+
+Admin download: one **24×24 in** sheet, two doors. Each logo fills an **11×20 in** cell (left and right). In the print dialog set paper to 24×24 in, 100% scale, and turn off “fit to page”.
 
 ## Stack
 

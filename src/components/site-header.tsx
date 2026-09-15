@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur print:hidden">
       <div className="h-0.5 bg-[var(--gold)]" />
       <div className="mx-auto flex h-11 max-w-6xl items-center justify-between gap-2 px-3 sm:h-12 sm:px-6">
         <Link href="/" className="min-w-0">
@@ -16,11 +16,14 @@ export function SiteHeader() {
           </p>
         </Link>
         <nav className="flex items-center gap-1">
-          <Button variant="ghost" size="sm" asChild>
+          <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
             <Link href="/samples">Samples</Link>
           </Button>
           <Button variant="ghost" size="sm" asChild>
             <Link href="/orders">Orders</Link>
+          </Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/admin">Admin</Link>
           </Button>
           <CartButton />
           <Button size="sm" asChild>
