@@ -59,13 +59,23 @@ export function PrintSheet({
 }
 
 function DoorCell({ fields }: { fields: SignFields }) {
+  const scaleY = DOOR_H_IN / DOOR_W_IN;
   return (
     <div
-      className="relative"
+      className="relative overflow-hidden"
       style={{ width: `${DOOR_W_IN}in`, height: `${DOOR_H_IN}in` }}
     >
       <CropMarks />
-      <TruckSign fields={fields} layout="door" className="shadow-none" />
+      <div
+        className="absolute left-0 w-full"
+        style={{
+          top: "50%",
+          height: `${DOOR_W_IN}in`,
+          transform: `translateY(-50%) scaleY(${scaleY})`,
+        }}
+      >
+        <TruckSign fields={fields} className="shadow-none" />
+      </div>
     </div>
   );
 }

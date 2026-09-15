@@ -126,13 +126,10 @@ function paletteOf(fields: SignFields): SignPalette {
 export function TruckSign({
   fields,
   className,
-  layout = "square",
   ...props
 }: {
   fields: SignFields;
   className?: string;
-  /** Square mockup, or the 11×20 in print-door cell. */
-  layout?: "square" | "door";
 } & HTMLAttributes<HTMLDivElement>) {
   const colors = paletteOf(fields);
   const company = fields.companyName.trim().toUpperCase();
@@ -147,11 +144,7 @@ export function TruckSign({
 
   return (
     <div
-      className={cn(
-        "w-full select-none",
-        layout === "door" ? "aspect-[11/20] h-full" : "aspect-square",
-        className,
-      )}
+      className={cn("aspect-square w-full select-none", className)}
       style={{ containerType: "inline-size", backgroundColor: colors.face }}
       {...props}
     >

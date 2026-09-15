@@ -150,8 +150,8 @@ export function CheckoutDesk() {
               a white Cascadia
             </h2>
             <p className="text-sm text-muted-foreground">
-              Logo sits in the lower rounded sleeper hatch. The inset is the
-              24×24 so you can read the lettering.
+              Each logo is 11×20 in, stretched along the lower rounded hatch.
+              The inset is the readable face.
             </p>
           </div>
           <WhiteSemiTruck fields={item.fields} />
