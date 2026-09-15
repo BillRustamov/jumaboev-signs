@@ -10,7 +10,7 @@ export function SiteHeader() {
             Jumaboev Signs
           </p>
           <p className="hidden truncate text-[11px] text-muted-foreground sm:block sm:text-xs">
-            24×24 vinyl DOT door decals
+            24×24 USDOT door vinyl
           </p>
         </Link>
         <nav className="flex items-center gap-1 sm:gap-2">

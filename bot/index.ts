@@ -19,6 +19,7 @@ import {
   type SignFields,
   type SignOrder,
 } from "../src/lib/order";
+import { STYLE_PRESETS, applyPreset } from "../src/lib/sign-style";
 
 type Step =
   | "lang"
@@ -29,6 +30,7 @@ type Step =
   | "mc"
   | "fleet"
   | "logo"
+  | "style"
   | "confirm";
 
 type Draft = {
@@ -62,6 +64,16 @@ function skipKeyboard(lang: Lang) {
   return keyboardFrom([{ id: "skip", label: t(lang, "skip") }], 1);
 }
 
+function styleKeyboard() {
+  return keyboardFrom(
+    STYLE_PRESETS.map((preset) => ({
+      id: `style:${preset.id}`,
+      label: preset.label,
+    })),
+    2,
+  );
+}
+
 function confirmKeyboard(lang: Lang) {
   return keyboardFrom(
     [
@@ -92,6 +104,7 @@ function summary(draft: Draft): string {
       mc: draft.fields.mcNumber,
       fleet: draft.fields.fleetNumber || "—",
       logo: draft.fields.logoDataUrl ? "yes" : "—",
+      style: draft.fields.paletteId,
     }),
   ].join("\n");
 }
@@ -181,14 +194,10 @@ async function handleText(
       }
       draft.fields.companyName = trimmed;
       draft.step = "legal";
-      await chat.send(t(draft.lang, "askLegal"));
+      await chat.send(t(draft.lang, "askLegal"), skipKeyboard(draft.lang));
       return draft;
     }
     case "legal": {
-      if (!trimmed) {
-        await chat.send(t(draft.lang, "askLegal"));
-        return draft;
-      }
       draft.fields.legalName = trimmed;
       draft.step = "dot";
       await chat.send(t(draft.lang, "askDot"));
@@ -201,7 +210,7 @@ async function handleText(
       }
       draft.fields.dotNumber = trimmed;
       draft.step = "mc";
-      await chat.send(t(draft.lang, "askMc"));
+      await chat.send(t(draft.lang, "askMc"), skipKeyboard(draft.lang));
       return draft;
     }
     case "mc": {
@@ -210,6 +219,7 @@ async function handleText(
         return draft;
       }
       draft.fields.mcNumber = trimmed;
+      draft.fields.showMc = true;
       draft.step = "fleet";
       await chat.send(t(draft.lang, "askFleet"), skipKeyboard(draft.lang));
       return draft;
@@ -234,8 +244,12 @@ async function handleText(
           return draft;
         }
       }
-      draft.step = "confirm";
-      await chat.send(summary(draft), confirmKeyboard(draft.lang));
+      draft.step = "style";
+      await chat.send(t(draft.lang, "askStyle"), styleKeyboard());
+      return draft;
+    }
+    case "style": {
+      await chat.send(t(draft.lang, "askStyle"), styleKeyboard());
       return draft;
     }
     case "confirm": {
@@ -258,6 +272,19 @@ async function handleCallback(
     await chat.send(`${t(draft.lang, "languageSet")}\n\n${t(draft.lang, "askUsername")}`);
     return draft;
   }
+  if (data === "skip" && draft.step === "legal") {
+    draft.fields.legalName = "";
+    draft.step = "dot";
+    await chat.send(t(draft.lang, "askDot"));
+    return draft;
+  }
+  if (data === "skip" && draft.step === "mc") {
+    draft.fields.mcNumber = "";
+    draft.fields.showMc = false;
+    draft.step = "fleet";
+    await chat.send(t(draft.lang, "askFleet"), skipKeyboard(draft.lang));
+    return draft;
+  }
   if (data === "skip" && draft.step === "fleet") {
     draft.fields.fleetNumber = "";
     draft.step = "logo";
@@ -265,6 +292,17 @@ async function handleCallback(
     return draft;
   }
   if (data === "skip" && draft.step === "logo") {
+    draft.step = "style";
+    await chat.send(t(draft.lang, "askStyle"), styleKeyboard());
+    return draft;
+  }
+  if (data.startsWith("style:")) {
+    const preset = applyPreset(data.slice(6));
+    draft.fields = {
+      ...draft.fields,
+      ...preset,
+      showMc: draft.fields.showMc,
+    };
     draft.step = "confirm";
     await chat.send(summary(draft), confirmKeyboard(draft.lang));
     return draft;
@@ -351,10 +389,10 @@ async function runTelegram(token: string) {
     if (photo) {
       draft.fields.logoDataUrl = await telegramPhotoToDataUrl(ctx, photo.file_id, token);
     }
-    draft.step = "confirm";
+    draft.step = "style";
     sessions.set(ctx.chat.id, draft);
-    await ctx.reply(summary(draft), {
-      reply_markup: confirmKeyboard(draft.lang).keyboard,
+    await ctx.reply(t(draft.lang, "askStyle"), {
+      reply_markup: styleKeyboard().keyboard,
     });
   });
 
@@ -458,6 +496,7 @@ async function main() {
           "ELBRUS FREIGHTLINES LLC",
           "20179229",
           "796405",
+          "1",
           "1",
           "1",
           "1",

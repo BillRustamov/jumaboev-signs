@@ -22,13 +22,13 @@ export default function HomePage() {
           <div>
             <Badge variant="secondary">Set of two · 24 in × 24 in</Badge>
             <h1 className="font-heading mt-4 text-3xl font-semibold tracking-tight text-[var(--navy)] sm:text-5xl">
-              Vinyl DOT doors for the truck you actually run.
+              USDOT doors that follow FMCSA 390.21.
             </h1>
             <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
-              Jumaboev Signs is Khurshid Jumaboev’s print desk for semi-truck
-              lettering: company name, legal entity, DOT, MC, fleet number, and
-              logo. The gold-and-navy double border you see here is the shop
-              layout — the same 24×24 pair drivers put on both cab doors.
+              Jumaboev Signs prints a matched 24×24 pair for both sides of the
+              cab: MCS-150 name, USDOT number, and optional MC, fleet, and logo.
+              Recolor the Elbrus gold-and-navy layout live — letters still have
+              to read from 50 feet in daylight.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" asChild>
@@ -46,7 +46,7 @@ export default function HomePage() {
           <div className="mx-auto w-full max-w-md">
             <SignPair fields={SAMPLE_SIGN} />
             <p className="mt-3 text-center text-xs text-muted-foreground">
-              Sample layout: ELBRUS / ELBRUS FREIGHTLINES LLC · DOT 20179229 ·
+              Sample layout: ELBRUS / ELBRUS FREIGHTLINES LLC · USDOT 20179229 ·
               MC 796405
             </p>
           </div>
@@ -58,26 +58,26 @@ export default function HomePage() {
           What prints on the vinyl
         </h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Required lettering for a US carrier door, set in the shop’s forest
-          green, navy plates, and gold/red rules. Typical size is 24×24 inches
-          outdoor vinyl, two copies.
+          Required by FMCSA on both sides: the MCS-150 name and USDOT. MC,
+          fleet, and logo are extra. Typical print is 24×24 outdoor vinyl, two
+          copies. Recolor the shop layout in the designer.
         </p>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Spec
-            title="Door name"
-            body="Large serif company mark — ELBRUS on the sample — in forest green."
+            title="MCS-150 name"
+            body="Legal name or one trade name, as filed with FMCSA. Optional second line for the LLC under a trade mark."
           />
           <Spec
-            title="Legal name"
-            body="LLC or INC line under the mark, tracked small caps in navy."
+            title="USDOT number"
+            body="Prints as USDOT plus the digits. Required. Letters must stay readable from 50 feet in daylight."
           />
           <Spec
-            title="DOT and MC"
-            body="Navy blocks, white condensed type. Fleet/unit number is optional."
+            title="MC, fleet, logo"
+            body="Optional. FMCSA does not require an MC plate. Turn it off if you only run USDOT."
           />
           <Spec
-            title="Logo"
-            body="Optional. If you upload one, it sits above the company name without crowding the plates."
+            title="Colors you can recut"
+            body="Elbrus, Highway, Gold plates, Red line, or pick every swatch. The designer warns if contrast is too weak for 50-foot reading."
           />
           <Spec
             title="Pair of doors"
@@ -96,7 +96,7 @@ export default function HomePage() {
         <Step
           icon={<Printer className="size-4" />}
           title="1. Put the lettering in"
-          body="Create a username, paste company name, legal name, DOT, MC, and fleet. Watch the 24×24 door update as you type."
+          body="Create a username, paste the MCS-150 name and USDOT, then recolor the 24×24 door."
         />
         <Step
           icon={<Smartphone className="size-4" />}

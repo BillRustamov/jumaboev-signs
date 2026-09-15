@@ -1,12 +1,8 @@
 import { cn } from "@/lib/utils";
+import { defaultStyle, type SignPalette } from "@/lib/sign-style";
 import type { SignFields } from "@/lib/order";
 
-const GREEN = "#3d5c38";
-const NAVY = "#1a2744";
-const GOLD = "#c6a23a";
-const RED = "#b83a2f";
-
-function GoldRedRule() {
+function GoldRedRule({ rule, accent }: { rule: string; accent: string }) {
   return (
     <div
       aria-hidden
@@ -25,7 +21,7 @@ function GoldRedRule() {
           width: "72%",
           height: "100%",
           borderRadius: 999,
-          backgroundColor: GOLD,
+          backgroundColor: rule,
         }}
       />
       <div
@@ -33,21 +29,25 @@ function GoldRedRule() {
           width: "22%",
           height: "100%",
           borderRadius: 999,
-          backgroundColor: RED,
+          backgroundColor: accent,
         }}
       />
     </div>
   );
 }
 
-function NavyPlate({
+function NumberPlate({
   label,
   value,
   placeholder,
+  plate,
+  plateText,
 }: {
   label: string;
   value: string;
   placeholder: string;
+  plate: string;
+  plateText: string;
 }) {
   const filled = value.trim();
   return (
@@ -55,20 +55,20 @@ function NavyPlate({
       className={cn("flex w-full items-center", !filled && "opacity-35")}
       style={{
         marginTop: "2.1%",
-        backgroundColor: NAVY,
+        backgroundColor: plate,
         borderRadius: "2.4cqw",
         padding: "2.3% 4.2%",
       }}
     >
       <span
-        className="font-sign-condensed shrink-0 font-semibold leading-none tracking-wide text-white"
-        style={{ fontSize: "6.4cqw" }}
+        className="font-sign-condensed shrink-0 font-semibold leading-none tracking-wide"
+        style={{ fontSize: "5.4cqw", color: plateText }}
       >
         {label}
       </span>
       <span
-        className="font-sign-condensed min-w-0 font-bold leading-none tracking-wide text-white"
-        style={{ fontSize: "11.8cqw", marginLeft: "2.2%" }}
+        className="font-sign-condensed min-w-0 font-bold leading-none tracking-wide"
+        style={{ fontSize: "10.6cqw", marginLeft: "2%", color: plateText }}
       >
         {filled || placeholder}
       </span>
@@ -76,7 +76,7 @@ function NavyPlate({
   );
 }
 
-function Chevrons() {
+function Chevrons({ rule, accent }: { rule: string; accent: string }) {
   return (
     <div
       aria-hidden
@@ -88,7 +88,7 @@ function Chevrons() {
         gap: "0.9cqw",
       }}
     >
-      {[GOLD, RED, GOLD].map((color, i) => (
+      {[rule, accent, rule].map((color, i) => (
         <span
           key={`${color}-${i}`}
           style={{
@@ -114,6 +114,10 @@ function displaySize(name: string): string {
   return "5.5cqw";
 }
 
+function paletteOf(fields: SignFields): SignPalette {
+  return { ...defaultStyle().colors, ...fields.colors };
+}
+
 export function TruckSign({
   fields,
   className,
@@ -121,20 +125,24 @@ export function TruckSign({
   fields: SignFields;
   className?: string;
 }) {
+  const colors = paletteOf(fields);
   const company = fields.companyName.trim().toUpperCase();
   const legal = fields.legalName.trim().toUpperCase();
   const displayName = company || "COMPANY";
-  const displayLegal = legal || "LEGAL NAME LLC";
+  const displayLegal = legal || "LEGAL OR TRADE NAME";
+  const nameFontClass =
+    fields.nameFont === "condensed" ? "font-sign-condensed" : "font-sign-serif";
+  const printMc = fields.showMc !== false;
 
   return (
     <div
-      className={cn("aspect-square w-full select-none bg-white", className)}
-      style={{ containerType: "inline-size" }}
+      className={cn("aspect-square w-full select-none", className)}
+      style={{ containerType: "inline-size", backgroundColor: colors.face }}
     >
       <div
         className="h-full w-full"
         style={{
-          backgroundColor: GOLD,
+          backgroundColor: colors.outerBorder,
           borderRadius: "4.8%",
           padding: "1.55%",
         }}
@@ -142,14 +150,15 @@ export function TruckSign({
         <div
           className="h-full w-full"
           style={{
-            backgroundColor: NAVY,
+            backgroundColor: colors.innerBorder,
             borderRadius: "4%",
             padding: "1.05%",
           }}
         >
           <div
-            className="flex h-full w-full flex-col items-center bg-white"
+            className="flex h-full w-full flex-col items-center"
             style={{
+              backgroundColor: colors.face,
               borderRadius: "3.2%",
               padding: "6.6% 6.2% 3.6%",
             }}
@@ -170,46 +179,63 @@ export function TruckSign({
             ) : null}
             <p
               className={cn(
-                "font-sign-serif max-w-full text-center font-bold leading-[0.9] tracking-[-0.03em]",
+                "max-w-full text-center font-bold leading-[0.9] tracking-[-0.03em]",
+                nameFontClass,
                 !company && "opacity-35",
               )}
               style={{
-                color: GREEN,
+                color: colors.name,
                 fontSize: displaySize(displayName),
                 transform: "scaleX(0.96)",
               }}
             >
               {displayName}
             </p>
-            <GoldRedRule />
-            <p
-              className={cn(
-                "font-sign-condensed px-[2%] text-center font-semibold leading-none tracking-[0.22em]",
-                !legal && "opacity-35",
-              )}
-              style={{ color: NAVY, fontSize: "3.15cqw" }}
-            >
-              {displayLegal}
-            </p>
-            <GoldRedRule />
-            <NavyPlate
-              label="DOT:"
+            <GoldRedRule rule={colors.rule} accent={colors.accent} />
+            {legal || !company ? (
+              <>
+                <p
+                  className={cn(
+                    "font-sign-condensed px-[2%] text-center font-semibold leading-none tracking-[0.18em]",
+                    !legal && "opacity-35",
+                  )}
+                  style={{ color: colors.legal, fontSize: "3.15cqw" }}
+                >
+                  {displayLegal}
+                </p>
+                <GoldRedRule rule={colors.rule} accent={colors.accent} />
+              </>
+            ) : null}
+            <NumberPlate
+              label="USDOT"
               value={fields.dotNumber}
               placeholder="00000000"
+              plate={colors.plate}
+              plateText={colors.plateText}
             />
-            <NavyPlate
-              label="MC:"
-              value={fields.mcNumber}
-              placeholder="000000"
-            />
-            {fields.fleetNumber.trim() ? (
-              <NavyPlate
-                label="FLEET:"
-                value={fields.fleetNumber}
-                placeholder=""
+            {printMc ? (
+              <NumberPlate
+                label="MC"
+                value={fields.mcNumber}
+                placeholder="000000"
+                plate={colors.plate}
+                plateText={colors.plateText}
               />
             ) : null}
-            <Chevrons />
+            {fields.fleetNumber.trim() ? (
+              <NumberPlate
+                label="UNIT"
+                value={fields.fleetNumber}
+                placeholder=""
+                plate={colors.plate}
+                plateText={colors.plateText}
+              />
+            ) : null}
+            {fields.showChevrons !== false ? (
+              <Chevrons rule={colors.rule} accent={colors.accent} />
+            ) : (
+              <div className="mt-auto" />
+            )}
           </div>
         </div>
       </div>

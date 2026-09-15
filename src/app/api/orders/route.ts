@@ -26,14 +26,7 @@ export async function POST(request: Request) {
   }
 
   const input = body as Partial<SignOrder>;
-  const fields = normalizeSign({
-    companyName: String(input.companyName ?? ""),
-    legalName: String(input.legalName ?? ""),
-    dotNumber: String(input.dotNumber ?? ""),
-    mcNumber: String(input.mcNumber ?? ""),
-    fleetNumber: String(input.fleetNumber ?? ""),
-    logoDataUrl: String(input.logoDataUrl ?? ""),
-  });
+  const fields = normalizeSign(input);
   const username = String(input.username ?? "").trim();
   const usernameError = validateUsername(username);
   if (usernameError) {

@@ -14,8 +14,9 @@ export default function OrderPage() {
           Build the door, then send it to the shop
         </h1>
         <p className="mt-2 text-muted-foreground">
-          This is the same gold-and-navy 24×24 layout Khurshid prints as a pair.
-          Username first, then lettering and an optional logo.
+          This desk follows 49 CFR 390.21: MCS-150 name and USDOT on both doors.
+          Recolor the Elbrus layout, skip MC if you do not run authority, then
+          send the pair to the shop.
         </p>
       </div>
       <OrderStudio />
