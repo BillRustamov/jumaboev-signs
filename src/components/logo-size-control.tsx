@@ -42,7 +42,7 @@ export function LogoSizeControl({
             size="sm"
             variant={size === option.value ? "default" : "outline"}
             disabled={disabled}
-            className="h-9 px-0"
+            className="h-11 px-0 md:h-9"
             onClick={() => onChange(option.value)}
           >
             {option.short}
@@ -58,6 +58,7 @@ export function LogoSizeControl({
         value={[size]}
         onValueChange={(next) => onChange(clampLogoSize(next[0]))}
         aria-label="Logo size on the vinyl"
+        className="py-3 md:py-0"
       />
     </div>
   );

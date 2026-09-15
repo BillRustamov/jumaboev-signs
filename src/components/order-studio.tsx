@@ -35,8 +35,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { LogoSizeControl } from "@/components/logo-size-control";
+import { LiveVinylDock } from "@/components/live-vinyl-dock";
 import { SampleGallery } from "@/components/sample-gallery";
-import { TruckSign } from "@/components/truck-sign";
 import {
   useUsername,
   writeLocalOrder,
@@ -253,40 +253,25 @@ export function OrderStudio() {
   }
 
   return (
-    <div className="space-y-8">
-      <SampleGallery activeId={activeSample} onPick={applySample} />
+    <>
+    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:grid-rows-[auto_1fr] lg:gap-8">
+      <div className="order-1 lg:order-none lg:col-start-1 lg:row-start-2">
+        <LiveVinylDock fields={fields} />
+      </div>
 
-      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-        <div className="lg:sticky lg:top-6">
-          <div className="mb-3 flex items-end justify-between gap-3">
-            <div>
-              <p className="text-sm font-medium text-[var(--navy)]">
-                Live 24×24 vinyl
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {fields.companyName.trim() || fields.dotNumber.trim()
-                  ? "This is what prints. Finish lettering, colors, and layout on the ticket."
-                  : "Sample look is on. Type your MCS-150 name and USDOT to replace the ghost type."}
-              </p>
-            </div>
-            <p className="hidden text-xs font-medium tracking-wide text-muted-foreground sm:block">
-              24 in × 24 in
-            </p>
-          </div>
-          <div className="rounded-xl bg-neutral-100 p-3 shadow-inner ring-1 ring-black/10 sm:p-5">
-            <TruckSign
-              fields={fields}
-              className="mx-auto max-w-[560px] shadow-lg"
-              data-testid="live-vinyl"
-            />
-          </div>
-        </div>
+      <div className="order-2 lg:order-none lg:col-span-2 lg:row-start-1">
+        <SampleGallery activeId={activeSample} onPick={applySample} />
+      </div>
 
-        <form className="space-y-4" onSubmit={onPlaceClick} autoComplete="off">
+      <form
+        className="order-3 space-y-4 lg:order-none lg:col-start-2 lg:row-start-2"
+        onSubmit={onPlaceClick}
+        autoComplete="off"
+      >
           <Card>
             <CardHeader className="border-b">
               <CardTitle>Print ticket</CardTitle>
-              <CardDescription>
+              <CardDescription className="hidden sm:block">
                 Do these three before we cut vinyl. A sample is only a look —
                 your MCS-150 name, USDOT, colors, and layout have to be set
                 here.
@@ -301,7 +286,11 @@ export function OrderStudio() {
                   </>
                 ) : null}
               </CardDescription>
-              <ol className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
+              <CardDescription className="sm:hidden">
+                Required before print.
+                {username ? ` Ticket as @${username}.` : ""}
+              </CardDescription>
+              <ol className="mt-3 grid grid-cols-3 gap-1 text-xs sm:gap-2 sm:text-sm">
                 <CheckItem done={letteringDone} label="1. Lettering" />
                 <CheckItem done={colorPicked} label="2. Colors" />
                 <CheckItem done={layoutReady} label="3. Layout" />
@@ -621,7 +610,7 @@ export function OrderStudio() {
             </CardFooter>
           </Card>
         </form>
-      </div>
+    </div>
 
       <Dialog open={askUsername} onOpenChange={setAskUsername}>
         <DialogContent>
@@ -704,7 +693,7 @@ export function OrderStudio() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
 
@@ -745,7 +734,7 @@ function MustSection({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="space-y-4 scroll-mt-6">
+    <section id={id} className="space-y-4 scroll-mt-[11.5rem] lg:scroll-mt-24">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-2">
           <span className="mt-0.5 text-[var(--navy)]">{icon}</span>
@@ -826,7 +815,7 @@ function ColorField({
           aria-label={label}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="h-8 w-10 cursor-pointer rounded border bg-transparent p-0.5"
+          className="h-11 w-11 cursor-pointer rounded border bg-transparent p-0.5 md:h-8 md:w-10"
         />
         <Input
           value={value}

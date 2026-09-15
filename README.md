@@ -9,7 +9,7 @@ This repo is the web designer plus a Telegram bot. Instagram is out of scope for
 ## What you can do
 
 - Land on the shop, tap a sample door, and open the print desk with that look loaded.
-- Fill required lettering, tap a color set, and confirm layout (logo size, MC plate, chevrons).
+- Fill required lettering, tap a color set, and confirm layout (logo size, MC plate, chevrons). On a phone the live door stays on screen while you type.
 - Upload a logo and choose size: Small, Medium, Large, Extra large, or Full face.
 - Place the order only after those three ticket steps. A shop handle is asked at submit (no password).
 - Run the same questions in Telegram in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, or Ukrainian.

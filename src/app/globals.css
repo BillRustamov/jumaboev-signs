@@ -57,6 +57,7 @@
   --navy: #1a2744;
   --gold: #c6a23a;
   --forest: #3d5c38;
+  --shop-header: 3rem;
   --background: oklch(0.985 0.004 90);
   --foreground: oklch(0.22 0.03 260);
   --card: oklch(1 0 0);
@@ -134,5 +135,12 @@
   }
   html {
     @apply font-sans;
+    scroll-padding-top: calc(var(--shop-header) + 9.5rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    scroll-padding-top: 6rem;
   }
 }

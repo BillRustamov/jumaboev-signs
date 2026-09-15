@@ -1,3 +1,4 @@
+import type { Viewport } from "next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Libre_Baskerville, Oswald } from "next/font/google";
 import { SiteFooter } from "@/components/site-footer";
@@ -35,6 +36,12 @@ export const metadata: Metadata = {
     "Khurshid Jumaboev prints 24×24 vinyl USDOT door decals. Live preview, color edits, Telegram bot.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -43,7 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <SiteHeader />
-        <div className="flex flex-1 flex-col">{children}</div>
+        <div className="flex min-h-0 flex-1 flex-col">{children}</div>
         <SiteFooter />
       </body>
     </html>
