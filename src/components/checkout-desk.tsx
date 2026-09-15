@@ -142,10 +142,11 @@ export function CheckoutDesk() {
           <div>
             <h2 className="font-heading text-lg font-semibold text-[var(--navy)]">
               {item.fields.companyName.trim().toUpperCase() || "Door pair"} on
-              a white semi
+              a white Cascadia
             </h2>
             <p className="text-sm text-muted-foreground">
-              White tractor-trailer. Close-up is the 24×24 on the cab door.
+              Vinyl sits on the sleeper door, same place as a DOT door job.
+              The inset is the 24×24 close-up.
             </p>
           </div>
           <WhiteSemiTruck fields={item.fields} />

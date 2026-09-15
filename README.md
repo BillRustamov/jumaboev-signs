@@ -26,7 +26,7 @@ Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0
 - `/samples` — door samples
 - `/order` — live designer (`/order?sample=elbrus` loads a look)
 - `/cart` — shopping cart
-- `/checkout` — white semi preview and send to the shop
+- `/checkout` — white Cascadia sleeper-door preview and send to the shop
 - `/orders` — tickets from this server and this browser
 
 There is no database and no login. Restarting the Next.js process clears the in-memory shop list; local browser copies and the cart remain.
