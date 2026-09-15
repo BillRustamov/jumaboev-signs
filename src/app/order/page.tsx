@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 export default function OrderPage() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-8 lg:py-10">
+      <div className="h-[9.1rem] lg:hidden" aria-hidden />
       <div className="mb-4 max-w-2xl lg:mb-8">
         <p className="text-xs font-semibold tracking-[0.14em] text-[var(--gold)] uppercase">
           Print desk
