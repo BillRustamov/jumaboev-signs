@@ -26,7 +26,7 @@ export function WhiteSemiTruck({
         />
         <div
           className="absolute"
-          style={{ left: "47.5%", top: "55.42%", width: "3.75%" }}
+          style={{ left: "47.97%", top: "56.11%", width: "3.28%" }}
         >
           <TruckSign
             fields={fields}
