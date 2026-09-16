@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { SignFields } from "@/lib/order";
 import { cn } from "@/lib/utils";
-import { TruckSign } from "@/components/truck-sign";
+import { DotMcLines, NamePlate, TruckSign } from "@/components/truck-sign";
 import {
   Dialog,
   DialogContent,
@@ -11,13 +11,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-/** Customer mockup: white Volvo sleeper, landscape vinyl on the door. */
+/** Customer mockup: white Volvo sleeper, vinyl on the sleeper door. */
 const SRC = { w: 1312, h: 928 };
 
-/** Black frame on the mockup — close-up of the recommended 20–24 × 10–12 in vinyl. */
-const INSET = { left: 20.05, top: 26.72, width: 26.75, height: 15.84 };
-/** Horizontal plaque on the sleeper door the green arrow points to. */
-const DOOR = { left: 48.15, top: 64.7, width: 11.5, height: 5.75 };
+/** Empty black callout on the photo — name plate fills it; numbers hang below. */
+const INSET_NAME = { left: 20.12, top: 26.83, width: 26.52, height: 15.52 };
+const INSET_NUMS = { left: 20.12, top: 43.45, width: 26.52, height: 7.1 };
+
+/** Boxed name on the sleeper door; USDOT/MC on the door under the box. */
+const DOOR_NAME = { left: 48.8, top: 62.45, width: 8.2, height: 6.7 };
+const DOOR_NUMS = { left: 48.8, top: 69.3, width: 8.2, height: 3.35 };
 
 export function WhiteSemiTruck({
   fields,
@@ -48,21 +51,38 @@ export function WhiteSemiTruck({
             alt="White sleeper cab with USDOT vinyl on the door"
             className="absolute inset-0 h-full w-full object-contain"
           />
-          <DoorChip
-            fields={fields}
+          <Hotspot
             interactive={interactive}
             onOpen={() => setOpen(true)}
-            box={DOOR}
-            className="shadow-[0_3px_10px_rgba(20,24,28,0.22)]"
+            box={DOOR_NAME}
             label="Open door lettering"
-          />
-          <DoorChip
-            fields={fields}
+          >
+            <NamePlate fields={fields} />
+          </Hotspot>
+          <Hotspot
             interactive={interactive}
             onOpen={() => setOpen(true)}
-            box={INSET}
+            box={DOOR_NUMS}
+            label="Open USDOT and MC lettering"
+          >
+            <DotMcLines fields={fields} />
+          </Hotspot>
+          <Hotspot
+            interactive={interactive}
+            onOpen={() => setOpen(true)}
+            box={INSET_NAME}
             label="Open lettering close-up"
-          />
+          >
+            <NamePlate fields={fields} />
+          </Hotspot>
+          <Hotspot
+            interactive={interactive}
+            onOpen={() => setOpen(true)}
+            box={INSET_NUMS}
+            label="Open USDOT and MC close-up"
+          >
+            <DotMcLines fields={fields} />
+          </Hotspot>
         </div>
       </div>
 
@@ -74,9 +94,10 @@ export function WhiteSemiTruck({
           >
             <DialogTitle className="sr-only">Door lettering</DialogTitle>
             <DialogDescription className="sr-only">
-              Close-up of the sleeper-door vinyl, landscape 20–24 × 10–12 in.
+              Close-up of the sleeper-door vinyl: boxed company name, USDOT and
+              MC aligned underneath.
             </DialogDescription>
-            <div className="overflow-hidden rounded-[1.2rem] border-[5px] border-black bg-white p-[2%] shadow-2xl">
+            <div className="overflow-hidden rounded-[1.2rem] border-[5px] border-black bg-white p-[3%] shadow-2xl">
               <TruckSign fields={fields} />
             </div>
           </DialogContent>
@@ -86,20 +107,20 @@ export function WhiteSemiTruck({
   );
 }
 
-function DoorChip({
-  fields,
+function Hotspot({
   box,
   interactive,
   onOpen,
   className,
   label,
+  children,
 }: {
-  fields: SignFields;
   box: { left: number; top: number; width: number; height: number };
   interactive: boolean;
   onOpen: () => void;
   className?: string;
   label: string;
+  children: ReactNode;
 }) {
   const style = {
     left: `${box.left}%`,
@@ -107,14 +128,6 @@ function DoorChip({
     width: `${box.width}%`,
     height: `${box.height}%`,
   };
-  const inner = (
-    <div className="h-full w-full">
-      <TruckSign
-        fields={fields}
-        className="h-full w-full [aspect-ratio:auto]"
-      />
-    </div>
-  );
 
   if (interactive) {
     return (
@@ -122,23 +135,23 @@ function DoorChip({
         type="button"
         onClick={onOpen}
         className={cn(
-          "absolute z-10 cursor-zoom-in overflow-hidden p-0",
+          "absolute z-10 flex cursor-zoom-in overflow-hidden p-0",
           className,
         )}
         style={style}
         aria-label={label}
       >
-        {inner}
+        {children}
       </button>
     );
   }
 
   return (
     <div
-      className={cn("absolute z-10 overflow-hidden p-0", className)}
+      className={cn("absolute z-10 flex overflow-hidden p-0", className)}
       style={style}
     >
-      {inner}
+      {children}
     </div>
   );
 }

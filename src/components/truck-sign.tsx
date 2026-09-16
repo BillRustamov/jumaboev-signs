@@ -4,25 +4,19 @@ import { clampLogoSize, logoBox } from "@/lib/logo-size";
 import { defaultStyle, type SignPalette } from "@/lib/sign-style";
 import type { SignFields } from "@/lib/order";
 
-/** Name ~2–3 in at 20–24 in plaque width; shrink so one line always fits. */
+/** Fit one line of the door name inside the boxed plate. */
 function nameSize(name: string, hasLogo: boolean, serif: boolean): string {
-  const len = name.length;
-  let size = 7.4;
-  if (len <= 10) size = 12.5;
-  else if (len <= 14) size = 11;
-  else if (len <= 18) size = 9.4;
-  else if (len <= 24) size = 7.6;
-  else size = 6.4;
-  if (hasLogo) size *= 0.88;
-  if (serif) size *= len > 14 ? 0.7 : 0.84;
-  return `${size}cqw`;
+  const em = serif ? 0.72 : 0.55;
+  const cqw = 88 / Math.max(name.length * em, 7);
+  const scaled = hasLogo ? cqw * 0.86 : cqw;
+  return `min(${scaled.toFixed(2)}cqw, 36cqh)`;
 }
 
 function paletteOf(fields: SignFields): SignPalette {
   return { ...defaultStyle().colors, ...fields.colors };
 }
 
-export function TruckSign({
+export function NamePlate({
   fields,
   className,
   ...props
@@ -34,27 +28,23 @@ export function TruckSign({
   const company = fields.companyName.trim().toUpperCase();
   const legal = fields.legalName.trim().toUpperCase();
   const displayName = company || "COMPANY NAME";
-  const dot = fields.dotNumber.trim() || "0000000";
-  const mc = fields.mcNumber.trim() || "000000";
   const nameFontClass =
     fields.nameFont === "condensed" ? "font-sign-condensed" : "font-sign-serif";
-  const logoSize = clampLogoSize(fields.logoSize);
-  const mark = logoBox(logoSize);
+  const mark = logoBox(clampLogoSize(fields.logoSize));
   const hasLogo = Boolean(fields.logoDataUrl);
 
   return (
     <div
-      className={cn("aspect-[2/1] w-full select-none", className)}
-      style={{ containerType: "inline-size", backgroundColor: colors.face }}
+      className={cn("h-full w-full select-none", className)}
+      style={{ containerType: "size" }}
       {...props}
     >
       <div
         className="flex h-full w-full flex-col items-center justify-center text-center"
         style={{
           backgroundColor: colors.face,
-          borderRadius: "2.8% / 5.6%",
-          boxShadow: `inset 0 0 0 2px ${colors.innerBorder}`,
-          padding: hasLogo ? "3.2cqw 4.5cqw" : "4.2cqw 5cqw",
+          boxShadow: `inset 0 0 0 max(2px, 0.7cqmin) ${colors.innerBorder}`,
+          padding: hasLogo ? "5cqmin 6cqmin" : "6cqmin 7cqmin",
         }}
       >
         {hasLogo ? (
@@ -65,7 +55,7 @@ export function TruckSign({
             alt=""
             className="object-contain"
             style={{
-              marginBottom: "1.4cqw",
+              marginBottom: "2cqmin",
               maxHeight: mark.maxHeight,
               maxWidth: mark.maxWidth,
             }}
@@ -73,40 +63,101 @@ export function TruckSign({
         ) : null}
         <p
           className={cn(
-            "max-w-full overflow-hidden font-bold leading-none tracking-[-0.02em] whitespace-nowrap",
+            "max-w-full overflow-hidden font-bold leading-none tracking-[-0.03em] whitespace-nowrap",
             nameFontClass,
             !company && "opacity-35",
           )}
-          style={{ color: colors.name, fontSize: nameSize(displayName, hasLogo, fields.nameFont === "serif") }}
+          style={{
+            color: colors.name,
+            fontSize: nameSize(
+              displayName,
+              hasLogo,
+              fields.nameFont === "serif",
+            ),
+          }}
         >
           {displayName}
         </p>
         {legal ? (
           <p
-            className="font-sign-condensed mt-[0.6cqw] max-w-full truncate font-semibold leading-none tracking-[0.12em] whitespace-nowrap"
-            style={{ color: colors.legal, fontSize: "3.6cqw" }}
+            className="font-sign-condensed mt-[2cqmin] max-w-full overflow-hidden font-semibold leading-none tracking-[0.14em] whitespace-nowrap"
+            style={{ color: colors.legal, fontSize: "min(8cqw, 12cqh)" }}
           >
             {legal}
           </p>
         ) : null}
-        <p
-          className={cn(
-            "font-sign-condensed mt-[1.6cqw] max-w-full truncate font-semibold leading-none tracking-[0.04em] whitespace-nowrap",
-            !fields.dotNumber.trim() && "opacity-35",
-          )}
-          style={{ color: colors.legal, fontSize: "12cqw" }}
-        >
-          USDOT {dot}
-        </p>
-        <p
-          className={cn(
-            "font-sign-condensed mt-[1.2cqw] max-w-full truncate font-semibold leading-none tracking-[0.04em] whitespace-nowrap",
-            !fields.mcNumber.trim() && "opacity-35",
-          )}
-          style={{ color: colors.legal, fontSize: "10cqw" }}
-        >
-          MC {mc}
-        </p>
+      </div>
+    </div>
+  );
+}
+
+/** USDOT / MC as two flush columns, numbers right-aligned like the cab sample. */
+export function DotMcLines({
+  fields,
+  className,
+  ...props
+}: {
+  fields: SignFields;
+  className?: string;
+} & HTMLAttributes<HTMLDivElement>) {
+  const colors = paletteOf(fields);
+  const dot = fields.dotNumber.trim() || "0000000";
+  const mc = fields.mcNumber.trim() || "000000";
+
+  return (
+    <div
+      className={cn("flex h-full w-full select-none items-center", className)}
+      style={{ containerType: "size" }}
+      {...props}
+    >
+      <div
+        className="font-sign-condensed grid w-full font-semibold"
+        style={{
+          gridTemplateColumns: "auto 1fr",
+          columnGap: "0.55em",
+          rowGap: "0.32em",
+          color: colors.legal,
+          fontSize: "min(12cqw, 38cqh)",
+          letterSpacing: "0.04em",
+          fontVariantNumeric: "tabular-nums",
+          lineHeight: 1,
+        }}
+      >
+        <span className={cn("text-left", !fields.dotNumber.trim() && "opacity-35")}>
+          USDOT
+        </span>
+        <span className={cn("text-right", !fields.dotNumber.trim() && "opacity-35")}>
+          {dot}
+        </span>
+        <span className={cn("text-left", !fields.mcNumber.trim() && "opacity-35")}>
+          MC
+        </span>
+        <span className={cn("text-right", !fields.mcNumber.trim() && "opacity-35")}>
+          {mc}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+export function TruckSign({
+  fields,
+  className,
+  ...props
+}: {
+  fields: SignFields;
+  className?: string;
+} & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("flex aspect-[2/1] w-full flex-col bg-transparent", className)}
+      {...props}
+    >
+      <div className="min-h-0 flex-[1.65]">
+        <NamePlate fields={fields} />
+      </div>
+      <div className="min-h-0 flex-1" style={{ padding: "2.4% 1.2% 0" }}>
+        <DotMcLines fields={fields} />
       </div>
     </div>
   );
