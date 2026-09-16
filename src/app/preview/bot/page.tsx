@@ -16,7 +16,7 @@ function fieldsFromQuery(
     const value = q[key];
     return Array.isArray(value) ? value[0] : value;
   };
-  const preset = applyPreset(pick("preset") || "elbrus");
+  const preset = applyPreset(pick("preset") || "highway");
   return {
     ...EXAMPLE,
     ...preset,

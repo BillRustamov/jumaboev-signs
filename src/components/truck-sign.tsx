@@ -4,15 +4,17 @@ import { clampLogoSize, logoBox } from "@/lib/logo-size";
 import { defaultStyle, type SignPalette } from "@/lib/sign-style";
 import type { SignFields } from "@/lib/order";
 
-/** Name ~2–3 in at 20–24 in plaque width (10–15 cqw). */
-function nameSize(name: string, hasLogo: boolean): string {
+/** Name ~2–3 in at 20–24 in plaque width; shrink so one line always fits. */
+function nameSize(name: string, hasLogo: boolean, serif: boolean): string {
   const len = name.length;
-  let size = 8.5;
-  if (len <= 10) size = 13;
-  else if (len <= 16) size = 11.5;
-  else if (len <= 22) size = 10.5;
-  else size = 8.5;
+  let size = 7.4;
+  if (len <= 10) size = 12.5;
+  else if (len <= 14) size = 11;
+  else if (len <= 18) size = 9.4;
+  else if (len <= 24) size = 7.6;
+  else size = 6.4;
   if (hasLogo) size *= 0.88;
+  if (serif) size *= len > 14 ? 0.7 : 0.84;
   return `${size}cqw`;
 }
 
@@ -71,17 +73,17 @@ export function TruckSign({
         ) : null}
         <p
           className={cn(
-            "max-w-full font-bold leading-[1.05] tracking-[-0.02em]",
+            "max-w-full overflow-hidden font-bold leading-none tracking-[-0.02em] whitespace-nowrap",
             nameFontClass,
             !company && "opacity-35",
           )}
-          style={{ color: colors.name, fontSize: nameSize(displayName, hasLogo) }}
+          style={{ color: colors.name, fontSize: nameSize(displayName, hasLogo, fields.nameFont === "serif") }}
         >
           {displayName}
         </p>
         {legal ? (
           <p
-            className="font-sign-condensed mt-[0.6cqw] max-w-full font-semibold leading-none tracking-[0.12em]"
+            className="font-sign-condensed mt-[0.6cqw] max-w-full truncate font-semibold leading-none tracking-[0.12em] whitespace-nowrap"
             style={{ color: colors.legal, fontSize: "3.6cqw" }}
           >
             {legal}
@@ -89,7 +91,7 @@ export function TruckSign({
         ) : null}
         <p
           className={cn(
-            "font-sign-condensed mt-[1.6cqw] max-w-full font-semibold leading-none tracking-[0.04em]",
+            "font-sign-condensed mt-[1.6cqw] max-w-full truncate font-semibold leading-none tracking-[0.04em] whitespace-nowrap",
             !fields.dotNumber.trim() && "opacity-35",
           )}
           style={{ color: colors.legal, fontSize: "12cqw" }}
@@ -98,7 +100,7 @@ export function TruckSign({
         </p>
         <p
           className={cn(
-            "font-sign-condensed mt-[1.2cqw] max-w-full font-semibold leading-none tracking-[0.04em]",
+            "font-sign-condensed mt-[1.2cqw] max-w-full truncate font-semibold leading-none tracking-[0.04em] whitespace-nowrap",
             !fields.mcNumber.trim() && "opacity-35",
           )}
           style={{ color: colors.legal, fontSize: "10cqw" }}
