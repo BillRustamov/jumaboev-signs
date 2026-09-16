@@ -23,17 +23,19 @@ export type SignStyle = {
   logoSize: number;
 };
 
-export const ELBRUS_PALETTE: SignPalette = {
-  face: "#ffffff",
-  name: "#3d5c38",
-  legal: "#1a2744",
-  plate: "#1a2744",
-  plateText: "#ffffff",
-  outerBorder: "#c6a23a",
-  innerBorder: "#1a2744",
-  rule: "#c6a23a",
-  accent: "#b83a2f",
-};
+function tone(face: string, ink: string, accent: string): SignPalette {
+  return {
+    face,
+    name: ink,
+    legal: ink,
+    plate: face,
+    plateText: ink,
+    outerBorder: accent,
+    innerBorder: ink,
+    rule: accent,
+    accent,
+  };
+}
 
 export const STYLE_PRESETS: {
   id: string;
@@ -44,82 +46,53 @@ export const STYLE_PRESETS: {
   colors: SignPalette;
 }[] = [
   {
-    id: "elbrus",
-    label: "Elbrus",
-    hint: "Forest green name, navy numbers",
-    nameFont: "serif",
-    showChevrons: true,
-    colors: ELBRUS_PALETTE,
-  },
-  {
-    id: "highway",
-    label: "Highway",
-    hint: "Suggested layout — black lettering, white face",
+    id: "gold-navy",
+    label: "Navy gold",
+    hint: "20 × 12 in · gold on navy",
     nameFont: "condensed",
     showChevrons: false,
-    colors: {
-      face: "#ffffff",
-      name: "#111111",
-      legal: "#111111",
-      plate: "#111111",
-      plateText: "#ffffff",
-      outerBorder: "#111111",
-      innerBorder: "#111111",
-      rule: "#111111",
-      accent: "#111111",
-    },
+    colors: tone("#071a33", "#d4af37", "#d4af37"),
   },
   {
-    id: "gold-navy",
-    label: "Gold plates",
-    hint: "Navy name, gold border",
-    nameFont: "serif",
-    showChevrons: true,
-    colors: {
-      face: "#ffffff",
-      name: "#1a2744",
-      legal: "#1a2744",
-      plate: "#c6a23a",
-      plateText: "#1a2744",
-      outerBorder: "#c6a23a",
-      innerBorder: "#1a2744",
-      rule: "#c6a23a",
-      accent: "#1a2744",
-    },
+    id: "black",
+    label: "Black",
+    hint: "20 × 12 in · white on black",
+    nameFont: "condensed",
+    showChevrons: false,
+    colors: tone("#111111", "#ffffff", "#ffffff"),
   },
   {
     id: "red-line",
-    label: "Red line",
-    hint: "Black name, red USDOT and MC",
+    label: "Red",
+    hint: "20 × 12 in · white on red",
+    nameFont: "condensed",
+    showChevrons: false,
+    colors: tone("#c8102e", "#ffffff", "#ffffff"),
+  },
+  {
+    id: "asphalt",
+    label: "Asphalt",
+    hint: "20 × 12 in · charcoal with orange",
     nameFont: "condensed",
     showChevrons: true,
-    colors: {
-      face: "#ffffff",
-      name: "#1a1a1a",
-      legal: "#8b1e1e",
-      plate: "#8b1e1e",
-      plateText: "#ffffff",
-      outerBorder: "#1a1a1a",
-      innerBorder: "#8b1e1e",
-      rule: "#8b1e1e",
-      accent: "#c6a23a",
-    },
+    colors: tone("#2c3036", "#ffffff", "#f15a24"),
   },
 ];
 
+const PRESET_ALIAS: Record<string, string> = {
+  highway: "black",
+  elbrus: "gold-navy",
+  suggested: "gold-navy",
+};
+
 export function defaultStyle(): SignStyle {
-  return {
-    nameFont: "serif",
-    showChevrons: true,
-    showMc: true,
-    paletteId: "elbrus",
-    colors: { ...ELBRUS_PALETTE },
-    logoSize: DEFAULT_LOGO_SIZE,
-  };
+  return applyPreset("gold-navy");
 }
 
 export function applyPreset(id: string): SignStyle {
-  const preset = STYLE_PRESETS.find((item) => item.id === id) ?? STYLE_PRESETS[0];
+  const resolved = PRESET_ALIAS[id] ?? id;
+  const preset =
+    STYLE_PRESETS.find((item) => item.id === resolved) ?? STYLE_PRESETS[0];
   return {
     nameFont: preset.nameFont,
     showChevrons: preset.showChevrons,

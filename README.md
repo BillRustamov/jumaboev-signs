@@ -1,6 +1,6 @@
 # Jumaboev Signs
 
-Khurshid Jumaboev’s shop slice: vinyl USDOT truck door decals that follow FMCSA 49 CFR § 390.21. The customer sample is a stacked white plaque — company name, USDOT, then MC. Recommended cut is **20–24 × 10–12 in for each cab side**, with name and USDOT letters **2–3 in** and MC letters **2 in**.
+Khurshid Jumaboev’s shop slice: vinyl USDOT truck door decals that follow FMCSA 49 CFR § 390.21. The customer example is a **20 × 12 in filled plaque** — logo, company name, city and state, USDOT, then MC — gold on navy. Name and USDOT letters are **2–3 in** and MC letters are **2 in**.
 
 FMCSA requires company name and USDOT on both sides of the power unit, readable from 50 feet, in strong contrast. There is no fixed federal letter height. **MC is not required on the truck**; this shop still prints MC on the plaque and requires it on the ticket. Logo is optional. **Unit numbers are a separate small print** and do not go on this vinyl.
 
@@ -13,7 +13,7 @@ This repo is the web designer plus a Telegram bot. Instagram is out of scope for
 - Browse samples, open the print desk, and keep a live door on screen on a phone.
 - Fill required lettering, colors, and layout. Click the live door to preview. Add the pair to the cart.
 - Open the cart, click a sign to preview, then checkout to see the vinyl on a white sleeper before sending it to the shop.
-- Run the same questions in Telegram in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, or Ukrainian. Color picks send photos of the stacked plaque on a white cab. Confirmed tickets POST to the shop list.
+- Run the same questions in Telegram in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, or Ukrainian. Color picks send photos of the filled plaque on a white cab. Confirmed tickets POST to the shop list.
 
 ## Web app
 
@@ -24,9 +24,9 @@ npm run dev
 
 Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0:43147`.
 
-- `/` — shop landing, suggested layout, recommended sizes, and FMCSA table
+- `/` — shop landing, navy-gold example, 20 × 12 in sizes, and FMCSA table
 - `/samples` — door samples on the white Volvo mockup
-- `/order` — live designer (`/order?sample=suggested` loads the spec plaque)
+- `/order` — live designer (`/order?sample=gold-navy` loads the example plaque)
 - `/cart` — shopping cart (click the sign to preview)
 - `/checkout` — white sleeper-door preview and send to the shop
 - `/orders` — tickets from this server and this browser
@@ -42,7 +42,7 @@ Tickets persist in `data/orders.json` so a restart does not wipe the print desk.
 npm run bot
 ```
 
-If `TELEGRAM_BOT_TOKEN` is **unset**, the command starts a **mock chat in the terminal**. Pick a language with `1`, `2`, … then answer like a driver. Type `Skip` on optional fields (second line, logo) instead of tapping the button. MC is required. `/start` resets, `/quit` exits. `npm run bot:demo` walks an ELBRUS sample order without typing and POSTs it to `/api/orders` when the site is up.
+If `TELEGRAM_BOT_TOKEN` is **unset**, the command starts a **mock chat in the terminal**. Pick a language with `1`, `2`, … then answer like a driver. Type `Skip` on optional fields (city and state, logo) instead of tapping the button. MC is required. `/start` resets, `/quit` exits. `npm run bot:demo` walks a sample order without typing and POSTs it to `/api/orders` when the site is up.
 
 To talk to real Telegram:
 
@@ -62,9 +62,9 @@ The bot loads `.env` itself, pings `/api/health` on start, and retries the shop 
 
 ## Print layout
 
-The live sign is a 2:1 white plaque: company name, then `USDOT` plus the digits, then `MC` plus the digits. Company name is required; USDOT is required; MC is required on the shop ticket even though 390.21 does not require it on the truck. Recolor face, name, and number lines in the designer. Logo size is a 1–5 scale on the vinyl. Suggested-layout sample: USDOT `1234567`, MC `123456`. Elbrus sample: USDOT `20179229`, MC `796405`.
+The customer sample is a 20 × 12 in filled plaque: logo box, company name, a rule, city and state, then `USDOT` plus the digits, then `MC` plus the digits. Company name is required; USDOT is required; MC is required on the shop ticket even though 390.21 does not require it on the truck. Recolor face, name, and number lines in the designer. Logo size is a 1–5 scale on the vinyl. Navy-gold example: USDOT `3311300`, MC `1051891`.
 
-Admin download: two doors on one sheet, each **20 × 10 in** (left and right), within the recommended **20–24 × 10–12 in**. In the print dialog set 100% scale and turn off “fit to page”. Never tell customers the sheet is 24×24.
+Admin download: two doors on one sheet, each **20 × 10 in** (left and right), so both fit a 24 in cutter. The customer-facing example stays **20 × 12 in**. In the print dialog set 100% scale and turn off “fit to page”. Never tell customers the sheet is 24×24.
 
 ## Stack
 

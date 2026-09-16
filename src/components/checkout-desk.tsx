@@ -98,7 +98,7 @@ export function CheckoutDesk() {
             Order received
           </CardTitle>
           <CardDescription>
-            {placed.map((order) => order.id).join(", ")} · 20–24 × 10–12 in
+            {placed.map((order) => order.id).join(", ")} · 20 × 12 in
             each cab side for @{placed[0]?.username}.
           </CardDescription>
         </CardHeader>

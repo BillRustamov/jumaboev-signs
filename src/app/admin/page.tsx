@@ -17,7 +17,7 @@ export default function AdminPage() {
         </h1>
         <p className="mt-2 text-muted-foreground">
           Each download is a matched pair — 20 × 10 in shop cut for the left
-          cab and the right cab (recommended 20–24 × 10–12 in).
+          cab and the right cab. The customer example is 20 × 12 in.
         </p>
       </div>
       <AdminDesk />

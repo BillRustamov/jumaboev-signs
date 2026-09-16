@@ -25,8 +25,8 @@ export function SampleGallery({
             Tap a sample
           </h2>
           <p className="hidden text-sm text-muted-foreground sm:block">
-            This is the look. Your name, colors, and layout get set on the
-            print ticket before we cut vinyl.
+            This is the 20 × 12 in look. Your name, city and state, colors,
+            and layout get set on the print ticket before we cut vinyl.
           </p>
           <p className="text-xs text-muted-foreground sm:hidden">
             Swipe a look. Your numbers go on the ticket.

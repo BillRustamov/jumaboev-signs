@@ -1,34 +1,34 @@
-import { TruckSign } from "@/components/truck-sign";
+import { DimensionedSign } from "@/components/truck-sign";
 import { SUGGESTED_LAYOUT } from "@/lib/samples";
 import { FMCSA_ROWS, VINYL, VINYL_SIZE_ROWS } from "@/lib/vinyl-spec";
 
 export function VinylSpecPanel() {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <article className="overflow-hidden rounded-2xl bg-neutral-950 text-white shadow-lg ring-1 ring-white/10">
+      <article className="overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-black/10">
         <div className="px-5 pb-5 pt-4 sm:px-6">
-          <p className="inline-flex rounded-full bg-emerald-950 px-2.5 py-0.5 text-[11px] font-medium text-emerald-300">
-            Suggested layout for a semi-truck
+          <p className="inline-flex rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-medium text-emerald-800">
+            Example · 20 × 12 in door plaque
           </p>
-          <div className="mt-4 overflow-hidden rounded-lg bg-white">
-            <TruckSign fields={SUGGESTED_LAYOUT.fields} />
+          <div className="mt-5">
+            <DimensionedSign fields={SUGGESTED_LAYOUT.fields} />
           </div>
-          <p className="mt-3 text-center text-xs text-neutral-400">
-            Illustrative layout — replace with the carrier&apos;s registered
-            information.
+          <p className="mt-3 text-center text-xs text-neutral-500">
+            Logo, company name, city and state, USDOT, then MC. Replace with
+            the carrier&apos;s registered information.
           </p>
           <table className="mt-5 w-full text-sm">
             <thead>
-              <tr className="border-b border-white/10 text-left text-neutral-400">
+              <tr className="border-b border-neutral-200 text-left text-neutral-500">
                 <th className="pb-2 font-medium">Item</th>
-                <th className="pb-2 text-right font-medium">Recommended size</th>
+                <th className="pb-2 text-right font-medium">Example size</th>
               </tr>
             </thead>
             <tbody>
               {VINYL_SIZE_ROWS.map((row) => (
-                <tr key={row.item} className="border-b border-white/10">
+                <tr key={row.item} className="border-b border-neutral-200">
                   <td className="py-2.5">{row.item}</td>
-                  <td className="py-2.5 text-right text-neutral-200">
+                  <td className="py-2.5 text-right text-neutral-800">
                     {row.size}
                   </td>
                 </tr>
@@ -41,7 +41,7 @@ export function VinylSpecPanel() {
       <article className="overflow-hidden rounded-2xl bg-neutral-950 text-white shadow-lg ring-1 ring-white/10">
         <div className="px-5 pb-5 pt-4 sm:px-6">
           <h3 className="text-lg font-semibold tracking-tight">
-            1. Official federal requirements
+            Official federal requirements
           </h3>
           <table className="mt-5 w-full text-sm">
             <thead>

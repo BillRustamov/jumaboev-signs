@@ -58,7 +58,7 @@ export function CartButton() {
         >
           {count === 0 ? (
             <p className="px-1 py-2 text-sm text-muted-foreground">
-              Cart is empty. Add a 20–24 × 10–12 in pair from the print desk.
+              Cart is empty. Add a 20 × 12 in pair from the print desk.
             </p>
           ) : (
             <ul className="max-h-72 space-y-2 overflow-auto">

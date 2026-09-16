@@ -21,8 +21,8 @@ export default function OrderPage() {
         <p className="mt-1 hidden text-muted-foreground sm:block">
           A sample is only the style. Before vinyl is cut you must set
           lettering, colors, and layout on the print ticket — your company
-          name, USDOT, and MC, not the shop demo. Recommended cut is
-          20–24 × 10–12 in.
+          name, city and state, USDOT, and MC, not the shop demo. Example
+          cut is 20 × 12 in.
         </p>
         <p className="mt-1 text-sm text-muted-foreground sm:hidden">
           The live door stays on screen. Put your name, USDOT, and MC on the
@@ -40,7 +40,7 @@ function DeskFallback() {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <Skeleton className="h-28 rounded-xl lg:h-80" />
-      <Skeleton className="h-28 rounded-xl lg:aspect-[20/10]" />
+      <Skeleton className="h-28 rounded-xl lg:aspect-[20/12]" />
     </div>
   );
 }

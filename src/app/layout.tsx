@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     template: "%s · Jumaboev Signs",
   },
   description:
-    "Khurshid Jumaboev prints vinyl USDOT truck door decals, recommended 20–24 × 10–12 in each cab side. Live preview, color edits, Telegram bot.",
+    "Khurshid Jumaboev prints vinyl USDOT truck door decals, 20 × 12 in each cab side. Live preview, color edits, Telegram bot.",
 };
 
 export const viewport: Viewport = {

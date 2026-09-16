@@ -87,7 +87,7 @@ export function OrdersBoard() {
             </CardTitle>
             <CardDescription>
               {username
-                ? `Nothing on file for ${username}. Add a 20–24 × 10–12 in pair to the cart and check out.`
+                ? `Nothing on file for ${username}. Add a 20 × 12 in pair to the cart and check out.`
                 : "Design a door, add it to the cart, and check out. The ticket lands here."}
             </CardDescription>
           </CardHeader>

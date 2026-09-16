@@ -27,13 +27,13 @@ export type SignOrder = SignFields & {
 };
 
 export const SAMPLE_SIGN: SignFields = {
-  companyName: "ELBRUS",
-  legalName: "ELBRUS FREIGHTLINES LLC",
-  dotNumber: "20179229",
-  mcNumber: "796405",
+  companyName: "COMPANY NAME",
+  legalName: "DALLAS, TX",
+  dotNumber: "3311300",
+  mcNumber: "1051891",
   fleetNumber: "",
   logoDataUrl: "",
-  ...applyPreset("elbrus"),
+  ...applyPreset("gold-navy"),
 };
 
 export const SAMPLE_PRINT_ID = "sample";

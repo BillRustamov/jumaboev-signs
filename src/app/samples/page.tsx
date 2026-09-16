@@ -16,10 +16,10 @@ export default function SamplesPage() {
           Tap a shop door
         </h1>
         <p className="mt-2 text-muted-foreground">
-          These are looks only. Each one is on a white sleeper, stacked as
-          company name, USDOT, then MC. Open it on the print desk, put your
-          numbers on it, then add the pair to your cart. Recommended cut is
-          20–24 × 10–12 in each cab side.
+          These are looks only. Each one is a 20 × 12 in filled plaque on a
+          white sleeper — logo, company name, city and state, USDOT, then MC.
+          Open it on the print desk, put your numbers on it, then add the pair
+          to your cart.
         </p>
       </div>
       <HomeSampleGrid />

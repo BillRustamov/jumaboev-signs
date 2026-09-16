@@ -16,7 +16,7 @@ export default function CheckoutPage() {
           Vinyl on the sleeper door
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Each item is recommended 20–24 × 10–12 in for each side of the cab.
+          Each item is 20 × 12 in for each side of the cab.
           Checkout shows the vinyl on a white semi before you send it to the
           shop.
         </p>

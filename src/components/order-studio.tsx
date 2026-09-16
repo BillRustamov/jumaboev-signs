@@ -245,9 +245,9 @@ export function OrderStudio() {
                 />
                 <Field
                   id="legalName"
-                  label="Second line (optional)"
-                  hint="Use this if you print a big trade name and the LLC line under it."
-                  placeholder="YOUR COMPANY LLC"
+                  label="City, State"
+                  hint="Prints under the company name on the 20 × 12 in plaque."
+                  placeholder="DALLAS, TX"
                   value={fields.legalName}
                   onChange={(value) => update("legalName", value)}
                 />
@@ -418,7 +418,7 @@ export function OrderStudio() {
                 step="3"
                 icon={<LayoutTemplate className="size-4" />}
                 title="Layout"
-                hint="Required. Confirm the stacked plaque: company name, USDOT, then MC."
+                hint="Required. Confirm the 20 × 12 in plaque: logo, company name, city and state, USDOT, then MC."
                 done={layoutReady}
               >
                 <LogoSizeControl
@@ -433,8 +433,8 @@ export function OrderStudio() {
                   <div>
                     <Label htmlFor="nameFont">Condensed door name</Label>
                     <p className="text-xs text-muted-foreground">
-                      Off = serif. On = gothic condensed. Stack is always
-                      company name, USDOT, then MC.
+                      Off = serif. On = gothic condensed. Plaque is always
+                      logo, company name, city and state, USDOT, then MC.
                     </p>
                   </div>
                   <Switch
@@ -489,7 +489,7 @@ export function OrderStudio() {
             </DialogTitle>
             <DialogDescription>
               {added
-                ? `${added.fields.companyName} · USDOT ${added.fields.dotNumber}. Recommended 20–24 × 10–12 in for each cab side. Checkout shows them on the truck.`
+                ? `${added.fields.companyName} · USDOT ${added.fields.dotNumber}. Example cut is 20 × 12 in for each cab side. Checkout shows them on the truck.`
                 : null}
             </DialogDescription>
           </DialogHeader>

@@ -451,10 +451,10 @@ function isImageDocument(
 async function configureBot(bot: Bot) {
   await bot.api.setMyName("Jumaboev Signs");
   await bot.api.setMyShortDescription(
-    "USDOT truck door vinyl · 20–24 × 10–12 in each cab side. Order a matched pair.",
+    "USDOT truck door vinyl · 20 × 12 in each cab side. Order a matched pair.",
   );
   await bot.api.setMyDescription(
-    "Jumaboev Signs prints vinyl USDOT truck doors. Recommended 20–24 × 10–12 in for each cab side — stacked company name, USDOT, and MC. Left and right match. Company name and USDOT required by FMCSA; MC required on this shop ticket. Logo optional. Unit numbers are a separate small print. Send /start to order.",
+    "Jumaboev Signs prints vinyl USDOT truck doors. Example cut is 20 × 12 in for each cab side — filled plaque with logo, company name, city and state, USDOT, and MC. Left and right match. Company name and USDOT required by FMCSA; MC required on this shop ticket. Logo optional. Unit numbers are a separate small print. Send /start to order.",
   );
   await bot.api.setMyCommands([
     { command: "start", description: "Start a new door vinyl order" },
@@ -750,7 +750,7 @@ async function main() {
           "1",
           "elbrus_dispatch",
           "ELBRUS",
-          "ELBRUS FREIGHTLINES LLC",
+          "DALLAS, TX",
           "20179229",
           "796405",
           "1",

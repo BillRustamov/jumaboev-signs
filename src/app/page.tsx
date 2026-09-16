@@ -66,10 +66,9 @@ export default function HomePage() {
             Pick a sample, then swap in your numbers
           </h2>
           <p className="mt-2 text-muted-foreground">
-            Each card is that color on a white sleeper — same truck the cart
-            uses. The first door is the recommended stacked plaque: company
-            name, USDOT, then MC. Tap one to open the designer with that door
-            loaded.
+            Each card is a 20 × 12 in color on a white sleeper — same truck
+            the cart uses. Navy gold is the example: logo, company name, city
+            and state, USDOT, then MC. Tap one to open the designer.
           </p>
         </div>
         <HomeSampleGrid />
@@ -82,10 +81,11 @@ export default function HomePage() {
           Layout and federal marking
         </h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Stacked white plaque: company name, USDOT, MC. Recommended cut is{" "}
-          {VINYL.size}. FMCSA does not set a letter height — it has to read from{" "}
-          {VINYL.readabilityFt} feet, on both sides of the power unit, in strong
-          contrast. MC is not required on the truck; this shop still prints it.
+          One 20 × 12 in plaque on each cab door: logo, company name, city and
+          state, USDOT, then MC. FMCSA does not set a letter height — it has
+          to read from {VINYL.readabilityFt} feet, on both sides of the power
+          unit, in strong contrast. MC is not required on the truck; this shop
+          still prints it.
         </p>
         <div className="mt-8">
           <VinylSpecPanel />
@@ -93,11 +93,11 @@ export default function HomePage() {
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Spec
             title="Company name"
-            body="Legal name or one trade name, as filed with FMCSA. Optional second line for the LLC under a trade mark. Letters 2–3 in."
+            body="Legal name or one trade name, as filed with FMCSA. Prints large on the 20 × 12 in plaque. City and state print under the name."
           />
           <Spec
             title="USDOT number"
-            body="Prints as USDOT plus the digits on the line under the name. Required. Letters 2–3 in, readable from 50 feet."
+            body="Prints as USDOT plus the digits under city and state. Required. Letters 2–3 in, readable from 50 feet."
           />
           <Spec
             title="MC number"
@@ -109,11 +109,11 @@ export default function HomePage() {
           />
           <Spec
             title="Colors you can recut"
-            body="Suggested layout is black on white. Elbrus, Gold plates, and Red line recut the same stack. The designer warns if contrast is too weak for 50-foot reading."
+            body="Navy gold is the example. Black, red, and asphalt recut the same 20 × 12 in stack. The designer warns if contrast is too weak for 50-foot reading."
           />
           <Spec
             title="Pair of doors"
-            body="One design, two prints. Left and right cab doors match. Shop cut is 20 × 10 in on a 24 in sheet."
+            body="One design, two prints. Left and right cab doors match. Example size is 20 × 12 in."
           />
         </div>
       </section>
@@ -145,7 +145,8 @@ export default function HomePage() {
           </h2>
           <p className="mt-3 max-w-2xl text-white/80">
             The bot asks for language first, then the same print fields as this
-            site. Color picks send photos of this stacked plaque on a white cab.
+            site. Color picks send photos of this 20 × 12 in plaque on a white
+            cab.
             It runs in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, and
             Ukrainian. Confirmed tickets land on the shop print desk.
           </p>

@@ -1,15 +1,14 @@
-/** Recommended cut and letter sizes from the shop spec (semi-truck plaque). */
+/** Shop example cut: 20 × 12 in navy-gold door plaque. */
 
 export const VINYL = {
-  widthIn: "20–24",
-  heightIn: "10–12",
-  size: "20–24 × 10–12 in",
-  sizeEach: "20–24 × 10–12 in each cab side",
+  widthIn: "20",
+  heightIn: "12",
+  size: "20 × 12 in",
+  sizeEach: "20 × 12 in each cab side",
   nameLetters: "2–3 in",
   usdotLetters: "2–3 in",
   mcLetters: "2 in",
   readabilityFt: "50",
-  /** Shop cutter size — within the recommended range, two doors on a 24 in sheet. */
   printWIn: 20,
   printHIn: 10,
   printSize: "20 × 10 in",
@@ -18,8 +17,8 @@ export const VINYL = {
 } as const;
 
 export const VINYL_SIZE_ROWS = [
-  { item: "Sticker width", size: "20–24 inches" },
-  { item: "Sticker height", size: "10–12 inches" },
+  { item: "Sticker width", size: "20 inches" },
+  { item: "Sticker height", size: "12 inches" },
   { item: "Company name letters", size: "2–3 inches" },
   { item: "USDOT number letters", size: "2–3 inches" },
   { item: "MC number letters", size: "2 inches" },

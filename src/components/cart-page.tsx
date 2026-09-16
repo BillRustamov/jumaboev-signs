@@ -26,7 +26,7 @@ export function CartPage() {
             Cart is empty
           </CardTitle>
           <CardDescription>
-            Add a 20–24 × 10–12 in door pair from the print desk. The cart
+            Add a 20 × 12 in door pair from the print desk. The cart
             shows your vinyl on a white cab, same as checkout.
           </CardDescription>
         </CardHeader>
@@ -51,7 +51,7 @@ export function CartPage() {
               {item.fields.companyName.trim().toUpperCase() || "Door pair"}
             </CardTitle>
             <CardDescription>
-              Set of two · 20–24 × 10–12 in each side
+              Set of two · 20 × 12 in each side
               {item.fields.mcNumber
                 ? ` · MC ${item.fields.mcNumber}`
                 : ""}
@@ -61,7 +61,7 @@ export function CartPage() {
           <CardContent className="space-y-3">
             <WhiteSemiTruck fields={item.fields} />
             <p className="text-sm text-muted-foreground">
-              Recommended 20–24 × 10–12 in for each side of the cab. Click the
+              Example cut is 20 × 12 in for each side of the cab. Click the
               door or the zoom on the truck to preview. Unit numbers are a
               separate small print.
             </p>

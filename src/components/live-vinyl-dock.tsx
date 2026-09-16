@@ -27,7 +27,7 @@ export function LiveVinylDock({ fields }: { fields: SignFields }) {
           </p>
         </div>
         <p className="text-xs font-medium tracking-wide text-muted-foreground">
-          20–24 × 10–12 in each side
+          20 × 12 in each side
         </p>
       </div>
       <div className="flex items-center gap-3 lg:block">

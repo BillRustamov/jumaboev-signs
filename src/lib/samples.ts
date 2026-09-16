@@ -2,15 +2,6 @@ import { applyPreset } from "@/lib/sign-style";
 import { DEFAULT_LOGO_SIZE } from "@/lib/logo-size";
 import { emptySign, type SignFields } from "@/lib/order";
 
-/** Simple mountain mark so drivers can see logo size on the Elbrus sample. */
-export const ELBRUS_MARK = `data:image/svg+xml;utf8,${encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 92">
-    <path fill="#1a2744" d="M8 84 L46 22 L68 48 L96 8 L152 84 Z"/>
-    <path fill="#c6a23a" d="M46 22 L62 42 L68 48 L54 36 Z"/>
-    <path fill="#f4f0e4" d="M96 8 L112 28 L104 22 Z"/>
-  </svg>`,
-)}`;
-
 export type DriverSample = {
   id: string;
   label: string;
@@ -19,17 +10,17 @@ export type DriverSample = {
 };
 
 export const SUGGESTED_LAYOUT: DriverSample = {
-  id: "suggested",
-  label: "Suggested layout",
-  hint: "Company · USDOT · MC · 20–24 × 10–12 in",
+  id: "gold-navy",
+  label: "Navy gold",
+  hint: "20 × 12 in example · gold on navy",
   fields: {
-    companyName: "ABC TRANSPORT LLC",
-    legalName: "",
-    dotNumber: "1234567",
-    mcNumber: "123456",
+    companyName: "COMPANY NAME",
+    legalName: "DALLAS, TX",
+    dotNumber: "3311300",
+    mcNumber: "1051891",
     fleetNumber: "",
     logoDataUrl: "",
-    ...applyPreset("highway"),
+    ...applyPreset("gold-navy"),
     logoSize: DEFAULT_LOGO_SIZE,
   },
 };
@@ -37,47 +28,47 @@ export const SUGGESTED_LAYOUT: DriverSample = {
 export const DRIVER_SAMPLES: DriverSample[] = [
   SUGGESTED_LAYOUT,
   {
-    id: "elbrus",
-    label: "Elbrus",
-    hint: "Gold/navy · MC · mark",
+    id: "black",
+    label: "Black",
+    hint: "20 × 12 in · white on black",
     fields: {
-      companyName: "ELBRUS",
-      legalName: "ELBRUS FREIGHTLINES LLC",
-      dotNumber: "20179229",
-      mcNumber: "796405",
-      fleetNumber: "",
-      logoDataUrl: ELBRUS_MARK,
-      ...applyPreset("elbrus"),
-      logoSize: DEFAULT_LOGO_SIZE,
-    },
-  },
-  {
-    id: "gold-plates",
-    label: "Gold plates",
-    hint: "Navy name · gold border",
-    fields: {
-      companyName: "GOLD LINE",
-      legalName: "GOLD LINE CARRIERS LLC",
+      companyName: "COMPANY NAME",
+      legalName: "HOUSTON, TX",
       dotNumber: "91244018",
       mcNumber: "441902",
       fleetNumber: "",
       logoDataUrl: "",
-      ...applyPreset("gold-navy"),
+      ...applyPreset("black"),
       logoSize: DEFAULT_LOGO_SIZE,
     },
   },
   {
     id: "red-line",
-    label: "Red line",
-    hint: "Black type · red USDOT and MC",
+    label: "Red",
+    hint: "20 × 12 in · white on red",
     fields: {
-      companyName: "REDLINE",
-      legalName: "REDLINE HAUL INC",
+      companyName: "COMPANY NAME",
+      legalName: "PHOENIX, AZ",
       dotNumber: "17550331",
       mcNumber: "628114",
       fleetNumber: "",
       logoDataUrl: "",
       ...applyPreset("red-line"),
+      logoSize: DEFAULT_LOGO_SIZE,
+    },
+  },
+  {
+    id: "asphalt",
+    label: "Asphalt",
+    hint: "20 × 12 in · charcoal with orange",
+    fields: {
+      companyName: "COMPANY NAME",
+      legalName: "CHICAGO, IL",
+      dotNumber: "34882106",
+      mcNumber: "901244",
+      fleetNumber: "",
+      logoDataUrl: "",
+      ...applyPreset("asphalt"),
       logoSize: DEFAULT_LOGO_SIZE,
     },
   },
@@ -90,13 +81,20 @@ export const BLANK_SAMPLE: DriverSample = {
   fields: emptySign(),
 };
 
+const SAMPLE_ALIASES: Record<string, string> = {
+  suggested: "gold-navy",
+  highway: "black",
+  elbrus: "gold-navy",
+  "gold-plates": "gold-navy",
+};
+
 export function sampleById(id: string | null | undefined): DriverSample | undefined {
   if (!id) return undefined;
-  if (id === BLANK_SAMPLE.id) return BLANK_SAMPLE;
-  return DRIVER_SAMPLES.find((sample) => sample.id === id);
+  const resolved = SAMPLE_ALIASES[id] ?? id;
+  if (resolved === BLANK_SAMPLE.id) return BLANK_SAMPLE;
+  return DRIVER_SAMPLES.find((sample) => sample.id === resolved);
 }
 
-/** Keep the sample look (colors, logo) but clear shop lettering. */
 export function lookFromSample(sample: DriverSample): SignFields {
   return {
     ...sample.fields,

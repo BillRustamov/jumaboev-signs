@@ -1,143 +1,19 @@
 import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
-import { clampLogoSize, logoBox } from "@/lib/logo-size";
 import { defaultStyle, type SignPalette } from "@/lib/sign-style";
 import type { SignFields } from "@/lib/order";
+import { VINYL } from "@/lib/vinyl-spec";
 
-/** Fit one line of the door name inside the boxed plate. */
-function nameSize(name: string, hasLogo: boolean, serif: boolean): string {
-  const em = serif ? 0.72 : 0.55;
-  const cqw = 88 / Math.max(name.length * em, 7);
-  const scaled = hasLogo ? cqw * 0.86 : cqw;
-  return `min(${scaled.toFixed(2)}cqw, 36cqh)`;
+function nameSize(name: string): string {
+  const len = name.length;
+  if (len <= 10) return "min(12.6cqw, 16cqh)";
+  if (len <= 14) return "min(10.8cqw, 14.5cqh)";
+  if (len <= 18) return "min(9.2cqw, 13cqh)";
+  return "min(7.6cqw, 11.5cqh)";
 }
 
 function paletteOf(fields: SignFields): SignPalette {
   return { ...defaultStyle().colors, ...fields.colors };
-}
-
-export function NamePlate({
-  fields,
-  className,
-  ...props
-}: {
-  fields: SignFields;
-  className?: string;
-} & HTMLAttributes<HTMLDivElement>) {
-  const colors = paletteOf(fields);
-  const company = fields.companyName.trim().toUpperCase();
-  const legal = fields.legalName.trim().toUpperCase();
-  const displayName = company || "COMPANY NAME";
-  const nameFontClass =
-    fields.nameFont === "condensed" ? "font-sign-condensed" : "font-sign-serif";
-  const mark = logoBox(clampLogoSize(fields.logoSize));
-  const hasLogo = Boolean(fields.logoDataUrl);
-
-  return (
-    <div
-      className={cn("h-full w-full select-none", className)}
-      style={{ containerType: "size" }}
-      {...props}
-    >
-      <div
-        className="flex h-full w-full flex-col items-center justify-center text-center"
-        style={{
-          backgroundColor: colors.face,
-          boxShadow: `inset 0 0 0 max(2px, 0.7cqmin) ${colors.innerBorder}`,
-          padding: hasLogo ? "5cqmin 6cqmin" : "6cqmin 7cqmin",
-        }}
-      >
-        {hasLogo ? (
-          // Data-URL logos from the order form; next/image does not fit this flow.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={fields.logoDataUrl}
-            alt=""
-            className="object-contain"
-            style={{
-              marginBottom: "2cqmin",
-              maxHeight: mark.maxHeight,
-              maxWidth: mark.maxWidth,
-            }}
-          />
-        ) : null}
-        <p
-          className={cn(
-            "max-w-full overflow-hidden font-bold leading-none tracking-[-0.03em] whitespace-nowrap",
-            nameFontClass,
-            !company && "opacity-35",
-          )}
-          style={{
-            color: colors.name,
-            fontSize: nameSize(
-              displayName,
-              hasLogo,
-              fields.nameFont === "serif",
-            ),
-          }}
-        >
-          {displayName}
-        </p>
-        {legal ? (
-          <p
-            className="font-sign-condensed mt-[2cqmin] max-w-full overflow-hidden font-semibold leading-none tracking-[0.14em] whitespace-nowrap"
-            style={{ color: colors.legal, fontSize: "min(8cqw, 12cqh)" }}
-          >
-            {legal}
-          </p>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
-/** USDOT / MC as two flush columns, numbers right-aligned like the cab sample. */
-export function DotMcLines({
-  fields,
-  className,
-  ...props
-}: {
-  fields: SignFields;
-  className?: string;
-} & HTMLAttributes<HTMLDivElement>) {
-  const colors = paletteOf(fields);
-  const dot = fields.dotNumber.trim() || "0000000";
-  const mc = fields.mcNumber.trim() || "000000";
-
-  return (
-    <div
-      className={cn("flex h-full w-full select-none items-center", className)}
-      style={{ containerType: "size" }}
-      {...props}
-    >
-      <div
-        className="font-sign-condensed grid w-full font-semibold"
-        style={{
-          gridTemplateColumns: "auto 1fr",
-          columnGap: "0.55em",
-          rowGap: "0.32em",
-          color: colors.legal,
-          fontSize: "min(12cqw, 38cqh)",
-          letterSpacing: "0.04em",
-          fontVariantNumeric: "tabular-nums",
-          lineHeight: 1,
-        }}
-      >
-        <span className={cn("text-left", !fields.dotNumber.trim() && "opacity-35")}>
-          USDOT
-        </span>
-        <span className={cn("text-right", !fields.dotNumber.trim() && "opacity-35")}>
-          {dot}
-        </span>
-        <span className={cn("text-left", !fields.mcNumber.trim() && "opacity-35")}>
-          MC
-        </span>
-        <span className={cn("text-right", !fields.mcNumber.trim() && "opacity-35")}>
-          {mc}
-        </span>
-      </div>
-    </div>
-  );
 }
 
 export function TruckSign({
@@ -148,16 +24,139 @@ export function TruckSign({
   fields: SignFields;
   className?: string;
 } & HTMLAttributes<HTMLDivElement>) {
+  const colors = paletteOf(fields);
+  const company = fields.companyName.trim().toUpperCase();
+  const place = fields.legalName.trim().toUpperCase();
+  const displayName = company || "COMPANY NAME";
+  const dot = fields.dotNumber.trim() || "0000000";
+  const mc = fields.mcNumber.trim() || "000000";
+  const hasLogo = Boolean(fields.logoDataUrl);
+  const ink = colors.name;
+
   return (
     <div
-      className={cn("flex aspect-[2/1] w-full flex-col bg-transparent", className)}
+      className={cn(
+        "relative aspect-[20/12] w-full select-none overflow-hidden",
+        className,
+      )}
+      style={{
+        containerType: "size",
+        backgroundColor: colors.face,
+        borderRadius: "3.2% / 5.4%",
+        boxShadow: `inset 0 0 0 max(1.5px, 0.28cqh) ${colors.accent}`,
+        color: ink,
+      }}
       {...props}
     >
-      <div className="min-h-0 flex-[1.65]">
-        <NamePlate fields={fields} />
+      <div className="flex h-full w-full flex-col items-center justify-center px-[6%] py-[7%] text-center">
+        <div
+          className="flex items-center justify-center"
+          style={{
+            marginBottom: "2cqh",
+            minWidth: "30cqw",
+            maxWidth: "44cqw",
+            padding: "1.1cqh 3cqw",
+            border: `max(1.5px, 0.38cqh) solid ${ink}`,
+            borderRadius: "1.2cqh",
+          }}
+        >
+          {hasLogo ? (
+            // Data-URL logos from the order form; next/image does not fit this flow.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={fields.logoDataUrl}
+              alt=""
+              className="max-h-full max-w-full object-contain"
+              style={{ height: "8.5cqh" }}
+            />
+          ) : (
+            <span
+              className="font-sign-condensed font-semibold leading-none tracking-[0.2em]"
+              style={{ fontSize: "min(5.8cqw, 7.6cqh)" }}
+            >
+              LOGO
+            </span>
+          )}
+        </div>
+
+        <p
+          className={cn(
+            "font-sign-condensed max-w-full overflow-hidden font-bold leading-[0.9] tracking-[-0.03em] whitespace-nowrap",
+            !company && "opacity-40",
+          )}
+          style={{ color: ink, fontSize: nameSize(displayName) }}
+        >
+          {displayName}
+        </p>
+
+        <div
+          style={{
+            marginTop: "1.8cqh",
+            marginBottom: "1.6cqh",
+            width: "46%",
+            height: "max(1px, 0.28cqh)",
+            backgroundColor: colors.accent,
+          }}
+        />
+
+        <p
+          className={cn(
+            "font-sign-condensed max-w-full overflow-hidden font-medium leading-none tracking-[0.18em] whitespace-nowrap",
+            !place && "opacity-40",
+          )}
+          style={{ color: colors.legal, fontSize: "min(5cqw, 6.8cqh)" }}
+        >
+          {place || "CITY, STATE"}
+        </p>
+
+        <p
+          className={cn(
+            "font-sign-condensed mt-[1.7cqh] max-w-full overflow-hidden font-semibold leading-none tracking-[0.1em] whitespace-nowrap",
+            !fields.dotNumber.trim() && "opacity-40",
+          )}
+          style={{ color: colors.legal, fontSize: "min(5.6cqw, 7.4cqh)" }}
+        >
+          USDOT {dot}
+        </p>
+        <p
+          className={cn(
+            "font-sign-condensed mt-[1.1cqh] max-w-full overflow-hidden font-semibold leading-none tracking-[0.1em] whitespace-nowrap",
+            !fields.mcNumber.trim() && "opacity-40",
+          )}
+          style={{ color: colors.legal, fontSize: "min(5.6cqw, 7.4cqh)" }}
+        >
+          MC {mc}
+        </p>
       </div>
-      <div className="min-h-0 flex-1" style={{ padding: "2.4% 1.2% 0" }}>
-        <DotMcLines fields={fields} />
+    </div>
+  );
+}
+
+export function DimensionedSign({
+  fields,
+  className,
+}: {
+  fields: SignFields;
+  className?: string;
+}) {
+  return (
+    <div className={cn("w-full text-[11px] font-medium tracking-[0.16em] text-neutral-700 sm:text-xs", className)}>
+      <div className="mb-2 flex items-center gap-2 px-[6%]">
+        <span className="h-px flex-1 bg-neutral-800" />
+        <span>20 INCH</span>
+        <span className="h-px flex-1 bg-neutral-800" />
+      </div>
+      <div className="flex items-stretch gap-2">
+        <div className="min-w-0 flex-1">
+          <TruckSign fields={fields} />
+        </div>
+        <div className="flex w-6 flex-col items-center justify-between py-1 text-center sm:w-8">
+          <span className="w-px flex-1 bg-neutral-800" />
+          <span className="py-2 [writing-mode:vertical-rl] rotate-180">
+            12 INCH
+          </span>
+          <span className="w-px flex-1 bg-neutral-800" />
+        </div>
       </div>
     </div>
   );
@@ -180,13 +179,13 @@ export function SignPair({
     >
       <div>
         <p className="mb-1.5 text-center text-[10px] font-semibold tracking-[0.14em] text-neutral-600 uppercase">
-          Left · 20–24 × 10–12 in
+          Left · {VINYL.size}
         </p>
         <TruckSign fields={fields} />
       </div>
       <div>
         <p className="mb-1.5 text-center text-[10px] font-semibold tracking-[0.14em] text-neutral-600 uppercase">
-          Right · 20–24 × 10–12 in
+          Right · {VINYL.size}
         </p>
         <TruckSign fields={fields} />
       </div>

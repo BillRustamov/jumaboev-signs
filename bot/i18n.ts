@@ -44,13 +44,13 @@ type Copy = {
 export const COPY: Record<Lang, Copy> = {
   en: {
     chooseLanguage:
-      "Jumaboev Signs\nUSDOT truck door vinyl\n\nRecommended 20–24 × 10–12 in each cab side — stacked company name, USDOT, then MC. Left and right match. Company name and USDOT are required by FMCSA. MC is required on this shop ticket. Logo optional. Unit numbers are a separate small print.\n\nChoose a language:",
+      "Jumaboev Signs\nUSDOT truck door vinyl\n\nExample cut is 20 × 12 in each cab side — filled plaque with logo, company name, city and state, USDOT, then MC. Left and right match. Company name and USDOT are required by FMCSA. MC is required on this shop ticket. Logo optional. Unit numbers are a separate small print.\n\nChoose a language:",
     languageSet:
-      "English selected. Jumaboev Signs prints vinyl DOT doors, recommended 20–24 × 10–12 in for each cab side.",
+      "English selected. Jumaboev Signs prints vinyl DOT doors, 20 × 12 in for each cab side.",
     askUsername: "Create a shop username (3–24 letters, numbers, or _).",
     badUsername: "That username does not work. Use 3–24 letters, numbers, or _.",
     askCompany: "Door name as on MCS-150 (legal or one trade name)? Example: ELBRUS",
-    askLegal: "Second line if you also print the LLC name? Send it, or tap Skip.",
+    askLegal: "City and state on the plaque? Example: DALLAS, TX. Send it, or tap Skip.",
     askDot: "USDOT number? Digits only. Prints as USDOT plus the number.",
     askMc: "MC number? Digits only. Required on this shop ticket — prints on its own line under USDOT. FMCSA does not require MC on the truck.",
     askFleet: "Fleet or unit number? Send it, or tap Skip.",
@@ -64,31 +64,31 @@ export const COPY: Record<Lang, Copy> = {
     askStyle:
       "Tap a look. Photos above are that color on a white cab — same mockup as the cart.",
     askStylePhotos:
-      "Here are four looks on a white sleeper cab — same truck as the cart. Stacked company name, USDOT, then MC. Tap a color after the photos.",
+      "Here are four looks on a white sleeper cab — same truck as the cart. 20 × 12 in filled plaque: logo, company name, city and state, USDOT, then MC. Tap a color after the photos.",
     skip: "Skip",
     numbersOnly: "Digits only, please.",
     confirmTitle: "Review this pair",
     confirmBody:
-      "Size: 20–24 × 10–12 in each cab side (left + right)\nShop user: {username}\nDoor name: {company}\nSecond line: {legal}\nUSDOT: {dot}\nMC: {mc}\nLogo: {logo}\nColors: {style}",
+      "Size: 20 × 12 in each cab side (left + right)\nShop user: {username}\nDoor name: {company}\nCity, State: {legal}\nUSDOT: {dot}\nMC: {mc}\nLogo: {logo}\nColors: {style}",
     yes: "✅ Confirm order",
     no: "↺ Start over",
     placed:
-      "Order {id} received. Khurshid will print two vinyl doors, recommended 20–24 × 10–12 in for each cab side.",
+      "Order {id} received. Khurshid will print two vinyl doors, 20 × 12 in for each cab side.",
     shopPosted: "The ticket is on the shop print desk.",
     cancelled: "Cleared. Send /start to design again.",
-    help: "Jumaboev Signs prints USDOT door vinyl, recommended 20–24 × 10–12 in each cab side — company name, USDOT, then MC.\n\nSend /start to order. Pick a language, then your door name, USDOT, MC, optional logo, and a color set. Confirm to send the ticket to the shop.",
+    help: "Jumaboev Signs prints USDOT door vinyl, 20 × 12 in each cab side — logo, company name, city and state, USDOT, then MC.\n\nSend /start to order. Pick a language, then your door name, city and state, USDOT, MC, optional logo, and a color set. Confirm to send the ticket to the shop.",
     shopUnreachable:
       "Telegram kept the ticket, but the website list was unreachable. Keep the shop site running, then send /start and confirm again.",
   },
   uz: {
     chooseLanguage:
-      "Jumaboev Signs\nUSDOT kabina vinili\n\nHar bir juftlik kabinaning har tomoni uchun taxminan 20–24 × 10–12 dyuym. Chap va o‘ng mos. /start dan keyin tilni tanlang.",
+      "Jumaboev Signs\nUSDOT kabina vinili\n\nHar bir juftlik kabinaning har tomoni uchun 20 × 12 dyuym. Chap va o‘ng mos. /start dan keyin tilni tanlang.",
     languageSet:
-      "O‘zbekcha tanlandi. Jumaboev Signs har bir kabina tomoni uchun taxminan 20–24 × 10–12 dyuym vinil DOT eshik chop etadi.",
+      "O‘zbekcha tanlandi. Jumaboev Signs har bir kabina tomoni uchun 20 × 12 dyuym vinil DOT eshik chop etadi.",
     askUsername: "Do‘kon foydalanuvchi nomini yozing (3–24 harf, raqam yoki _).",
     badUsername: "Bu nom mos emas. 3–24 harf, raqam yoki _ yozing.",
     askCompany: "Eshikdagi kompaniya nomi? Masalan: ELBRUS",
-    askLegal: "Yuridik nom? Masalan: ELBRUS FREIGHTLINES LLC",
+    askLegal: "Shahar va shtat? Masalan: DALLAS, TX. Yozing yoki O‘tkazish ni bosing.",
     askDot: "DOT raqami? Faqat raqam.",
     askMc: "MC raqami? Faqat raqam. Majburiy.",
     askFleet: "Avtopark / unit raqami? Yozing yoki O‘tkazish ni bosing.",
@@ -101,13 +101,13 @@ export const COPY: Record<Lang, Copy> = {
       "To‘rtta rang oq kabinada. Savatchadagi yuk mashinasi. Suratdan keyin nomini bosing.",
     skip: "O‘tkazish",
     numbersOnly: "Faqat raqam yozing.",
-    confirmTitle: "Shu juftlikni tasdiqlaysizmi (~20–24 × 10–12 har tomon):",
+    confirmTitle: "Shu juftlikni tasdiqlaysizmi (20 × 12 har tomon):",
     confirmBody:
-      "Foydalanuvchi: {username}\nNom: {company}\nYuridik: {legal}\nUSDOT: {dot}\nMC: {mc}\nLogo: {logo}\nRang: {style}",
+      "Foydalanuvchi: {username}\nNom: {company}\nShahar, shtat: {legal}\nUSDOT: {dot}\nMC: {mc}\nLogo: {logo}\nRang: {style}",
     yes: "✅ Buyurtmani tasdiqlash",
     no: "↺ Qaytadan",
     placed:
-      "{id} qabul qilindi. Khurshid har tomon uchun taxminan 20–24 × 10–12 vinil eshik chop etadi.",
+      "{id} qabul qilindi. Khurshid har tomon uchun 20 × 12 vinil eshik chop etadi.",
     shopPosted: "Chipta do‘kon chop etish stolida.",
     cancelled: "Tozalandi. Qayta boshlash uchun /start yuboring.",
     help: "Jumaboev Signs dan DOT eshik vinili uchun /start yuboring.",
@@ -116,13 +116,13 @@ export const COPY: Record<Lang, Copy> = {
   },
   tg: {
     chooseLanguage:
-      "Jumaboev Signs\nВинили дари USDOT\n\nҲар ҷуфт тақрибан 20–24 × 10–12 дюйм барои ҳар тарафи кабина. Чап ва рост мувофиқанд.\n\nЗабонро интихоб кунед:",
+      "Jumaboev Signs\nВинили дари USDOT\n\nҲар ҷуфт 20 × 12 дюйм барои ҳар тарафи кабина. Чап ва рост мувофиқанд.\n\nЗабонро интихоб кунед:",
     languageSet:
-      "Тоҷикӣ интихоб шуд. Jumaboev Signs дарҳои винили DOT тақрибан 20–24 × 10–12 дюйм барои ҳар тарафи кабина чоп мекунад.",
+      "Тоҷикӣ интихоб шуд. Jumaboev Signs дарҳои винили DOT 20 × 12 дюйм барои ҳар тарафи кабина чоп мекунад.",
     askUsername: "Номи корбар созед (3–24 ҳарф, рақам ё _).",
     badUsername: "Ин ном мувофиқ нест. 3–24 ҳарф, рақам ё _ нависед.",
     askCompany: "Номи ширкат дар дар? Намуна: ELBRUS",
-    askLegal: "Номи ҳуқуқӣ? Намуна: ELBRUS FREIGHTLINES LLC",
+    askLegal: "Шаҳр ва иёлат? Намуна: DALLAS, TX. Нависед ё Нодида гирифтанро пахш кунед.",
     askDot: "Рақами DOT? Танҳо рақам.",
     askMc: "Рақами MC? Танҳо рақам. Ҳатмӣ.",
     askFleet: "Рақами парк/юнит? Нависед ё Нодида гирифтанро пахш кунед.",
@@ -135,13 +135,13 @@ export const COPY: Record<Lang, Copy> = {
       "Чор намуд дар кабинаи сафед — мисли сабад. Пас аз акс номро пахш кунед.",
     skip: "Нодида гирифтан",
     numbersOnly: "Лутфан танҳо рақам.",
-    confirmTitle: "Ин ҷуфтро тасдиқ мекунед (~20–24 × 10–12 ҳар тараф):",
+    confirmTitle: "Ин ҷуфтро тасдиқ мекунед (20 × 12 ҳар тараф):",
     confirmBody:
-      "Корбар: {username}\nНом: {company}\nҲуқуқӣ: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nРанг: {style}",
+      "Корбар: {username}\nНом: {company}\nШаҳр, иёлат: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nРанг: {style}",
     yes: "✅ Тасдиқи фармоиш",
     no: "↺ Аз нав",
     placed:
-      "Фармоиши {id} қабул шуд. Хуршид ду дарҳои винилӣ, тақрибан 20–24 × 10–12 барои ҳар тараф, чоп мекунад.",
+      "Фармоиши {id} қабул шуд. Хуршид ду дарҳои винилӣ, 20 × 12 барои ҳар тараф, чоп мекунад.",
     shopPosted: "Чипта дар мизи чопи дӯкон аст.",
     cancelled: "Пок шуд. Барои аз нав /start фиристед.",
     help: "Барои фармоиши винили дар /start фиристед.",
@@ -150,13 +150,13 @@ export const COPY: Record<Lang, Copy> = {
   },
   ru: {
     chooseLanguage:
-      "Jumaboev Signs\nВиниловые USDOT-двери\n\nКаждая пара — около 20–24 × 10–12 дюймов на сторону кабины, левая и правая совпадают.\n\nВыберите язык:",
+      "Jumaboev Signs\nВиниловые USDOT-двери\n\nКаждая пара — 20 × 12 дюймов на сторону кабины, левая и правая совпадают.\n\nВыберите язык:",
     languageSet:
-      "Русский выбран. Jumaboev Signs печатает виниловые DOT-двери около 20–24 × 10–12 дюймов на каждую сторону кабины.",
+      "Русский выбран. Jumaboev Signs печатает виниловые DOT-двери 20 × 12 дюймов на каждую сторону кабины.",
     askUsername: "Придумайте имя в магазине (3–24 буквы, цифры или _).",
     badUsername: "Так нельзя. 3–24 буквы, цифры или _.",
     askCompany: "Название на двери? Пример: ELBRUS",
-    askLegal: "Юридическое название? Пример: ELBRUS FREIGHTLINES LLC",
+    askLegal: "Город и штат? Пример: DALLAS, TX. Напишите или нажмите Пропустить.",
     askDot: "Номер DOT? Только цифры.",
     askMc: "Номер MC (FMCSA)? Только цифры. Обязательно.",
     askFleet: "Номер парка / борта? Напишите или нажмите Пропустить.",
@@ -169,13 +169,13 @@ export const COPY: Record<Lang, Copy> = {
       "Четыре вида на белой кабине — тот же грузовик, что в корзине. После фото нажмите название.",
     skip: "Пропустить",
     numbersOnly: "Только цифры.",
-    confirmTitle: "Подтвердите пару (~20–24 × 10–12 на каждую сторону кабины):",
+    confirmTitle: "Подтвердите пару (20 × 12 на каждую сторону кабины):",
     confirmBody:
-      "Пользователь: {username}\nИмя: {company}\nЮр. имя: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nЦвета: {style}",
+      "Пользователь: {username}\nИмя: {company}\nГород, штат: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nЦвета: {style}",
     yes: "✅ Подтвердить заказ",
     no: "↺ Начать заново",
     placed:
-      "Заказ {id} принят. Хуршид напечатает две виниловые двери, около 20–24 × 10–12 на каждую сторону кабины.",
+      "Заказ {id} принят. Хуршид напечатает две виниловые двери, 20 × 12 на каждую сторону кабины.",
     shopPosted: "Заявка на печатном столе мастерской.",
     cancelled: "Сброшено. Отправьте /start, чтобы начать снова.",
     help: "Отправьте /start, чтобы заказать DOT-виниль у Jumaboev Signs.",
@@ -184,13 +184,13 @@ export const COPY: Record<Lang, Copy> = {
   },
   kk: {
     chooseLanguage:
-      "Jumaboev Signs\nUSDOT винил есік\n\nӘр жұп кабинаның әр жағына шамамен 20–24 × 10–12. Сол және оң сәйкес.\n\nТілді таңдаңыз:",
+      "Jumaboev Signs\nUSDOT винил есік\n\nӘр жұп кабинаның әр жағына 20 × 12. Сол және оң сәйкес.\n\nТілді таңдаңыз:",
     languageSet:
-      "Қазақша таңдалды. Jumaboev Signs кабинаның әр жағына шамамен 20–24 × 10–12 винил DOT есік басады.",
+      "Қазақша таңдалды. Jumaboev Signs кабинаның әр жағына 20 × 12 винил DOT есік басады.",
     askUsername: "Дүкен пайдаланушы атын жазыңыз (3–24 әріп, сан немесе _).",
     badUsername: "Бұл ат жарамайды. 3–24 әріп, сан немесе _ жазыңыз.",
     askCompany: "Есіктегі компания атауы? Мысалы: ELBRUS",
-    askLegal: "Заңды атауы? Мысалы: ELBRUS FREIGHTLINES LLC",
+    askLegal: "Қала және штат? Мысалы: DALLAS, TX. Жазыңыз немесе Өткізуді басыңыз.",
     askDot: "DOT нөмірі? Тек цифр.",
     askMc: "MC нөмірі? Тек цифр. Міндетті.",
     askFleet: "Автопарк / борт нөмірі? Жазыңыз немесе Өткізуді басыңыз.",
@@ -203,13 +203,13 @@ export const COPY: Record<Lang, Copy> = {
       "Ақ кабинадағы төрт түс — себеттегі жүк көлігі. Суреттен кейін атауын басыңыз.",
     skip: "Өткізу",
     numbersOnly: "Тек цифр жазыңыз.",
-    confirmTitle: "Осы жұпты растаңыз (~20–24 × 10–12 әр жақ):",
+    confirmTitle: "Осы жұпты растаңыз (20 × 12 әр жақ):",
     confirmBody:
-      "Пайдаланушы: {username}\nАтауы: {company}\nЗаңды: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nТүс: {style}",
+      "Пайдаланушы: {username}\nАтауы: {company}\nҚала, штат: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nТүс: {style}",
     yes: "✅ Тапсырысты растау",
     no: "↺ Қайта бастау",
     placed:
-      "{id} қабылданды. Хуршид екі винил есік басады, әр кабина жағына шамамен 20–24 × 10–12.",
+      "{id} қабылданды. Хуршид екі винил есік басады, әр кабина жағына 20 × 12.",
     shopPosted: "Билет дүкеннің басып шығару үстелінде.",
     cancelled: "Тазартылды. Қайта бастау үшін /start жіберіңіз.",
     help: "DOT есік винилі үшін /start жіберіңіз.",
@@ -218,13 +218,13 @@ export const COPY: Record<Lang, Copy> = {
   },
   ky: {
     chooseLanguage:
-      "Jumaboev Signs\nUSDOT винил эшик\n\nАр бир жуп кабинанын ар тарабына болжол менен 20–24 × 10–12. Сол жана оң дал келет.\n\nТилди тандаңыз:",
+      "Jumaboev Signs\nUSDOT винил эшик\n\nАр бир жуп кабинанын ар тарабына 20 × 12. Сол жана оң дал келет.\n\nТилди тандаңыз:",
     languageSet:
-      "Кыргызча тандалды. Jumaboev Signs кабинанын ар бир тарабына болжол менен 20–24 × 10–12 винил DOT эшик басат.",
+      "Кыргызча тандалды. Jumaboev Signs кабинанын ар бир тарабына 20 × 12 винил DOT эшик басат.",
     askUsername: "Дүкөн колдонуучу атын жазыңыз (3–24 тамга, сан же _).",
     badUsername: "Бул ат туура эмес. 3–24 тамга, сан же _ жазыңыз.",
     askCompany: "Эшиктеги компаниянын аты? Мисалы: ELBRUS",
-    askLegal: "Юридикалык аталышы? Мисалы: ELBRUS FREIGHTLINES LLC",
+    askLegal: "Шаар жана штат? Мисалы: DALLAS, TX. Жазыңыз же Өткөрүүнү басыңыз.",
     askDot: "DOT номери? Сандар гана.",
     askMc: "MC номери? Сандар гана. Милдеттүү.",
     askFleet: "Автопарк / борт номери? Жазыңыз же Өткөрүүнү басыңыз.",
@@ -237,13 +237,13 @@ export const COPY: Record<Lang, Copy> = {
       "Ак кабинадагы төрт көрүнүш — себеттеги жүк ташуучу. Сүрөттөн кийин атын басыңыз.",
     skip: "Өткөрүү",
     numbersOnly: "Сандар гана жазыңыз.",
-    confirmTitle: "Бул жупту ырастаңыз (~20–24 × 10–12 ар тарап):",
+    confirmTitle: "Бул жупту ырастаңыз (20 × 12 ар тарап):",
     confirmBody:
-      "Колдонуучу: {username}\nАты: {company}\nЮрид.: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nТүс: {style}",
+      "Колдонуучу: {username}\nАты: {company}\nШаар, штат: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nТүс: {style}",
     yes: "✅ Заказды ырастоо",
     no: "↺ Кайра баштоо",
     placed:
-      "{id} кабыл алынды. Хуршид эки винил эшик басат, ар кабина тарабына болжол менен 20–24 × 10–12.",
+      "{id} кабыл алынды. Хуршид эки винил эшик басат, ар кабина тарабына 20 × 12.",
     shopPosted: "Билет дүкөндүн басып чыгаруу столунда.",
     cancelled: "Тазаланды. Кайра баштоо үчүн /start жибериңиз.",
     help: "DOT эшик винили үчүн /start жибериңиз.",
@@ -252,13 +252,13 @@ export const COPY: Record<Lang, Copy> = {
   },
   uk: {
     chooseLanguage:
-      "Jumaboev Signs\nВінілові USDOT-двері\n\nКожна пара — близько 20–24 × 10–12 дюймів на бік кабіни, ліва і права збігаються.\n\nОберіть мову:",
+      "Jumaboev Signs\nВінілові USDOT-двері\n\nКожна пара — 20 × 12 дюймів на бік кабіни, ліва і права збігаються.\n\nОберіть мову:",
     languageSet:
-      "Українську вибрано. Jumaboev Signs друкує вінілові DOT-двері близько 20–24 × 10–12 дюймів на кожен бік кабіни.",
+      "Українську вибрано. Jumaboev Signs друкує вінілові DOT-двері 20 × 12 дюймів на кожен бік кабіни.",
     askUsername: "Придумайте ім’я в майстерні (3–24 літери, цифри або _).",
     badUsername: "Так не можна. 3–24 літери, цифри або _.",
     askCompany: "Назва на дверях? Приклад: ELBRUS",
-    askLegal: "Юридична назва? Приклад: ELBRUS FREIGHTLINES LLC",
+    askLegal: "Місто і штат? Приклад: DALLAS, TX. Надішліть або натисніть Пропустити.",
     askDot: "Номер DOT? Лише цифри.",
     askMc: "Номер MC (FMCSA)? Лише цифри. Обов’язково.",
     askFleet: "Номер парку / борту? Надішліть або натисніть Пропустити.",
@@ -272,13 +272,13 @@ export const COPY: Record<Lang, Copy> = {
       "Чотири вигляди на білій кабіні — та сама вантажівка, що в кошику. Після фото натисніть назву.",
     skip: "Пропустити",
     numbersOnly: "Лише цифри.",
-    confirmTitle: "Підтвердіть пару (~20–24 × 10–12 на кожен бік кабіни):",
+    confirmTitle: "Підтвердіть пару (20 × 12 на кожен бік кабіни):",
     confirmBody:
-      "Користувач: {username}\nНазва: {company}\nЮр. назва: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nКолір: {style}",
+      "Користувач: {username}\nНазва: {company}\nМісто, штат: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nКолір: {style}",
     yes: "✅ Підтвердити замовлення",
     no: "↺ Почати знову",
     placed:
-      "Замовлення {id} прийнято. Хуршид надрукує дві вінілові двері, близько 20–24 × 10–12 на кожен бік кабіни.",
+      "Замовлення {id} прийнято. Хуршид надрукує дві вінілові двері, 20 × 12 на кожен бік кабіни.",
     shopPosted: "Заявку додано на друкарський стіл майстерні.",
     cancelled: "Скинуто. Надішліть /start, щоб почати знову.",
     help: "Надішліть /start, щоб замовити DOT-вініл у Jumaboev Signs.",
