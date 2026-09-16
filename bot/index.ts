@@ -1,6 +1,6 @@
 import { createInterface } from "node:readline";
 import { stdin as input, stdout as output } from "node:process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { Bot, InlineKeyboard, type Context } from "grammy";
@@ -215,22 +215,38 @@ type Chat = {
 async function presentStyles(draft: Draft, chat: Chat): Promise<void> {
   draft.step = "style";
   await chat.send(t(draft.lang, "askStylePhotos"));
-  if (chat.sendPhoto) {
-    for (const preset of STYLE_PRESETS) {
-      const png = await screenshotTruck(styledFields(draft.fields, preset.id));
-      if (png) {
-        await chat.sendPhoto(png, `${preset.label} — ${preset.hint}`);
-      }
+  try {
+    const sendPhoto = chat.sendPhoto;
+    if (sendPhoto) {
+      await Promise.race([
+        (async () => {
+          for (const preset of STYLE_PRESETS) {
+            const png = await screenshotTruck(
+              styledFields(draft.fields, preset.id),
+            );
+            if (png) {
+              await sendPhoto(png, `${preset.label} — ${preset.hint}`);
+            }
+          }
+        })(),
+        wait(50000),
+      ]);
     }
+  } catch (error) {
+    console.error("Could not send style photos.", error);
   }
   await chat.send(t(draft.lang, "askStyle"), styleKeyboard());
 }
 
 async function presentConfirm(draft: Draft, chat: Chat): Promise<void> {
   draft.step = "confirm";
-  if (chat.sendPhoto) {
-    const png = await screenshotTruck(draft.fields);
-    if (png) await chat.sendPhoto(png, t(draft.lang, "confirmTitle"));
+  try {
+    if (chat.sendPhoto) {
+      const png = await screenshotTruck(draft.fields);
+      if (png) await chat.sendPhoto(png, t(draft.lang, "confirmTitle"));
+    }
+  } catch (error) {
+    console.error("Could not send confirm photo.", error);
   }
   await chat.send(summary(draft), confirmKeyboard(draft.lang));
 }
@@ -408,7 +424,7 @@ async function handleCallback(
   return draft;
 }
 
-async function telegramPhotoToDataUrl(
+async function telegramFileToDataUrl(
   ctx: Context,
   fileId: string,
   token: string,
@@ -418,8 +434,35 @@ async function telegramPhotoToDataUrl(
   const url = `https://api.telegram.org/file/bot${token}/${file.file_path}`;
   const response = await fetch(url);
   const buf = Buffer.from(await response.arrayBuffer());
-  const mime = response.headers.get("content-type") || "image/jpeg";
+  const headerType = response.headers.get("content-type") || "";
+  const fromPath = file.file_path.toLowerCase();
+  const mime = headerType.startsWith("image/")
+    ? headerType
+    : fromPath.endsWith(".png")
+      ? "image/png"
+      : fromPath.endsWith(".webp")
+        ? "image/webp"
+        : fromPath.endsWith(".gif")
+          ? "image/gif"
+          : "image/jpeg";
   return `data:${mime};base64,${buf.toString("base64")}`;
+}
+
+const IMAGE_MIMES = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/webp",
+  "image/gif",
+]);
+
+function isImageDocument(
+  mimeType: string | undefined,
+  fileName: string | undefined,
+): boolean {
+  if (mimeType && IMAGE_MIMES.has(mimeType.toLowerCase())) return true;
+  if (fileName && /\.(png|jpe?g|webp|gif)$/i.test(fileName)) return true;
+  return false;
 }
 
 async function configureBot(bot: Bot) {
@@ -436,16 +479,58 @@ async function configureBot(bot: Bot) {
   ]);
 }
 
+function sessionPath() {
+  return path.join(process.cwd(), "data", "bot-sessions.json");
+}
+
+function loadSessions(): Map<number, Draft> {
+  try {
+    const file = sessionPath();
+    if (!existsSync(file)) return new Map();
+    const raw = JSON.parse(readFileSync(file, "utf8")) as Record<string, Draft>;
+    const map = new Map<number, Draft>();
+    for (const [key, draft] of Object.entries(raw)) {
+      const id = Number(key);
+      if (!Number.isFinite(id) || !draft || typeof draft !== "object") continue;
+      map.set(id, {
+        ...newDraft(),
+        ...draft,
+        fields: { ...emptySign(), ...draft.fields },
+      });
+    }
+    return map;
+  } catch {
+    return new Map();
+  }
+}
+
+function persistSessions(sessions: Map<number, Draft>) {
+  try {
+    mkdirSync(path.dirname(sessionPath()), { recursive: true });
+    writeFileSync(
+      sessionPath(),
+      JSON.stringify(Object.fromEntries(sessions)),
+    );
+  } catch (error) {
+    console.error("Could not save bot sessions.", error);
+  }
+}
+
 async function runTelegram(token: string) {
   const bot = new Bot(token);
-  const sessions = new Map<number, Draft>();
+  const sessions = loadSessions();
+
+  function remember(id: number, draft: Draft) {
+    sessions.set(id, draft);
+    persistSessions(sessions);
+  }
 
   function draftFor(id: number): Draft {
     const existing = sessions.get(id);
     if (existing) return existing;
     const created = newDraft();
     created.telegramChatId = id;
-    sessions.set(id, created);
+    remember(id, created);
     return created;
   }
 
@@ -453,7 +538,7 @@ async function runTelegram(token: string) {
     const chatId = ctx.chat.id;
     const draft = newDraft();
     draft.telegramChatId = chatId;
-    sessions.set(chatId, draft);
+    remember(chatId, draft);
     await ctx.reply(COPY.en.chooseLanguage, {
       parse_mode: "HTML",
       reply_markup: languageKeyboard().keyboard,
@@ -478,30 +563,89 @@ async function runTelegram(token: string) {
         await telegramSendPhoto(ctx, image, caption);
       },
     });
-    sessions.set(chatId, next);
+    remember(chatId, next);
   });
 
-  bot.on("message:photo", async (ctx) => {
-    const draft = draftFor(ctx.chat.id);
-    if (draft.step !== "logo") {
-      await ctx.reply(t(draft.lang, "help"), { parse_mode: "HTML" });
-      return;
-    }
-    const photo = ctx.message.photo.at(-1);
-    if (photo) {
-      draft.fields.logoDataUrl = await telegramPhotoToDataUrl(ctx, photo.file_id, token);
-    }
-    sessions.set(ctx.chat.id, draft);
-    const telegramChat: Chat = {
+  function telegramChatFor(ctx: Context): Chat {
+    return {
       send: async (text, extra) => {
-        await ctx.reply(text, extra ? { parse_mode: "HTML", reply_markup: extra.keyboard } : { parse_mode: "HTML" });
+        await ctx.reply(
+          text,
+          extra
+            ? { parse_mode: "HTML", reply_markup: extra.keyboard }
+            : { parse_mode: "HTML" },
+        );
       },
       sendPhoto: async (image, caption) => {
         await telegramSendPhoto(ctx, image, caption);
       },
     };
-    await presentStyles(draft, telegramChat);
-    sessions.set(ctx.chat.id, draft);
+  }
+
+  async function ingestLogo(
+    ctx: Context,
+    draft: Draft,
+    fileId: string,
+  ): Promise<void> {
+    await ctx.reply(t(draft.lang, "gotLogo"), { parse_mode: "HTML" });
+    try {
+      const dataUrl = await telegramFileToDataUrl(ctx, fileId, token);
+      if (dataUrl) draft.fields.logoDataUrl = dataUrl;
+    } catch (error) {
+      console.error("Could not download logo.", error);
+      await ctx.reply(t(draft.lang, "badLogo"), {
+        parse_mode: "HTML",
+        reply_markup: skipKeyboard(draft.lang).keyboard,
+      });
+      return;
+    }
+    const chatId = ctx.chat?.id;
+    if (!chatId) return;
+    remember(chatId, draft);
+    try {
+      await presentStyles(draft, telegramChatFor(ctx));
+    } catch (error) {
+      console.error("Could not continue after logo.", error);
+      await ctx.reply(t(draft.lang, "askStyle"), {
+        parse_mode: "HTML",
+        reply_markup: styleKeyboard().keyboard,
+      });
+    }
+    remember(chatId, draft);
+  }
+
+  bot.on("message:photo", async (ctx) => {
+    const draft = draftFor(ctx.chat.id);
+    if (draft.step !== "logo") {
+      await ctx.reply(t(draft.lang, "logoWrongStep"), { parse_mode: "HTML" });
+      return;
+    }
+    const photo = ctx.message.photo.at(-1);
+    if (!photo) {
+      await ctx.reply(t(draft.lang, "badLogo"), {
+        parse_mode: "HTML",
+        reply_markup: skipKeyboard(draft.lang).keyboard,
+      });
+      return;
+    }
+    await ingestLogo(ctx, draft, photo.file_id);
+  });
+
+  bot.on("message:document", async (ctx) => {
+    const draft = draftFor(ctx.chat.id);
+    if (draft.step !== "logo") {
+      await ctx.reply(t(draft.lang, "logoWrongStep"), { parse_mode: "HTML" });
+      return;
+    }
+    const document = ctx.message.document;
+    if (!isImageDocument(document.mime_type, document.file_name)) {
+      await ctx.reply(t(draft.lang, "badLogo"), {
+        parse_mode: "HTML",
+        reply_markup: skipKeyboard(draft.lang).keyboard,
+      });
+      return;
+    }
+    await ingestLogo(ctx, draft, document.file_id);
   });
 
   bot.on("message:text", async (ctx) => {
@@ -514,7 +658,11 @@ async function runTelegram(token: string) {
         await telegramSendPhoto(ctx, image, caption);
       },
     });
-    sessions.set(ctx.chat.id, next);
+    remember(ctx.chat.id, next);
+  });
+
+  bot.catch((error) => {
+    console.error("Telegram update failed.", error);
   });
 
   try {

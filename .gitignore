@@ -38,6 +38,7 @@ yarn-error.log*
 # shop tickets (local file store)
 /data/orders.json
 /data/preview-drafts.json
+/data/bot-sessions.json
 
 # vercel
 .vercel

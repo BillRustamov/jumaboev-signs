@@ -23,6 +23,9 @@ type Copy = {
   askMc: string;
   askFleet: string;
   askLogo: string;
+  gotLogo: string;
+  badLogo: string;
+  logoWrongStep: string;
   askStyle: string;
   askStylePhotos: string;
   skip: string;
@@ -51,7 +54,13 @@ export const COPY: Record<Lang, Copy> = {
     askDot: "USDOT number? Digits only. Prints as USDOT plus the number.",
     askMc: "MC number? Optional — FMCSA does not require it. Send digits or tap Skip.",
     askFleet: "Fleet or unit number? Send it, or tap Skip.",
-    askLogo: "Send a logo photo, or tap Skip.",
+    askLogo: "Send a logo photo or PNG file, or tap Skip.",
+    gotLogo:
+      "Got the logo. Building four looks on a white cab — tap a color after the photos.",
+    badLogo:
+      "That file is not an image I can print. Send a PNG, JPEG, or WebP, or tap Skip.",
+    logoWrongStep:
+      "Attach the logo when I ask for it. Send /start, then send the PNG at the logo step.",
     askStyle:
       "Tap a look. Photos above are that color on a white cab — same mockup as the cart.",
     askStylePhotos:
@@ -83,7 +92,10 @@ export const COPY: Record<Lang, Copy> = {
     askDot: "DOT raqami? Faqat raqam.",
     askMc: "MC raqami? Faqat raqam. O‘tkazish deb yozishingiz mumkin.",
     askFleet: "Avtopark / unit raqami? Yozing yoki O‘tkazish ni bosing.",
-    askLogo: "Logo rasmini yuboring yoki O‘tkazish ni bosing.",
+    askLogo: "Logo rasmini yoki PNG faylni yuboring, yoki O‘tkazish ni bosing.",
+    gotLogo: "Logo qabul qilindi. Oq kabinada to‘rtta ko‘rinish tayyorlanmoqda.",
+    badLogo: "Bu rasm emas. PNG, JPEG yoki WebP yuboring, yoki O‘tkazish ni bosing.",
+    logoWrongStep: "Logo so‘ralganda yuboring. /start yuboring, keyin PNG ni logo qadamida yuboring.",
     askStyle: "Rangni tanlang. Yuqoridagi suratlar — o‘sha rang oq kabinada, savatchadagi kabi.",
     askStylePhotos:
       "To‘rtta rang oq kabinada. Savatchadagi yuk mashinasi. Suratdan keyin nomini bosing.",
@@ -114,7 +126,10 @@ export const COPY: Record<Lang, Copy> = {
     askDot: "Рақами DOT? Танҳо рақам.",
     askMc: "Рақами MC? Танҳо рақам ё Нодида гирифтан.",
     askFleet: "Рақами парк/юнит? Нависед ё Нодида гирифтанро пахш кунед.",
-    askLogo: "Акси логоро фиристед ё Нодида гирифтанро пахш кунед.",
+    askLogo: "Акси лого ё файли PNG-ро фиристед, ё Нодида гирифтанро пахш кунед.",
+    gotLogo: "Лого қабул шуд. Чор намуд дар кабинаи сафед тайёр мешавад.",
+    badLogo: "Ин тасвир нест. PNG, JPEG ё WebP фиристед, ё Нодида гирифтанро пахш кунед.",
+    logoWrongStep: "Логоро вақте ки мепурсам фиристед. /start фиристед, баъд PNG-ро дар қадами лого фиристед.",
     askStyle: "Рангро интихоб кунед. Аксҳои боло ҳамон ранг дар кабинаи сафед аст.",
     askStylePhotos:
       "Чор намуд дар кабинаи сафед — мисли сабад. Пас аз акс номро пахш кунед.",
@@ -145,7 +160,10 @@ export const COPY: Record<Lang, Copy> = {
     askDot: "Номер DOT? Только цифры.",
     askMc: "Номер MC? Только цифры, или напишите Пропустить.",
     askFleet: "Номер парка / борта? Напишите или нажмите Пропустить.",
-    askLogo: "Пришлите фото логотипа или нажмите Пропустить.",
+    askLogo: "Пришлите фото логотипа или PNG-файл, или нажмите Пропустить.",
+    gotLogo: "Логотип получен. Готовлю четыре вида на белой кабине.",
+    badLogo: "Это не картинка. Пришлите PNG, JPEG или WebP, или нажмите Пропустить.",
+    logoWrongStep: "Пришлите логотип, когда я его попрошу. Отправьте /start, затем PNG на шаге логотипа.",
     askStyle: "Выберите цвет. Фото выше — этот набор на белой кабине, как в корзине.",
     askStylePhotos:
       "Четыре вида на белой кабине — тот же грузовик, что в корзине. После фото нажмите название.",
@@ -176,7 +194,10 @@ export const COPY: Record<Lang, Copy> = {
     askDot: "DOT нөмірі? Тек цифр.",
     askMc: "MC нөмірі? Тек цифр немесе Өткізу деп жазыңыз.",
     askFleet: "Автопарк / борт нөмірі? Жазыңыз немесе Өткізуді басыңыз.",
-    askLogo: "Логотип суретін жіберіңіз немесе Өткізуді басыңыз.",
+    askLogo: "Логотип суретін немесе PNG файлды жіберіңіз, немесе Өткізуді басыңыз.",
+    gotLogo: "Логотип қабылданды. Ақ кабинадағы төрт көрініс дайындалуда.",
+    badLogo: "Бұл сурет емес. PNG, JPEG немесе WebP жіберіңіз, немесе Өткізуді басыңыз.",
+    logoWrongStep: "Логотипті сұрағанда жіберіңіз. /start жіберіңіз, содан кейін PNG-ны логотип қадамында жіберіңіз.",
     askStyle: "Түсті таңдаңыз. Жоғарыдағы сурет — сол түс ақ кабинада, себеттегідей.",
     askStylePhotos:
       "Ақ кабинадағы төрт түс — себеттегі жүк көлігі. Суреттен кейін атауын басыңыз.",
@@ -207,7 +228,10 @@ export const COPY: Record<Lang, Copy> = {
     askDot: "DOT номери? Сандар гана.",
     askMc: "MC номери? Сандар гана же Өткөрүү деп жазыңыз.",
     askFleet: "Автопарк / борт номери? Жазыңыз же Өткөрүүнү басыңыз.",
-    askLogo: "Логотип сүрөтүн жибериңиз же Өткөрүүнү басыңыз.",
+    askLogo: "Логотип сүрөтүн же PNG файлды жибериңиз, же Өткөрүүнү басыңыз.",
+    gotLogo: "Логотип кабыл алынды. Ак кабинадагы төрт көрүнүш даярдалууда.",
+    badLogo: "Бул сүрөт эмес. PNG, JPEG же WebP жибериңиз, же Өткөрүүнү басыңыз.",
+    logoWrongStep: "Логотипти сураганда жибериңиз. /start жибериңиз, андан кийин PNG'ни логотип кадамында жибериңиз.",
     askStyle: "Түстү тандаңыз. Жогорку сүрөт — ошол түс ак кабинада, себеттегидей.",
     askStylePhotos:
       "Ак кабинадагы төрт көрүнүш — себеттеги жүк ташуучу. Сүрөттөн кийин атын басыңыз.",
@@ -238,7 +262,11 @@ export const COPY: Record<Lang, Copy> = {
     askDot: "Номер DOT? Лише цифри.",
     askMc: "Номер MC? Лише цифри, або напишіть Пропустити.",
     askFleet: "Номер парку / борту? Надішліть або натисніть Пропустити.",
-    askLogo: "Надішліть фото логотипа або натисніть Пропустити.",
+    askLogo: "Надішліть фото логотипа або PNG-файл, або натисніть Пропустити.",
+    gotLogo: "Логотип отримано. Готую чотири вигляди на білій кабіні.",
+    badLogo: "Це не зображення. Надішліть PNG, JPEG або WebP, або натисніть Пропустити.",
+    logoWrongStep:
+      "Надішліть логотип, коли я його попрошу. Надішліть /start, потім PNG на кроці логотипа.",
     askStyle: "Оберіть колір. Фото вище — цей набір на білій кабіні, як у кошику.",
     askStylePhotos:
       "Чотири вигляди на білій кабіні — та сама вантажівка, що в кошику. Після фото натисніть назву.",
