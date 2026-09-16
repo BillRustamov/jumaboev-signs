@@ -1,6 +1,6 @@
 # Jumaboev Signs
 
-Khurshid Jumaboev’s shop slice: vinyl USDOT truck door decals that follow FMCSA 49 CFR 390.21. Each item is approximately **10×20 in for each side of the cab** — MCS-150 name, USDOT number, optional MC and logo. **Unit numbers are a separate small print** and do not go on this vinyl.
+Khurshid Jumaboev’s shop slice: vinyl USDOT truck door decals that follow FMCSA 49 CFR 390.21. Each item is approximately **10×20 in for each side of the cab** — MCS-150 name, USDOT number, and MC (FMCSA) required; logo optional. **Unit numbers are a separate small print** and do not go on this vinyl.
 
 Drivers start from a visual sample, fill the print ticket, add the pair to the cart, then check the vinyl on a white semi at checkout. Click any door sign to preview it larger.
 

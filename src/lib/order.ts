@@ -78,10 +78,14 @@ export function validateSign(fields: SignFields): string[] {
   if (!/^\d{4,12}$/.test(fields.dotNumber.trim())) {
     errors.push("USDOT number should be 4–12 digits.");
   }
-  if (fields.showMc && !/^\d{4,10}$/.test(fields.mcNumber.trim())) {
-    errors.push("MC number should be 4–10 digits, or turn the MC plate off.");
+  if (!/^\d{4,10}$/.test(fields.mcNumber.trim())) {
+    errors.push("MC (FMCSA) number should be 4–10 digits.");
   }
   return errors;
+}
+
+export function digitsOnly(value: string, max: number): string {
+  return value.replace(/\D/g, "").slice(0, max);
 }
 
 export function createOrderId(): string {
@@ -101,7 +105,7 @@ export function normalizeSign(input: Partial<SignFields>): SignFields {
     logoDataUrl: String(input.logoDataUrl ?? "").trim(),
     nameFont: input.nameFont === "condensed" ? "condensed" : "serif",
     showChevrons: input.showChevrons !== false,
-    showMc: input.showMc !== false,
+    showMc: true,
     paletteId: String(input.paletteId ?? base.paletteId),
     colors: { ...base.colors, ...input.colors },
     logoSize: clampLogoSize(input.logoSize ?? base.logoSize),

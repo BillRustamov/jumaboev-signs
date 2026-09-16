@@ -91,7 +91,7 @@ export function styledFields(base: SignFields, presetId: string): SignFields {
   return {
     ...base,
     ...applyPreset(presetId),
-    showMc: base.showMc,
+    showMc: true,
     logoDataUrl: base.logoDataUrl,
     logoSize: base.logoSize,
     companyName: base.companyName,

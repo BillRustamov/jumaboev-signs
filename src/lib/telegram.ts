@@ -8,11 +8,8 @@ export function shopTicketText(order: SignOrder): string {
   const lines = [
     `New ${order.source} ticket ${order.id}`,
     `@${order.username}`,
-    `${order.companyName} · USDOT ${order.dotNumber}`,
+    `${order.companyName} · USDOT ${order.dotNumber} · MC ${order.mcNumber}`,
   ];
-  if (order.showMc && order.mcNumber) {
-    lines.push(`MC ${order.mcNumber}`);
-  }
   lines.push("Approximately 10×20 in for each side of the cab.");
   if (order.telegramChatId) {
     lines.push(`Telegram chat ${order.telegramChatId}`);

@@ -54,14 +54,11 @@ function NumberPlate({
   const filled = value.trim();
   return (
     <div
-      className={cn(
-        "flex min-w-0 flex-1 items-center",
-        !filled && "opacity-35",
-      )}
+      className={cn("flex w-full items-center", !filled && "opacity-35")}
       style={{
         backgroundColor: plate,
         borderRadius: "1.1cqw",
-        padding: "1.35cqw 2.4cqw",
+        padding: "1.05cqw 2.4cqw",
       }}
     >
       <span
@@ -139,7 +136,6 @@ export function TruckSign({
   const displayLegal = legal || "LEGAL OR TRADE NAME";
   const nameFontClass =
     fields.nameFont === "condensed" ? "font-sign-condensed" : "font-sign-serif";
-  const printMc = fields.showMc !== false;
   const logoSize = clampLogoSize(fields.logoSize);
   const mark = logoBox(logoSize);
   const hasLogo = Boolean(fields.logoDataUrl);
@@ -234,8 +230,8 @@ export function TruckSign({
             </div>
 
             <div
-              className="flex w-full items-stretch"
-              style={{ marginTop: "1.5cqw", gap: "1.4cqw" }}
+              className="flex w-full flex-col"
+              style={{ marginTop: "1.15cqw", gap: "0.8cqw" }}
             >
               <NumberPlate
                 label="USDOT"
@@ -244,15 +240,13 @@ export function TruckSign({
                 plate={colors.plate}
                 plateText={colors.plateText}
               />
-              {printMc ? (
-                <NumberPlate
-                  label="MC"
-                  value={fields.mcNumber}
-                  placeholder="000000"
-                  plate={colors.plate}
-                  plateText={colors.plateText}
-                />
-              ) : null}
+              <NumberPlate
+                label="MC"
+                value={fields.mcNumber}
+                placeholder="000000"
+                plate={colors.plate}
+                plateText={colors.plateText}
+              />
             </div>
             {fields.showChevrons !== false ? (
               <Chevrons rule={colors.rule} accent={colors.accent} />

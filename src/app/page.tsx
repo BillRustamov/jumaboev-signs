@@ -31,9 +31,9 @@ export default function HomePage() {
             </h1>
             <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
               Jumaboev Signs prints a matched pair — approximately 10×20 in for
-              each side of the cab. MCS-150 name and USDOT are required. MC and
-              logo size are yours to set. Unit numbers are a separate small
-              print. Letters still have to read from 50 feet in daylight.
+              each side of the cab. MCS-150 name, USDOT, and MC (FMCSA) are
+              required. Logo size is yours to set. Unit numbers are a separate
+              small print. Letters still have to read from 50 feet in daylight.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" asChild>
@@ -82,9 +82,9 @@ export default function HomePage() {
           What prints on the vinyl
         </h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Required by FMCSA on both sides: the MCS-150 name and USDOT. MC and
-          logo are extra. Unit numbers print as a separate small sticker.
-          Each door is approximately 10×20 in outdoor vinyl, one per cab side.
+          Required on both sides: MCS-150 name, USDOT, and MC (FMCSA). Logo is
+          extra. Unit numbers print as a separate small sticker. Each door is
+          approximately 10×20 in outdoor vinyl, one per cab side.
         </p>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Spec
@@ -96,8 +96,12 @@ export default function HomePage() {
             body="Prints as USDOT plus the digits. Required. Letters must stay readable from 50 feet in daylight."
           />
           <Spec
-            title="MC and logo"
-            body="Optional. Set how large the logo prints on the door. Turn the MC plate off if you only run USDOT. Unit numbers are not on this vinyl."
+            title="MC (FMCSA) number"
+            body="Prints as MC plus the digits on its own line under USDOT. Required on both doors."
+          />
+          <Spec
+            title="Logo"
+            body="Optional. Set how large the mark prints on the door. Unit numbers are not on this vinyl."
           />
           <Spec
             title="Colors you can recut"

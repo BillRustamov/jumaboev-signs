@@ -41,6 +41,7 @@ import { SampleGallery } from "@/components/sample-gallery";
 import { addToCart, type CartItem } from "@/lib/cart";
 import { clampLogoSize, type LogoSize } from "@/lib/logo-size";
 import {
+  digitsOnly,
   validateSign,
   type SignFields,
 } from "@/lib/order";
@@ -88,7 +89,7 @@ export function OrderStudio() {
     const issues = validateSign(fields);
     if (isDemoLettering(fields)) {
       return [
-        "This is still a sample door. Put your MCS-150 name and USDOT before we print.",
+        "This is still a sample door. Put your MCS-150 name, USDOT, and MC before we print.",
       ];
     }
     return issues;
@@ -230,7 +231,7 @@ export function OrderStudio() {
                 step="1"
                 icon={<Type className="size-4" />}
                 title="Lettering"
-                hint="Required. Put the name and USDOT that should actually print — not the sample."
+                hint="Required. Put the name, USDOT, and MC that should actually print — not the sample."
                 done={letteringDone}
               >
                 <Field
@@ -258,20 +259,17 @@ export function OrderStudio() {
                   placeholder="Your USDOT"
                   inputMode="numeric"
                   value={fields.dotNumber}
-                  onChange={(value) => update("dotNumber", value)}
+                  onChange={(value) => update("dotNumber", digitsOnly(value, 12))}
                 />
                 <Field
                   id="mcNumber"
-                  label="MC number"
-                  hint={
-                    fields.showMc
-                      ? "Required while the MC plate is on. Turn the plate off in Layout if you skip it."
-                      : "Plate is off in Layout. Turn it on if you want MC on the door."
-                  }
+                  label="MC (FMCSA) number"
+                  requiredMark
+                  hint="Prints as MC plus the digits. Required on both sides."
                   placeholder="Your MC"
                   inputMode="numeric"
                   value={fields.mcNumber}
-                  onChange={(value) => update("mcNumber", value)}
+                  onChange={(value) => update("mcNumber", digitsOnly(value, 10))}
                 />
                 <div className="space-y-2">
                   <Label htmlFor="logo">Logo (optional)</Label>
@@ -332,7 +330,7 @@ export function OrderStudio() {
                     const preview = {
                       ...fields,
                       ...applyPreset(preset.id),
-                      showMc: fields.showMc,
+                      showMc: true,
                       logoSize: fields.logoSize,
                       logoDataUrl: fields.logoDataUrl,
                     };
@@ -348,7 +346,7 @@ export function OrderStudio() {
                           setFields((current) => ({
                             ...current,
                             ...applyPreset(preset.id),
-                            showMc: current.showMc,
+                            showMc: true,
                             logoSize: current.logoSize,
                             logoDataUrl: current.logoDataUrl,
                           }));
@@ -468,22 +466,6 @@ export function OrderStudio() {
                     checked={fields.nameFont === "condensed"}
                     onCheckedChange={(checked) => {
                       update("nameFont", checked ? "condensed" : "serif");
-                      markLayoutReady();
-                    }}
-                  />
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <Label htmlFor="showMc">Print MC plate</Label>
-                    <p className="text-xs text-muted-foreground">
-                      FMCSA does not require MC on the door.
-                    </p>
-                  </div>
-                  <Switch
-                    id="showMc"
-                    checked={fields.showMc}
-                    onCheckedChange={(checked) => {
-                      update("showMc", checked);
                       markLayoutReady();
                     }}
                   />

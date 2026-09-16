@@ -17,7 +17,6 @@ function fieldsFromQuery(
     return Array.isArray(value) ? value[0] : value;
   };
   const preset = applyPreset(pick("preset") || "elbrus");
-  const showMc = pick("showMc") !== "0";
   return {
     ...EXAMPLE,
     ...preset,
@@ -25,7 +24,7 @@ function fieldsFromQuery(
     legalName: pick("legal") ?? EXAMPLE.legalName,
     dotNumber: pick("dot") || EXAMPLE.dotNumber,
     mcNumber: pick("mc") || EXAMPLE.mcNumber,
-    showMc,
+    showMc: true,
     logoDataUrl: EXAMPLE.logoDataUrl,
   };
 }

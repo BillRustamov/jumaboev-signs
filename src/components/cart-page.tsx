@@ -52,7 +52,7 @@ export function CartPage() {
             </CardTitle>
             <CardDescription>
               Set of two · ~10×20 in each side
-              {item.fields.showMc && item.fields.mcNumber
+              {item.fields.mcNumber
                 ? ` · MC ${item.fields.mcNumber}`
                 : ""}
               {item.fields.dotNumber ? ` · USDOT ${item.fields.dotNumber}` : ""}

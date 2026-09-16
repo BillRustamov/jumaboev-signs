@@ -35,18 +35,17 @@ export const DRIVER_SAMPLES: DriverSample[] = [
     },
   },
   {
-    id: "usdot-only",
-    label: "USDOT only",
-    hint: "No MC plate",
+    id: "highway",
+    label: "Highway",
+    hint: "Black lettering · max contrast",
     fields: {
       companyName: "HIGHWAY",
       legalName: "HIGHWAY LOGISTICS LLC",
       dotNumber: "34882106",
-      mcNumber: "",
+      mcNumber: "901244",
       fleetNumber: "",
       logoDataUrl: "",
       ...applyPreset("highway"),
-      showMc: false,
       logoSize: DEFAULT_LOGO_SIZE,
     },
   },
@@ -104,6 +103,7 @@ export function lookFromSample(sample: DriverSample): SignFields {
     dotNumber: "",
     mcNumber: "",
     fleetNumber: "",
+    showMc: true,
   };
 }
 

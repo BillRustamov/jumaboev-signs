@@ -128,10 +128,7 @@ function escapeHtml(value: string): string {
 }
 
 function summary(draft: Draft): string {
-  const mc =
-    draft.fields.showMc && draft.fields.mcNumber
-      ? draft.fields.mcNumber
-      : "—";
+  const mc = draft.fields.mcNumber || "—";
   const body = t(draft.lang, "confirmBody", {
     username: draft.username,
     company: draft.fields.companyName,
@@ -306,17 +303,10 @@ async function handleText(
       }
       draft.fields.dotNumber = trimmed;
       draft.step = "mc";
-      await chat.send(t(draft.lang, "askMc"), skipKeyboard(draft.lang));
+      await chat.send(t(draft.lang, "askMc"));
       return draft;
     }
     case "mc": {
-      if (!trimmed || isSkipText(trimmed, draft.lang)) {
-        draft.fields.mcNumber = "";
-        draft.fields.showMc = false;
-        draft.step = "logo";
-        await chat.send(t(draft.lang, "askLogo"), skipKeyboard(draft.lang));
-        return draft;
-      }
       if (!/^\d{4,10}$/.test(trimmed)) {
         await chat.send(t(draft.lang, "numbersOnly"));
         return draft;
@@ -379,13 +369,6 @@ async function handleCallback(
     await chat.send(t(draft.lang, "askDot"));
     return draft;
   }
-  if (data === "skip" && draft.step === "mc") {
-    draft.fields.mcNumber = "";
-    draft.fields.showMc = false;
-    draft.step = "logo";
-    await chat.send(t(draft.lang, "askLogo"), skipKeyboard(draft.lang));
-    return draft;
-  }
   if (data === "skip" && draft.step === "logo") {
     await presentStyles(draft, chat);
     return draft;
@@ -395,7 +378,7 @@ async function handleCallback(
     draft.fields = {
       ...draft.fields,
       ...preset,
-      showMc: draft.fields.showMc,
+      showMc: true,
     };
     await presentConfirm(draft, chat);
     return draft;
@@ -471,7 +454,7 @@ async function configureBot(bot: Bot) {
     "USDOT truck door vinyl · ~10×20 in each cab side. Order a matched pair.",
   );
   await bot.api.setMyDescription(
-    "Jumaboev Signs prints vinyl USDOT truck doors. Each item is about 10×20 in for each side of the cab — left and right match. MCS-150 name and USDOT required. MC and logo optional. Unit numbers are a separate small print. Send /start to order.",
+    "Jumaboev Signs prints vinyl USDOT truck doors. Each item is about 10×20 in for each side of the cab — left and right match. MCS-150 name, USDOT, and MC required. Logo optional. Unit numbers are a separate small print. Send /start to order.",
   );
   await bot.api.setMyCommands([
     { command: "start", description: "Start a new door vinyl order" },
