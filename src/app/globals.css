@@ -167,3 +167,14 @@
     box-shadow: none;
   }
 }
+
+body.bot-preview header,
+body.bot-preview footer,
+body.bot-preview nextjs-portal,
+body.bot-preview [data-next-badge-root] {
+  display: none !important;
+}
+
+body.bot-preview {
+  background: #eceff2;
+}

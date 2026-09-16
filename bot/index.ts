@@ -21,6 +21,7 @@ import {
   type SignOrder,
 } from "../src/lib/order";
 import { STYLE_PRESETS, applyPreset } from "../src/lib/sign-style";
+import { screenshotTruck, styledFields, telegramSendPhoto } from "./previews";
 
 type Step =
   | "lang"
@@ -208,7 +209,31 @@ type Markup = { keyboard: InlineKeyboard; buttons: Button[] };
 
 type Chat = {
   send: (text: string, extra?: Markup) => Promise<void> | void;
+  sendPhoto?: (image: Buffer, caption: string) => Promise<void> | void;
 };
+
+async function presentStyles(draft: Draft, chat: Chat): Promise<void> {
+  draft.step = "style";
+  await chat.send(t(draft.lang, "askStylePhotos"));
+  if (chat.sendPhoto) {
+    for (const preset of STYLE_PRESETS) {
+      const png = await screenshotTruck(styledFields(draft.fields, preset.id));
+      if (png) {
+        await chat.sendPhoto(png, `${preset.label} — ${preset.hint}`);
+      }
+    }
+  }
+  await chat.send(t(draft.lang, "askStyle"), styleKeyboard());
+}
+
+async function presentConfirm(draft: Draft, chat: Chat): Promise<void> {
+  draft.step = "confirm";
+  if (chat.sendPhoto) {
+    const png = await screenshotTruck(draft.fields);
+    if (png) await chat.sendPhoto(png, t(draft.lang, "confirmTitle"));
+  }
+  await chat.send(summary(draft), confirmKeyboard(draft.lang));
+}
 
 async function handleText(
   draft: Draft,
@@ -288,8 +313,7 @@ async function handleText(
     }
     case "logo": {
       if (!trimmed || isSkipText(trimmed, draft.lang)) {
-        draft.step = "style";
-        await chat.send(t(draft.lang, "askStyle"), styleKeyboard());
+        await presentStyles(draft, chat);
         return draft;
       }
       if (
@@ -306,16 +330,15 @@ async function handleText(
           return draft;
         }
       }
-      draft.step = "style";
-      await chat.send(t(draft.lang, "askStyle"), styleKeyboard());
+      await presentStyles(draft, chat);
       return draft;
     }
     case "style": {
-      await chat.send(t(draft.lang, "askStyle"), styleKeyboard());
+      await presentStyles(draft, chat);
       return draft;
     }
     case "confirm": {
-      await chat.send(summary(draft), confirmKeyboard(draft.lang));
+      await presentConfirm(draft, chat);
       return draft;
     }
   }
@@ -348,8 +371,7 @@ async function handleCallback(
     return draft;
   }
   if (data === "skip" && draft.step === "logo") {
-    draft.step = "style";
-    await chat.send(t(draft.lang, "askStyle"), styleKeyboard());
+    await presentStyles(draft, chat);
     return draft;
   }
   if (data.startsWith("style:")) {
@@ -359,8 +381,7 @@ async function handleCallback(
       ...preset,
       showMc: draft.fields.showMc,
     };
-    draft.step = "confirm";
-    await chat.send(summary(draft), confirmKeyboard(draft.lang));
+    await presentConfirm(draft, chat);
     return draft;
   }
   if (data === "restart") {
@@ -448,13 +469,16 @@ async function runTelegram(token: string) {
     const chatId = ctx.chat?.id;
     if (!chatId) return;
     const draft = draftFor(chatId);
+    await ctx.answerCallbackQuery();
     const next = await handleCallback(draft, ctx.callbackQuery.data, {
       send: async (text, extra) => {
         await ctx.reply(text, extra ? { parse_mode: "HTML", reply_markup: extra.keyboard } : { parse_mode: "HTML" });
       },
+      sendPhoto: async (image, caption) => {
+        await telegramSendPhoto(ctx, image, caption);
+      },
     });
     sessions.set(chatId, next);
-    await ctx.answerCallbackQuery();
   });
 
   bot.on("message:photo", async (ctx) => {
@@ -467,12 +491,17 @@ async function runTelegram(token: string) {
     if (photo) {
       draft.fields.logoDataUrl = await telegramPhotoToDataUrl(ctx, photo.file_id, token);
     }
-    draft.step = "style";
     sessions.set(ctx.chat.id, draft);
-    await ctx.reply(t(draft.lang, "askStyle"), {
-      parse_mode: "HTML",
-      reply_markup: styleKeyboard().keyboard,
-    });
+    const telegramChat: Chat = {
+      send: async (text, extra) => {
+        await ctx.reply(text, extra ? { parse_mode: "HTML", reply_markup: extra.keyboard } : { parse_mode: "HTML" });
+      },
+      sendPhoto: async (image, caption) => {
+        await telegramSendPhoto(ctx, image, caption);
+      },
+    };
+    await presentStyles(draft, telegramChat);
+    sessions.set(ctx.chat.id, draft);
   });
 
   bot.on("message:text", async (ctx) => {
@@ -480,6 +509,9 @@ async function runTelegram(token: string) {
     const next = await handleText(draft, ctx.message.text, {
       send: async (text, extra) => {
         await ctx.reply(text, extra ? { parse_mode: "HTML", reply_markup: extra.keyboard } : { parse_mode: "HTML" });
+      },
+      sendPhoto: async (image, caption) => {
+        await telegramSendPhoto(ctx, image, caption);
       },
     });
     sessions.set(ctx.chat.id, next);
@@ -521,6 +553,9 @@ async function playTurns(script?: string[]) {
       lastButtons.forEach((button, index) => {
         console.log(`  [${index + 1}] ${button.label}`);
       });
+    },
+    sendPhoto: async (_image, caption) => {
+      console.log(`\nbot photo: ${caption}`);
     },
   };
 

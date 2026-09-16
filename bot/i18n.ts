@@ -24,6 +24,7 @@ type Copy = {
   askFleet: string;
   askLogo: string;
   askStyle: string;
+  askStylePhotos: string;
   skip: string;
   numbersOnly: string;
   confirmTitle: string;
@@ -51,7 +52,10 @@ export const COPY: Record<Lang, Copy> = {
     askMc: "MC number? Optional — FMCSA does not require it. Send digits or tap Skip.",
     askFleet: "Fleet or unit number? Send it, or tap Skip.",
     askLogo: "Send a logo photo, or tap Skip.",
-    askStyle: "Pick a door color set. You can still recut colors on the website.",
+    askStyle:
+      "Tap a look. Photos above are that color on a white cab — same mockup as the cart.",
+    askStylePhotos:
+      "Here are four looks on a white sleeper cab — same truck as the cart. Your name and USDOT are on the door. Tap a color after the photos.",
     skip: "Skip",
     numbersOnly: "Digits only, please.",
     confirmTitle: "Review this pair",
@@ -80,7 +84,9 @@ export const COPY: Record<Lang, Copy> = {
     askMc: "MC raqami? Faqat raqam. O‘tkazish deb yozishingiz mumkin.",
     askFleet: "Avtopark / unit raqami? Yozing yoki O‘tkazish ni bosing.",
     askLogo: "Logo rasmini yuboring yoki O‘tkazish ni bosing.",
-    askStyle: "Eshik rangini tanlang.",
+    askStyle: "Rangni tanlang. Yuqoridagi suratlar — o‘sha rang oq kabinada, savatchadagi kabi.",
+    askStylePhotos:
+      "To‘rtta rang oq kabinada. Savatchadagi yuk mashinasi. Suratdan keyin nomini bosing.",
     skip: "O‘tkazish",
     numbersOnly: "Faqat raqam yozing.",
     confirmTitle: "Shu juftlikni tasdiqlaysizmi (~10×20 har tomon):",
@@ -109,7 +115,9 @@ export const COPY: Record<Lang, Copy> = {
     askMc: "Рақами MC? Танҳо рақам ё Нодида гирифтан.",
     askFleet: "Рақами парк/юнит? Нависед ё Нодида гирифтанро пахш кунед.",
     askLogo: "Акси логоро фиристед ё Нодида гирифтанро пахш кунед.",
-    askStyle: "Ранги дарро интихоб кунед.",
+    askStyle: "Рангро интихоб кунед. Аксҳои боло ҳамон ранг дар кабинаи сафед аст.",
+    askStylePhotos:
+      "Чор намуд дар кабинаи сафед — мисли сабад. Пас аз акс номро пахш кунед.",
     skip: "Нодида гирифтан",
     numbersOnly: "Лутфан танҳо рақам.",
     confirmTitle: "Ин ҷуфтро тасдиқ мекунед (~10×20 ҳар тараф):",
@@ -138,7 +146,9 @@ export const COPY: Record<Lang, Copy> = {
     askMc: "Номер MC? Только цифры, или напишите Пропустить.",
     askFleet: "Номер парка / борта? Напишите или нажмите Пропустить.",
     askLogo: "Пришлите фото логотипа или нажмите Пропустить.",
-    askStyle: "Выберите набор цветов для двери.",
+    askStyle: "Выберите цвет. Фото выше — этот набор на белой кабине, как в корзине.",
+    askStylePhotos:
+      "Четыре вида на белой кабине — тот же грузовик, что в корзине. После фото нажмите название.",
     skip: "Пропустить",
     numbersOnly: "Только цифры.",
     confirmTitle: "Подтвердите пару (~10×20 на каждую сторону кабины):",
@@ -167,7 +177,9 @@ export const COPY: Record<Lang, Copy> = {
     askMc: "MC нөмірі? Тек цифр немесе Өткізу деп жазыңыз.",
     askFleet: "Автопарк / борт нөмірі? Жазыңыз немесе Өткізуді басыңыз.",
     askLogo: "Логотип суретін жіберіңіз немесе Өткізуді басыңыз.",
-    askStyle: "Есік түстерін таңдаңыз.",
+    askStyle: "Түсті таңдаңыз. Жоғарыдағы сурет — сол түс ақ кабинада, себеттегідей.",
+    askStylePhotos:
+      "Ақ кабинадағы төрт түс — себеттегі жүк көлігі. Суреттен кейін атауын басыңыз.",
     skip: "Өткізу",
     numbersOnly: "Тек цифр жазыңыз.",
     confirmTitle: "Осы жұпты растаңыз (~10×20 әр жақ):",
@@ -196,7 +208,9 @@ export const COPY: Record<Lang, Copy> = {
     askMc: "MC номери? Сандар гана же Өткөрүү деп жазыңыз.",
     askFleet: "Автопарк / борт номери? Жазыңыз же Өткөрүүнү басыңыз.",
     askLogo: "Логотип сүрөтүн жибериңиз же Өткөрүүнү басыңыз.",
-    askStyle: "Эшик түстөрүн тандаңыз.",
+    askStyle: "Түстү тандаңыз. Жогорку сүрөт — ошол түс ак кабинада, себеттегидей.",
+    askStylePhotos:
+      "Ак кабинадагы төрт көрүнүш — себеттеги жүк ташуучу. Сүрөттөн кийин атын басыңыз.",
     skip: "Өткөрүү",
     numbersOnly: "Сандар гана жазыңыз.",
     confirmTitle: "Бул жупту ырастаңыз (~10×20 ар тарап):",
@@ -225,7 +239,9 @@ export const COPY: Record<Lang, Copy> = {
     askMc: "Номер MC? Лише цифри, або напишіть Пропустити.",
     askFleet: "Номер парку / борту? Надішліть або натисніть Пропустити.",
     askLogo: "Надішліть фото логотипа або натисніть Пропустити.",
-    askStyle: "Оберіть набір кольорів для дверей.",
+    askStyle: "Оберіть колір. Фото вище — цей набір на білій кабіні, як у кошику.",
+    askStylePhotos:
+      "Чотири вигляди на білій кабіні — та сама вантажівка, що в кошику. Після фото натисніть назву.",
     skip: "Пропустити",
     numbersOnly: "Лише цифри.",
     confirmTitle: "Підтвердіть пару (~10×20 на кожен бік кабіни):",

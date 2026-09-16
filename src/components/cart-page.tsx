@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SignPreview } from "@/components/sign-preview";
+import { WhiteSemiTruck } from "@/components/white-semi-truck";
 import { removeFromCart, useCart } from "@/lib/cart";
 
 export function CartPage() {
@@ -26,8 +26,8 @@ export function CartPage() {
             Cart is empty
           </CardTitle>
           <CardDescription>
-            Add a ~10×20 door pair from the print desk. You can preview the
-            sign here, then check both cab sides at checkout.
+            Add a ~10×20 door pair from the print desk. The cart shows your
+            vinyl on a white cab, same as checkout.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
@@ -58,15 +58,12 @@ export function CartPage() {
               {item.fields.dotNumber ? ` · USDOT ${item.fields.dotNumber}` : ""}
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-[8.5rem_1fr] sm:items-center">
-            <SignPreview
-              fields={item.fields}
-              className="max-w-[8.5rem]"
-              signClassName="max-w-[8.5rem]"
-            />
+          <CardContent className="space-y-3">
+            <WhiteSemiTruck fields={item.fields} />
             <p className="text-sm text-muted-foreground">
-              Approximately 10×20 in for each side of the cab. Click the sign
-              to preview. Unit numbers are a separate small print.
+              Approximately 10×20 in for each side of the cab. Click the door or
+              the zoom on the truck to preview. Unit numbers are a separate
+              small print.
             </p>
           </CardContent>
           <CardFooter className="justify-between">

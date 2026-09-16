@@ -34,6 +34,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { LogoSizeControl } from "@/components/logo-size-control";
+import { TruckSign } from "@/components/truck-sign";
+import { WhiteSemiTruck } from "@/components/white-semi-truck";
 import { LiveVinylDock } from "@/components/live-vinyl-dock";
 import { SampleGallery } from "@/components/sample-gallery";
 import { addToCart, type CartItem } from "@/lib/cart";
@@ -315,7 +317,7 @@ export function OrderStudio() {
                 step="2"
                 icon={<Palette className="size-4" />}
                 title="Colors"
-                hint="Required. Tap the set that should print, even if you keep the sample look."
+                hint="Required. Tap a look — each card is that color on the door. The truck below matches the cart."
                 done={colorPicked}
               >
                 {contrastNotes.length ? (
@@ -326,49 +328,68 @@ export function OrderStudio() {
                   </Alert>
                 ) : null}
                 <div className="grid grid-cols-2 gap-2">
-                  {STYLE_PRESETS.map((preset) => (
-                    <Button
-                      key={preset.id}
-                      type="button"
-                      variant={
-                        colorPicked && fields.paletteId === preset.id
-                          ? "default"
-                          : "outline"
-                      }
-                      className="h-auto flex-col items-start gap-2 py-3 text-left"
-                      onClick={() => {
-                        setFields((current) => ({
-                          ...current,
-                          ...applyPreset(preset.id),
-                          showMc: current.showMc,
-                          logoSize: current.logoSize,
-                          logoDataUrl: current.logoDataUrl,
-                        }));
-                        setColorPicked(true);
-                        setFormError(null);
-                      }}
-                    >
-                      <span className="flex gap-1" aria-hidden>
-                        {[
-                          preset.colors.face,
-                          preset.colors.name,
-                          preset.colors.plate,
-                          preset.colors.outerBorder,
-                        ].map((swatch, index) => (
-                          <span
-                            key={`${preset.id}-${index}`}
-                            className="size-4 rounded-full ring-1 ring-black/15"
-                            style={{ backgroundColor: swatch }}
-                          />
-                        ))}
-                      </span>
-                      <span>{preset.label}</span>
-                      <span className="text-[11px] font-normal text-muted-foreground">
-                        {preset.hint}
-                      </span>
-                    </Button>
-                  ))}
+                  {STYLE_PRESETS.map((preset) => {
+                    const preview = {
+                      ...fields,
+                      ...applyPreset(preset.id),
+                      showMc: fields.showMc,
+                      logoSize: fields.logoSize,
+                      logoDataUrl: fields.logoDataUrl,
+                    };
+                    const selected =
+                      colorPicked && fields.paletteId === preset.id;
+                    return (
+                      <Button
+                        key={preset.id}
+                        type="button"
+                        variant={selected ? "default" : "outline"}
+                        className="h-auto flex-col items-stretch gap-2 p-2 text-left"
+                        onClick={() => {
+                          setFields((current) => ({
+                            ...current,
+                            ...applyPreset(preset.id),
+                            showMc: current.showMc,
+                            logoSize: current.logoSize,
+                            logoDataUrl: current.logoDataUrl,
+                          }));
+                          setColorPicked(true);
+                          setFormError(null);
+                        }}
+                      >
+                        <TruckSign
+                          fields={preview}
+                          className="pointer-events-none shadow-none"
+                        />
+                        <span className="flex gap-1 px-1" aria-hidden>
+                          {[
+                            preset.colors.face,
+                            preset.colors.name,
+                            preset.colors.plate,
+                            preset.colors.outerBorder,
+                          ].map((swatch, index) => (
+                            <span
+                              key={`${preset.id}-${index}`}
+                              className="size-3 rounded-full ring-1 ring-black/15"
+                              style={{ backgroundColor: swatch }}
+                            />
+                          ))}
+                        </span>
+                        <span className="px-1">{preset.label}</span>
+                        <span className="px-1 text-[11px] font-normal text-muted-foreground">
+                          {preset.hint}
+                        </span>
+                      </Button>
+                    );
+                  })}
                 </div>
+                {colorPicked ? (
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-[var(--navy)]">
+                      On the cab — same mockup as the cart
+                    </p>
+                    <WhiteSemiTruck fields={fields} />
+                  </div>
+                ) : null}
                 <p className="text-xs font-medium text-[var(--navy)]">
                   Recut any swatch
                 </p>

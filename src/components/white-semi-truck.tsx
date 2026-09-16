@@ -20,9 +20,11 @@ const DOOR = { left: 43.5, top: 63.7, width: 13.3, height: 13.9 };
 export function WhiteSemiTruck({
   fields,
   className,
+  interactive = true,
 }: {
   fields: SignFields;
   className?: string;
+  interactive?: boolean;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -44,42 +46,76 @@ export function WhiteSemiTruck({
             alt="Cascadia sleeper door with USDOT vinyl"
             className="absolute inset-0 h-full w-full object-cover"
           />
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="absolute z-10 cursor-zoom-in overflow-hidden p-0 shadow-[0_4px_14px_rgba(20,24,28,0.28)] ring-0"
-            style={{
-              left: `${DOOR.left}%`,
-              top: `${DOOR.top}%`,
-              width: `${DOOR.width}%`,
-              height: `${DOOR.height}%`,
-              borderRadius: "18% / 42%",
-            }}
-            aria-label="Open door lettering"
-          >
-            <DoorDecal fields={fields} />
-          </button>
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="absolute z-10 cursor-zoom-in overflow-hidden bg-white p-0 text-left shadow-md"
-            style={{
-              left: `${INSET.left}%`,
-              top: `${INSET.top}%`,
-              width: `${INSET.width}%`,
-              height: `${INSET.height}%`,
-              border: "6px solid #2f7dff",
-              borderRadius: "4% / 10%",
-            }}
-            aria-label="Open lettering close-up"
-          >
-            <div className="h-full w-full p-[3.2%]">
+          {interactive ? (
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="absolute z-10 cursor-zoom-in overflow-hidden p-0 shadow-[0_4px_14px_rgba(20,24,28,0.28)] ring-0"
+              style={{
+                left: `${DOOR.left}%`,
+                top: `${DOOR.top}%`,
+                width: `${DOOR.width}%`,
+                height: `${DOOR.height}%`,
+                borderRadius: "18% / 42%",
+              }}
+              aria-label="Open door lettering"
+            >
+              <DoorDecal fields={fields} />
+            </button>
+          ) : (
+            <div
+              className="absolute z-10 overflow-hidden p-0 shadow-[0_4px_14px_rgba(20,24,28,0.28)]"
+              style={{
+                left: `${DOOR.left}%`,
+                top: `${DOOR.top}%`,
+                width: `${DOOR.width}%`,
+                height: `${DOOR.height}%`,
+                borderRadius: "18% / 42%",
+              }}
+            >
               <DoorDecal fields={fields} />
             </div>
-          </button>
+          )}
+          {interactive ? (
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="absolute z-10 cursor-zoom-in overflow-hidden bg-white p-0 text-left shadow-md"
+              style={{
+                left: `${INSET.left}%`,
+                top: `${INSET.top}%`,
+                width: `${INSET.width}%`,
+                height: `${INSET.height}%`,
+                border: "6px solid #2f7dff",
+                borderRadius: "4% / 10%",
+              }}
+              aria-label="Open lettering close-up"
+            >
+              <div className="h-full w-full p-[3.2%]">
+                <DoorDecal fields={fields} />
+              </div>
+            </button>
+          ) : (
+            <div
+              className="absolute z-10 overflow-hidden bg-white p-0 text-left shadow-md"
+              style={{
+                left: `${INSET.left}%`,
+                top: `${INSET.top}%`,
+                width: `${INSET.width}%`,
+                height: `${INSET.height}%`,
+                border: "6px solid #2f7dff",
+                borderRadius: "4% / 10%",
+              }}
+            >
+              <div className="h-full w-full p-[3.2%]">
+                <DoorDecal fields={fields} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
+      {interactive ? (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
           className="max-w-[min(52rem,calc(100%-1.5rem))] overflow-hidden border-0 bg-transparent p-0 shadow-none ring-0 sm:max-w-[min(52rem,calc(100%-2rem))]"
@@ -96,6 +132,7 @@ export function WhiteSemiTruck({
           </div>
         </DialogContent>
       </Dialog>
+      ) : null}
     </>
   );
 }
