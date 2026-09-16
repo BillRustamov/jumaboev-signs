@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { HomeSampleGrid } from "@/components/home-sample-grid";
-import { SignPreview } from "@/components/sign-preview";
-import { SignPair } from "@/components/truck-sign";
+import { WhiteSemiTruck } from "@/components/white-semi-truck";
 import { DRIVER_SAMPLES } from "@/lib/samples";
 import { TELEGRAM_BOT_URL } from "@/lib/telegram";
 
@@ -44,12 +43,10 @@ export default function HomePage() {
               </Button>
             </div>
           </div>
-          <div className="mx-auto w-full max-w-lg">
-            <SignPreview fields={HERO}>
-              <SignPair fields={HERO} />
-            </SignPreview>
+          <div className="mx-auto w-full max-w-xl">
+            <WhiteSemiTruck fields={HERO} />
             <p className="mt-3 text-center text-xs text-muted-foreground">
-              Click the sign to preview · ~10×20 in each cab side
+              Vinyl on a white sleeper · ~10×20 in each cab side
             </p>
           </div>
         </div>
@@ -67,9 +64,8 @@ export default function HomePage() {
             Pick a sample, then swap in your numbers
           </h2>
           <p className="mt-2 text-muted-foreground">
-            Each card is a real door layout. Tap one to open the designer with
-            that door loaded. Change the logo size on the vinyl before you send
-            the pair to the shop.
+            Each card is that color on a white sleeper — same truck the cart
+            uses. Tap one to open the designer with that door loaded.
           </p>
         </div>
         <HomeSampleGrid />

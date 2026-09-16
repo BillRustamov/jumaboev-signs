@@ -16,9 +16,9 @@ export default function SamplesPage() {
           Tap a shop door
         </h1>
         <p className="mt-2 text-muted-foreground">
-          These are looks only. Open one on the print desk, put your MCS-150
-          name and USDOT on it, then add the pair to your cart. Unit numbers
-          are a separate small print.
+          These are looks only. Each one is on a white sleeper. Open it on the
+          print desk, put your MCS-150 name, USDOT, and MC on it, then add the
+          pair to your cart.
         </p>
       </div>
       <HomeSampleGrid />

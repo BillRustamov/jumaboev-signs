@@ -11,13 +11,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-/** Cropped Roadway-style Cascadia template (carousel arrows removed). */
-const SRC = { w: 1340, h: 828 };
+/** Customer mockup: white Volvo sleeper, landscape vinyl on the door. */
+const SRC = { w: 1312, h: 928 };
 
-/** Landscape close-up of the 20×10 in vinyl. */
-const INSET = { left: 45.6, top: 3.2, width: 52.2, height: 26.1 };
-/** Horizontal plaque on the sleeper door, 20×10 in proportion. */
-const DOOR = { left: 39.6, top: 62.1, width: 22.4, height: 11.2 };
+/** Black frame on the mockup — close-up of the 20×10 in vinyl. */
+const INSET = { left: 20.05, top: 26.72, width: 26.75, height: 15.84 };
+/** Horizontal plaque on the sleeper door the green arrow points to. */
+const DOOR = { left: 48.6, top: 63.4, width: 16.4, height: 8.2 };
 
 export function WhiteSemiTruck({
   fields,
@@ -34,7 +34,7 @@ export function WhiteSemiTruck({
     <>
       <div
         className={cn(
-          "overflow-hidden rounded-xl bg-[#eceff2] ring-1 ring-black/10",
+          "overflow-hidden rounded-xl bg-white ring-1 ring-black/10",
           className,
         )}
       >
@@ -44,16 +44,16 @@ export function WhiteSemiTruck({
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/cascadia-template.jpg"
-            alt="Cascadia sleeper door with USDOT vinyl"
-            className="absolute inset-0 h-full w-full object-cover"
+            src="/white-volvo-door.png"
+            alt="White sleeper cab with USDOT vinyl on the door"
+            className="absolute inset-0 h-full w-full object-contain"
           />
           <DoorChip
             fields={fields}
             interactive={interactive}
             onOpen={() => setOpen(true)}
             box={DOOR}
-            className="shadow-[0_4px_14px_rgba(20,24,28,0.28)]"
+            className="shadow-[0_3px_10px_rgba(20,24,28,0.22)]"
             label="Open door lettering"
           />
           <DoorChip
@@ -61,8 +61,6 @@ export function WhiteSemiTruck({
             interactive={interactive}
             onOpen={() => setOpen(true)}
             box={INSET}
-            padded
-            className="border-[6px] border-[#2f7dff] bg-white shadow-md"
             label="Open lettering close-up"
           />
         </div>
@@ -78,7 +76,7 @@ export function WhiteSemiTruck({
             <DialogDescription className="sr-only">
               Close-up of the sleeper-door vinyl, landscape ~10×20 in.
             </DialogDescription>
-            <div className="overflow-hidden rounded-[1.2rem] border-[6px] border-[#2f7dff] bg-white p-[2%] shadow-2xl">
+            <div className="overflow-hidden rounded-[1.2rem] border-[5px] border-black bg-white p-[2%] shadow-2xl">
               <TruckSign fields={fields} />
             </div>
           </DialogContent>
@@ -93,7 +91,6 @@ function DoorChip({
   box,
   interactive,
   onOpen,
-  padded,
   className,
   label,
 }: {
@@ -101,7 +98,6 @@ function DoorChip({
   box: { left: number; top: number; width: number; height: number };
   interactive: boolean;
   onOpen: () => void;
-  padded?: boolean;
   className?: string;
   label: string;
 }) {
@@ -112,7 +108,7 @@ function DoorChip({
     height: `${box.height}%`,
   };
   const inner = (
-    <div className={cn("h-full w-full", padded && "p-[3.2%]")}>
+    <div className="h-full w-full">
       <TruckSign
         fields={fields}
         className="h-full w-full [aspect-ratio:auto]"
