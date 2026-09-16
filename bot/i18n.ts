@@ -39,7 +39,8 @@ type Copy = {
 
 export const COPY: Record<Lang, Copy> = {
   en: {
-    chooseLanguage: "Choose a language for this order.",
+    chooseLanguage:
+      "Jumaboev Signs\nUSDOT truck door vinyl\n\nEach pair is about 10×20 in for each side of the cab — left and right match. MCS-150 name and USDOT required. MC and logo optional. Unit numbers are a separate small print.\n\nChoose a language:",
     languageSet:
       "English selected. Jumaboev Signs prints vinyl DOT doors, about 10×20 in for each cab side.",
     askUsername: "Create a shop username (3–24 letters, numbers, or _).",
@@ -53,21 +54,22 @@ export const COPY: Record<Lang, Copy> = {
     askStyle: "Pick a door color set. You can still recut colors on the website.",
     skip: "Skip",
     numbersOnly: "Digits only, please.",
-    confirmTitle: "Confirm this pair (~10×20 in for each cab side):",
+    confirmTitle: "Review this pair",
     confirmBody:
-      "User: {username}\nName: {company}\nLegal: {legal}\nUSDOT: {dot}\nMC: {mc}\nLogo: {logo}\nColors: {style}",
-    yes: "Confirm order",
-    no: "Start over",
+      "Size: ~10×20 in each cab side (left + right)\nShop user: {username}\nDoor name: {company}\nSecond line: {legal}\nUSDOT: {dot}\nMC: {mc}\nLogo: {logo}\nColors: {style}",
+    yes: "✅ Confirm order",
+    no: "↺ Start over",
     placed:
       "Order {id} received. Khurshid will print two vinyl doors, about 10×20 in for each cab side.",
     shopPosted: "The ticket is on the shop print desk.",
     cancelled: "Cleared. Send /start to design again.",
-    help: "Send /start to order US DOT door vinyl from Jumaboev Signs. Each door is about 10×20 in.",
+    help: "Jumaboev Signs prints USDOT door vinyl, about 10×20 in each cab side.\n\nSend /start to order. Pick a language, then your door name, USDOT, optional MC and logo, and a color set. Confirm to send the ticket to the shop.",
     shopUnreachable:
       "Telegram kept the ticket, but the website list was unreachable. Keep the shop site running, then send /start and confirm again.",
   },
   uz: {
-    chooseLanguage: "Buyurtma tili ni tanlang.",
+    chooseLanguage:
+      "Jumaboev Signs\nUSDOT kabina vinili\n\nHar bir juftlik kabinaning har tomoni uchun taxminan 10×20 dyuym. Chap va o‘ng mos. /start dan keyin tilni tanlang.",
     languageSet:
       "O‘zbekcha tanlandi. Jumaboev Signs har bir kabina tomoni uchun taxminan 10×20 dyuym vinil DOT eshik chop etadi.",
     askUsername: "Do‘kon foydalanuvchi nomini yozing (3–24 harf, raqam yoki _).",
@@ -84,8 +86,8 @@ export const COPY: Record<Lang, Copy> = {
     confirmTitle: "Shu juftlikni tasdiqlaysizmi (~10×20 har tomon):",
     confirmBody:
       "Foydalanuvchi: {username}\nNom: {company}\nYuridik: {legal}\nUSDOT: {dot}\nMC: {mc}\nLogo: {logo}\nRang: {style}",
-    yes: "Buyurtmani tasdiqlash",
-    no: "Qaytadan",
+    yes: "✅ Buyurtmani tasdiqlash",
+    no: "↺ Qaytadan",
     placed:
       "{id} qabul qilindi. Khurshid har tomon uchun taxminan 10×20 vinil eshik chop etadi.",
     shopPosted: "Chipta do‘kon chop etish stolida.",
@@ -95,7 +97,8 @@ export const COPY: Record<Lang, Copy> = {
       "Telegramda saqlandi, lekin sayt ro‘yxatiga yetib bo‘lmadi. Saytni ishga tushirib, qayta tasdiqlang.",
   },
   tg: {
-    chooseLanguage: "Забонро барои фармоиш интихоб кунед.",
+    chooseLanguage:
+      "Jumaboev Signs\nВинили дари USDOT\n\nҲар ҷуфт тақрибан 10×20 дюйм барои ҳар тарафи кабина. Чап ва рост мувофиқанд.\n\nЗабонро интихоб кунед:",
     languageSet:
       "Тоҷикӣ интихоб шуд. Jumaboev Signs дарҳои винили DOT тақрибан 10×20 дюйм барои ҳар тарафи кабина чоп мекунад.",
     askUsername: "Номи корбар созед (3–24 ҳарф, рақам ё _).",
@@ -112,8 +115,8 @@ export const COPY: Record<Lang, Copy> = {
     confirmTitle: "Ин ҷуфтро тасдиқ мекунед (~10×20 ҳар тараф):",
     confirmBody:
       "Корбар: {username}\nНом: {company}\nҲуқуқӣ: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nРанг: {style}",
-    yes: "Тасдиқи фармоиш",
-    no: "Аз нав",
+    yes: "✅ Тасдиқи фармоиш",
+    no: "↺ Аз нав",
     placed:
       "Фармоиши {id} қабул шуд. Хуршид ду дарҳои винилӣ, тақрибан 10×20 барои ҳар тараф, чоп мекунад.",
     shopPosted: "Чипта дар мизи чопи дӯкон аст.",
@@ -123,7 +126,8 @@ export const COPY: Record<Lang, Copy> = {
       "Дар Telegram монд, аммо рӯйхати сайт дастнорас буд. Сайтро кушоед ва дубора тасдиқ кунед.",
   },
   ru: {
-    chooseLanguage: "Выберите язык для заказа.",
+    chooseLanguage:
+      "Jumaboev Signs\nВиниловые USDOT-двери\n\nКаждая пара — около 10×20 дюймов на сторону кабины, левая и правая совпадают.\n\nВыберите язык:",
     languageSet:
       "Русский выбран. Jumaboev Signs печатает виниловые DOT-двери около 10×20 дюймов на каждую сторону кабины.",
     askUsername: "Придумайте имя в магазине (3–24 буквы, цифры или _).",
@@ -140,8 +144,8 @@ export const COPY: Record<Lang, Copy> = {
     confirmTitle: "Подтвердите пару (~10×20 на каждую сторону кабины):",
     confirmBody:
       "Пользователь: {username}\nИмя: {company}\nЮр. имя: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nЦвета: {style}",
-    yes: "Подтвердить заказ",
-    no: "Начать заново",
+    yes: "✅ Подтвердить заказ",
+    no: "↺ Начать заново",
     placed:
       "Заказ {id} принят. Хуршид напечатает две виниловые двери, около 10×20 на каждую сторону кабины.",
     shopPosted: "Заявка на печатном столе мастерской.",
@@ -151,7 +155,8 @@ export const COPY: Record<Lang, Copy> = {
       "Заявка осталась в Telegram, список на сайте недоступен. Запустите сайт и подтвердите снова.",
   },
   kk: {
-    chooseLanguage: "Тапсырыс тілін таңдаңыз.",
+    chooseLanguage:
+      "Jumaboev Signs\nUSDOT винил есік\n\nӘр жұп кабинаның әр жағына шамамен 10×20. Сол және оң сәйкес.\n\nТілді таңдаңыз:",
     languageSet:
       "Қазақша таңдалды. Jumaboev Signs кабинаның әр жағына шамамен 10×20 винил DOT есік басады.",
     askUsername: "Дүкен пайдаланушы атын жазыңыз (3–24 әріп, сан немесе _).",
@@ -168,8 +173,8 @@ export const COPY: Record<Lang, Copy> = {
     confirmTitle: "Осы жұпты растаңыз (~10×20 әр жақ):",
     confirmBody:
       "Пайдаланушы: {username}\nАтауы: {company}\nЗаңды: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nТүс: {style}",
-    yes: "Тапсырысты растау",
-    no: "Қайта бастау",
+    yes: "✅ Тапсырысты растау",
+    no: "↺ Қайта бастау",
     placed:
       "{id} қабылданды. Хуршид екі винил есік басады, әр кабина жағына шамамен 10×20.",
     shopPosted: "Билет дүкеннің басып шығару үстелінде.",
@@ -179,7 +184,8 @@ export const COPY: Record<Lang, Copy> = {
       "Telegram-да сақталды, сайт тізімі қолжетімсіз. Сайтты іске қосып, қайта растаңыз.",
   },
   ky: {
-    chooseLanguage: "Заказ үчүн тилди тандаңыз.",
+    chooseLanguage:
+      "Jumaboev Signs\nUSDOT винил эшик\n\nАр бир жуп кабинанын ар тарабына болжол менен 10×20. Сол жана оң дал келет.\n\nТилди тандаңыз:",
     languageSet:
       "Кыргызча тандалды. Jumaboev Signs кабинанын ар бир тарабына болжол менен 10×20 винил DOT эшик басат.",
     askUsername: "Дүкөн колдонуучу атын жазыңыз (3–24 тамга, сан же _).",
@@ -196,8 +202,8 @@ export const COPY: Record<Lang, Copy> = {
     confirmTitle: "Бул жупту ырастаңыз (~10×20 ар тарап):",
     confirmBody:
       "Колдонуучу: {username}\nАты: {company}\nЮрид.: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nТүс: {style}",
-    yes: "Заказды ырастоо",
-    no: "Кайра баштоо",
+    yes: "✅ Заказды ырастоо",
+    no: "↺ Кайра баштоо",
     placed:
       "{id} кабыл алынды. Хуршид эки винил эшик басат, ар кабина тарабына болжол менен 10×20.",
     shopPosted: "Билет дүкөндүн басып чыгаруу столунда.",
@@ -207,7 +213,8 @@ export const COPY: Record<Lang, Copy> = {
       "Telegramда сакталды, сайттын тизмеси жеткиликсиз. Сайтты иштетип, кайра ырастаңыз.",
   },
   uk: {
-    chooseLanguage: "Оберіть мову для замовлення.",
+    chooseLanguage:
+      "Jumaboev Signs\nВінілові USDOT-двері\n\nКожна пара — близько 10×20 дюймів на бік кабіни, ліва і права збігаються.\n\nОберіть мову:",
     languageSet:
       "Українську вибрано. Jumaboev Signs друкує вінілові DOT-двері близько 10×20 дюймів на кожен бік кабіни.",
     askUsername: "Придумайте ім’я в майстерні (3–24 літери, цифри або _).",
@@ -224,8 +231,8 @@ export const COPY: Record<Lang, Copy> = {
     confirmTitle: "Підтвердіть пару (~10×20 на кожен бік кабіни):",
     confirmBody:
       "Користувач: {username}\nНазва: {company}\nЮр. назва: {legal}\nUSDOT: {dot}\nMC: {mc}\nЛого: {logo}\nКолір: {style}",
-    yes: "Підтвердити замовлення",
-    no: "Почати знову",
+    yes: "✅ Підтвердити замовлення",
+    no: "↺ Почати знову",
     placed:
       "Замовлення {id} прийнято. Хуршид надрукує дві вінілові двері, близько 10×20 на кожен бік кабіни.",
     shopPosted: "Заявку додано на друкарський стіл майстерні.",

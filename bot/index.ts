@@ -119,19 +119,28 @@ function newDraft(): Draft {
   };
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
 function summary(draft: Draft): string {
-  return [
-    t(draft.lang, "confirmTitle"),
-    t(draft.lang, "confirmBody", {
-      username: draft.username,
-      company: draft.fields.companyName,
-      legal: draft.fields.legalName || "—",
-      dot: draft.fields.dotNumber,
-      mc: draft.fields.showMc && draft.fields.mcNumber ? draft.fields.mcNumber : "—",
-      logo: draft.fields.logoDataUrl ? "yes" : "—",
-      style: draft.fields.paletteId,
-    }),
-  ].join("\n");
+  const mc =
+    draft.fields.showMc && draft.fields.mcNumber
+      ? draft.fields.mcNumber
+      : "—";
+  const body = t(draft.lang, "confirmBody", {
+    username: draft.username,
+    company: draft.fields.companyName,
+    legal: draft.fields.legalName || "—",
+    dot: draft.fields.dotNumber,
+    mc,
+    logo: draft.fields.logoDataUrl ? "yes" : "—",
+    style: draft.fields.paletteId,
+  });
+  return `<b>${escapeHtml(t(draft.lang, "confirmTitle"))}</b>\n\n${escapeHtml(body)}`;
 }
 
 function wait(ms: number) {
@@ -392,6 +401,20 @@ async function telegramPhotoToDataUrl(
   return `data:${mime};base64,${buf.toString("base64")}`;
 }
 
+async function configureBot(bot: Bot) {
+  await bot.api.setMyName("Jumaboev Signs");
+  await bot.api.setMyShortDescription(
+    "USDOT truck door vinyl · ~10×20 in each cab side. Order a matched pair.",
+  );
+  await bot.api.setMyDescription(
+    "Jumaboev Signs prints vinyl USDOT truck doors. Each item is about 10×20 in for each side of the cab — left and right match. MCS-150 name and USDOT required. MC and logo optional. Unit numbers are a separate small print. Send /start to order.",
+  );
+  await bot.api.setMyCommands([
+    { command: "start", description: "Start a new door vinyl order" },
+    { command: "help", description: "How Jumaboev Signs works" },
+  ]);
+}
+
 async function runTelegram(token: string) {
   const bot = new Bot(token);
   const sessions = new Map<number, Draft>();
@@ -411,13 +434,14 @@ async function runTelegram(token: string) {
     draft.telegramChatId = chatId;
     sessions.set(chatId, draft);
     await ctx.reply(COPY.en.chooseLanguage, {
+      parse_mode: "HTML",
       reply_markup: languageKeyboard().keyboard,
     });
   });
 
   bot.command("help", async (ctx) => {
     const draft = draftFor(ctx.chat.id);
-    await ctx.reply(t(draft.lang, "help"));
+    await ctx.reply(t(draft.lang, "help"), { parse_mode: "HTML" });
   });
 
   bot.on("callback_query:data", async (ctx) => {
@@ -426,7 +450,7 @@ async function runTelegram(token: string) {
     const draft = draftFor(chatId);
     const next = await handleCallback(draft, ctx.callbackQuery.data, {
       send: async (text, extra) => {
-        await ctx.reply(text, extra ? { reply_markup: extra.keyboard } : {});
+        await ctx.reply(text, extra ? { parse_mode: "HTML", reply_markup: extra.keyboard } : { parse_mode: "HTML" });
       },
     });
     sessions.set(chatId, next);
@@ -436,7 +460,7 @@ async function runTelegram(token: string) {
   bot.on("message:photo", async (ctx) => {
     const draft = draftFor(ctx.chat.id);
     if (draft.step !== "logo") {
-      await ctx.reply(t(draft.lang, "help"));
+      await ctx.reply(t(draft.lang, "help"), { parse_mode: "HTML" });
       return;
     }
     const photo = ctx.message.photo.at(-1);
@@ -446,6 +470,7 @@ async function runTelegram(token: string) {
     draft.step = "style";
     sessions.set(ctx.chat.id, draft);
     await ctx.reply(t(draft.lang, "askStyle"), {
+      parse_mode: "HTML",
       reply_markup: styleKeyboard().keyboard,
     });
   });
@@ -454,12 +479,17 @@ async function runTelegram(token: string) {
     const draft = draftFor(ctx.chat.id);
     const next = await handleText(draft, ctx.message.text, {
       send: async (text, extra) => {
-        await ctx.reply(text, extra ? { reply_markup: extra.keyboard } : {});
+        await ctx.reply(text, extra ? { parse_mode: "HTML", reply_markup: extra.keyboard } : { parse_mode: "HTML" });
       },
     });
     sessions.set(ctx.chat.id, next);
   });
 
+  try {
+    await configureBot(bot);
+  } catch (error) {
+    console.error("Could not update Telegram bot profile.", error);
+  }
   console.log("Jumaboev Signs Telegram bot is polling.");
   await bot.start();
 }
