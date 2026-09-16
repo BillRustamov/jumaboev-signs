@@ -17,7 +17,7 @@ const SRC = { w: 1340, h: 828 };
 /** Landscape close-up of the 20×10 in vinyl. */
 const INSET = { left: 45.6, top: 3.2, width: 52.2, height: 26.1 };
 /** Horizontal plaque on the sleeper door, 20×10 in proportion. */
-const DOOR = { left: 38.4, top: 64.6, width: 23.6, height: 11.8 };
+const DOOR = { left: 39.6, top: 62.1, width: 22.4, height: 11.2 };
 
 export function WhiteSemiTruck({
   fields,
