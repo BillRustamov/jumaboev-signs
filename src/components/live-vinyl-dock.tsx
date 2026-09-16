@@ -31,7 +31,7 @@ export function LiveVinylDock({ fields }: { fields: SignFields }) {
         </p>
       </div>
       <div className="flex items-center gap-3 lg:block">
-        <div className="w-[4.35rem] shrink-0 rounded-lg bg-neutral-100 p-1 ring-1 ring-black/10 sm:w-[5.25rem] lg:w-full lg:max-w-[17.5rem] lg:rounded-xl lg:bg-neutral-100 lg:p-4">
+        <div className="w-[9.25rem] shrink-0 rounded-lg bg-neutral-100 p-1 ring-1 ring-black/10 sm:w-[11rem] lg:w-full lg:max-w-[34rem] lg:rounded-xl lg:bg-neutral-100 lg:p-4">
           <SignPreview
             fields={fields}
             signClassName="shadow-md"

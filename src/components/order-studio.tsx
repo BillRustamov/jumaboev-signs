@@ -358,7 +358,7 @@ export function OrderStudio() {
                       >
                         <TruckSign
                           fields={preview}
-                          className="pointer-events-none mx-auto w-full max-w-[9.75rem] shadow-none"
+                          className="pointer-events-none w-full shadow-none"
                         />
                         <span className="flex gap-1 px-1" aria-hidden>
                           {[

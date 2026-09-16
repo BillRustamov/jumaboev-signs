@@ -42,7 +42,7 @@ export function SampleGallery({
               type="button"
               onClick={() => onPick(sample)}
               className={cn(
-                "min-w-[7.25rem] shrink-0 snap-start overflow-visible rounded-xl border bg-white p-2 text-left shadow-sm transition sm:min-w-0",
+                "min-w-[11.5rem] shrink-0 snap-start overflow-visible rounded-xl border bg-white p-2 text-left shadow-sm transition sm:min-w-0",
                 selected
                   ? "border-[var(--navy)] ring-2 ring-[var(--navy)] ring-offset-2"
                   : "border-border hover:border-[var(--navy)]/40 hover:shadow-md",
@@ -51,7 +51,7 @@ export function SampleGallery({
             >
               <TruckSign
                 fields={sample.fields}
-                className="shadow-none sm:mx-auto sm:max-w-[8.75rem]"
+                className="shadow-none"
               />
               <p className="mt-2 text-sm font-medium text-[var(--navy)]">
                 {sample.label}

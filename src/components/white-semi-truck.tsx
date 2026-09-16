@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { defaultStyle, type SignPalette } from "@/lib/sign-style";
 import type { SignFields } from "@/lib/order";
 import { cn } from "@/lib/utils";
+import { TruckSign } from "@/components/truck-sign";
 import {
   Dialog,
   DialogContent,
@@ -14,8 +14,10 @@ import {
 /** Cropped Roadway-style Cascadia template (carousel arrows removed). */
 const SRC = { w: 1340, h: 828 };
 
-const INSET = { left: 46.8, top: 0, width: 53.2, height: 55.8 };
-const DOOR = { left: 43.5, top: 63.7, width: 13.3, height: 13.9 };
+/** Landscape close-up of the 20×10 in vinyl. */
+const INSET = { left: 45.6, top: 3.2, width: 52.2, height: 26.1 };
+/** Horizontal plaque on the sleeper door, 20×10 in proportion. */
+const DOOR = { left: 38.4, top: 64.6, width: 23.6, height: 11.8 };
 
 export function WhiteSemiTruck({
   fields,
@@ -46,169 +48,101 @@ export function WhiteSemiTruck({
             alt="Cascadia sleeper door with USDOT vinyl"
             className="absolute inset-0 h-full w-full object-cover"
           />
-          {interactive ? (
-            <button
-              type="button"
-              onClick={() => setOpen(true)}
-              className="absolute z-10 cursor-zoom-in overflow-hidden p-0 shadow-[0_4px_14px_rgba(20,24,28,0.28)] ring-0"
-              style={{
-                left: `${DOOR.left}%`,
-                top: `${DOOR.top}%`,
-                width: `${DOOR.width}%`,
-                height: `${DOOR.height}%`,
-                borderRadius: "18% / 42%",
-              }}
-              aria-label="Open door lettering"
-            >
-              <DoorDecal fields={fields} />
-            </button>
-          ) : (
-            <div
-              className="absolute z-10 overflow-hidden p-0 shadow-[0_4px_14px_rgba(20,24,28,0.28)]"
-              style={{
-                left: `${DOOR.left}%`,
-                top: `${DOOR.top}%`,
-                width: `${DOOR.width}%`,
-                height: `${DOOR.height}%`,
-                borderRadius: "18% / 42%",
-              }}
-            >
-              <DoorDecal fields={fields} />
-            </div>
-          )}
-          {interactive ? (
-            <button
-              type="button"
-              onClick={() => setOpen(true)}
-              className="absolute z-10 cursor-zoom-in overflow-hidden bg-white p-0 text-left shadow-md"
-              style={{
-                left: `${INSET.left}%`,
-                top: `${INSET.top}%`,
-                width: `${INSET.width}%`,
-                height: `${INSET.height}%`,
-                border: "6px solid #2f7dff",
-                borderRadius: "4% / 10%",
-              }}
-              aria-label="Open lettering close-up"
-            >
-              <div className="h-full w-full p-[3.2%]">
-                <DoorDecal fields={fields} />
-              </div>
-            </button>
-          ) : (
-            <div
-              className="absolute z-10 overflow-hidden bg-white p-0 text-left shadow-md"
-              style={{
-                left: `${INSET.left}%`,
-                top: `${INSET.top}%`,
-                width: `${INSET.width}%`,
-                height: `${INSET.height}%`,
-                border: "6px solid #2f7dff",
-                borderRadius: "4% / 10%",
-              }}
-            >
-              <div className="h-full w-full p-[3.2%]">
-                <DoorDecal fields={fields} />
-              </div>
-            </div>
-          )}
+          <DoorChip
+            fields={fields}
+            interactive={interactive}
+            onOpen={() => setOpen(true)}
+            box={DOOR}
+            className="shadow-[0_4px_14px_rgba(20,24,28,0.28)]"
+            label="Open door lettering"
+          />
+          <DoorChip
+            fields={fields}
+            interactive={interactive}
+            onOpen={() => setOpen(true)}
+            box={INSET}
+            padded
+            className="border-[6px] border-[#2f7dff] bg-white shadow-md"
+            label="Open lettering close-up"
+          />
         </div>
       </div>
 
       {interactive ? (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent
-          className="max-w-[min(52rem,calc(100%-1.5rem))] overflow-hidden border-0 bg-transparent p-0 shadow-none ring-0 sm:max-w-[min(52rem,calc(100%-2rem))]"
-          showCloseButton
-        >
-          <DialogTitle className="sr-only">Door lettering</DialogTitle>
-          <DialogDescription className="sr-only">
-            Close-up of the sleeper-door vinyl.
-          </DialogDescription>
-          <div className="overflow-hidden rounded-[1.6rem] border-[6px] border-[#2f7dff] bg-white shadow-2xl">
-            <div className="aspect-[2.15/1] w-full p-[2%]">
-              <DoorDecal fields={fields} />
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent
+            className="max-w-[min(52rem,calc(100%-1.5rem))] overflow-hidden border-0 bg-transparent p-0 shadow-none ring-0 sm:max-w-[min(52rem,calc(100%-2rem))]"
+            showCloseButton
+          >
+            <DialogTitle className="sr-only">Door lettering</DialogTitle>
+            <DialogDescription className="sr-only">
+              Close-up of the sleeper-door vinyl, landscape ~10×20 in.
+            </DialogDescription>
+            <div className="overflow-hidden rounded-[1.2rem] border-[6px] border-[#2f7dff] bg-white p-[2%] shadow-2xl">
+              <TruckSign fields={fields} />
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
       ) : null}
     </>
   );
 }
 
-function paletteOf(fields: SignFields): SignPalette {
-  return { ...defaultStyle().colors, ...fields.colors };
-}
+function DoorChip({
+  fields,
+  box,
+  interactive,
+  onOpen,
+  padded,
+  className,
+  label,
+}: {
+  fields: SignFields;
+  box: { left: number; top: number; width: number; height: number };
+  interactive: boolean;
+  onOpen: () => void;
+  padded?: boolean;
+  className?: string;
+  label: string;
+}) {
+  const style = {
+    left: `${box.left}%`,
+    top: `${box.top}%`,
+    width: `${box.width}%`,
+    height: `${box.height}%`,
+  };
+  const inner = (
+    <div className={cn("h-full w-full", padded && "p-[3.2%]")}>
+      <TruckSign
+        fields={fields}
+        className="h-full w-full [aspect-ratio:auto]"
+      />
+    </div>
+  );
 
-function nameSize(name: string): string {
-  const len = name.length;
-  if (len <= 8) return "min(17cqw, 30cqh)";
-  if (len <= 12) return "min(14cqw, 24cqh)";
-  if (len <= 16) return "min(11.5cqw, 20cqh)";
-  return "min(9.2cqw, 16cqh)";
-}
-
-/** Lettering from the Roadway template, sized to stay inside the rounded square. */
-function DoorDecal({ fields }: { fields: SignFields }) {
-  const colors = paletteOf(fields);
-  const company = fields.companyName.trim().toUpperCase() || "COMPANY";
-  const legal = fields.legalName.trim().toUpperCase();
-  const dot = fields.dotNumber.trim() || "00000000";
-  const mc = fields.mcNumber.trim();
-  const printMc = fields.showMc !== false && Boolean(mc);
-  const nameFontClass =
-    fields.nameFont === "condensed" ? "font-sign-condensed" : "font-sign-serif";
+  if (interactive) {
+    return (
+      <button
+        type="button"
+        onClick={onOpen}
+        className={cn(
+          "absolute z-10 cursor-zoom-in overflow-hidden p-0",
+          className,
+        )}
+        style={style}
+        aria-label={label}
+      >
+        {inner}
+      </button>
+    );
+  }
 
   return (
     <div
-      className="flex h-full w-full flex-col items-center justify-center overflow-hidden px-[6%] py-[7%] text-center"
-      style={{
-        containerType: "size",
-        backgroundColor: colors.face,
-        color: colors.name,
-        borderRadius: "18% / 42%",
-      }}
+      className={cn("absolute z-10 overflow-hidden p-0", className)}
+      style={style}
     >
-      {fields.logoDataUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={fields.logoDataUrl}
-          alt=""
-          className="mb-[1.5cqh] max-h-[16cqh] max-w-[28cqw] object-contain"
-        />
-      ) : null}
-      <p
-        className={cn(
-          "max-w-full font-bold leading-[0.9] tracking-tight",
-          nameFontClass,
-        )}
-        style={{ fontSize: nameSize(company) }}
-      >
-        {company}
-      </p>
-      {legal ? (
-        <p
-          className="font-sign-condensed mt-[1.4cqh] max-w-full truncate font-semibold leading-none tracking-[0.1em]"
-          style={{ fontSize: "min(5.6cqw, 9cqh)", color: colors.legal }}
-        >
-          {legal}
-        </p>
-      ) : null}
-      <p
-        className="font-sign-condensed mt-[3.2cqh] max-w-full truncate font-semibold leading-none"
-        style={{ fontSize: "min(6.4cqw, 10cqh)", color: colors.legal }}
-      >
-        USDOT {dot}
-      </p>
-      {printMc ? (
-        <p
-          className="font-sign-condensed mt-[1.4cqh] max-w-full truncate font-semibold leading-none"
-          style={{ fontSize: "min(6.4cqw, 10cqh)", color: colors.legal }}
-        >
-          MC {mc}
-        </p>
-      ) : null}
+      {inner}
     </div>
   );
 }

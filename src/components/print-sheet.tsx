@@ -1,10 +1,10 @@
 import { TruckSign } from "@/components/truck-sign";
 import type { SignFields } from "@/lib/order";
 
-/** Physical print: two ~10×20 in doors (left and right). */
+/** Physical print: two ~20×10 in doors (left and right), laid out landscape. */
 export const SHEET_IN = 24;
-export const DOOR_W_IN = 10;
-export const DOOR_H_IN = 20;
+export const DOOR_W_IN = 20;
+export const DOOR_H_IN = 10;
 
 export function PrintSheet({
   fields,
@@ -20,35 +20,30 @@ export function PrintSheet({
     >
       <p className="absolute left-[0.45in] top-[0.28in] font-sans text-[0.2in] tracking-wide text-neutral-700">
         Jumaboev Signs
-        {orderId ? ` · ${orderId}` : ""} · two ~10×20 in doors, left and right
+        {orderId ? ` · ${orderId}` : ""} · two landscape ~10×20 in doors, left and right
+      </p>
+      <p
+        className="absolute font-sans text-[0.22in] font-semibold tracking-[0.16em] text-neutral-800"
+        style={{ left: "2in", top: "0.85in", width: "20in", textAlign: "center" }}
+      >
+        LEFT · landscape ~10×20 in
       </p>
       <div
-        className="absolute flex"
-        style={{
-          left: "1in",
-          top: "0.85in",
-          width: "22in",
-          gap: "2in",
-        }}
-      >
-        <p className="w-[10in] text-center font-sans text-[0.22in] font-semibold tracking-[0.16em] text-neutral-800">
-          LEFT · ~10×20 in
-        </p>
-        <p className="w-[10in] text-center font-sans text-[0.22in] font-semibold tracking-[0.16em] text-neutral-800">
-          RIGHT · ~10×20 in
-        </p>
-      </div>
-      <div
-        className="absolute flex items-stretch"
-        style={{
-          left: "1in",
-          top: "1.35in",
-          width: "22in",
-          height: "20in",
-          gap: "2in",
-        }}
+        className="absolute"
+        style={{ left: "2in", top: "1.2in", width: "20in", height: "10in" }}
       >
         <DoorCell fields={fields} />
+      </div>
+      <p
+        className="absolute font-sans text-[0.22in] font-semibold tracking-[0.16em] text-neutral-800"
+        style={{ left: "2in", top: "11.5in", width: "20in", textAlign: "center" }}
+      >
+        RIGHT · landscape ~10×20 in
+      </p>
+      <div
+        className="absolute"
+        style={{ left: "2in", top: "11.85in", width: "20in", height: "10in" }}
+      >
         <DoorCell fields={fields} />
       </div>
       <p className="absolute bottom-[0.35in] left-[0.45in] font-sans text-[0.18in] text-neutral-600">
@@ -61,7 +56,7 @@ export function PrintSheet({
 function DoorCell({ fields }: { fields: SignFields }) {
   return (
     <div
-      className="relative"
+      className="relative h-full w-full"
       style={{ width: `${DOOR_W_IN}in`, height: `${DOOR_H_IN}in` }}
     >
       <CropMarks />

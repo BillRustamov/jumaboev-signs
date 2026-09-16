@@ -10,12 +10,12 @@ function GoldRedRule({ rule, accent }: { rule: string; accent: string }) {
       aria-hidden
       className="mx-auto shrink-0"
       style={{
-        width: "78%",
-        height: "max(3px, 0.85cqw)",
-        marginTop: "1.6cqw",
-        marginBottom: "1.8cqw",
+        width: "56%",
+        height: "max(3px, 0.55cqw)",
+        marginTop: "0.7cqw",
+        marginBottom: "0.8cqw",
         display: "flex",
-        gap: "1.1cqw",
+        gap: "0.7cqw",
       }}
     >
       <div
@@ -54,25 +54,27 @@ function NumberPlate({
   const filled = value.trim();
   return (
     <div
-      className={cn("flex w-full shrink-0 items-center", !filled && "opacity-35")}
+      className={cn(
+        "flex min-w-0 flex-1 items-center",
+        !filled && "opacity-35",
+      )}
       style={{
-        marginTop: "2.4cqw",
         backgroundColor: plate,
-        borderRadius: "2.2cqw",
-        padding: "2.8cqw 5cqw",
+        borderRadius: "1.1cqw",
+        padding: "1.35cqw 2.4cqw",
       }}
     >
       <span
         className="font-sign-condensed shrink-0 font-semibold leading-none tracking-wide"
-        style={{ fontSize: "5.8cqw", color: plateText }}
+        style={{ fontSize: "2.7cqw", color: plateText }}
       >
         {label}
       </span>
       <span
         className="font-sign-condensed min-w-0 font-bold leading-none tracking-wide"
         style={{
-          fontSize: "12.2cqw",
-          marginLeft: "2.4cqw",
+          fontSize: "5.4cqw",
+          marginLeft: "1.2cqw",
           color: plateText,
         }}
       >
@@ -87,21 +89,18 @@ function Chevrons({ rule, accent }: { rule: string; accent: string }) {
     <div
       aria-hidden
       className="flex shrink-0 items-end justify-center"
-      style={{
-        marginTop: "3.4cqw",
-        gap: "1cqw",
-      }}
+      style={{ marginTop: "1.1cqw", gap: "0.55cqw" }}
     >
       {[rule, accent, rule].map((color, i) => (
         <span
           key={`${color}-${i}`}
           style={{
             display: "inline-block",
-            height: "max(3px, 1.2cqw)",
-            width: "8cqw",
+            height: "max(3px, 0.7cqw)",
+            width: "4.4cqw",
             backgroundColor: color,
             transform: "skewX(-32deg)",
-            borderRadius: "0.2cqw",
+            borderRadius: "0.15cqw",
           }}
         />
       ))}
@@ -109,15 +108,15 @@ function Chevrons({ rule, accent }: { rule: string; accent: string }) {
   );
 }
 
-function displaySize(name: string, logoSize: number): string {
+function displaySize(name: string, logoSize: number, hasLogo: boolean): string {
   const len = name.length;
-  let size = 6.2;
-  if (len <= 7) size = 14.8;
-  else if (len <= 10) size = 12.2;
-  else if (len <= 14) size = 9.2;
-  else if (len <= 18) size = 7.2;
-  if (logoSize >= 5) size *= 0.86;
-  else if (logoSize >= 4) size *= 0.92;
+  let size = 3.4;
+  if (len <= 7) size = 8.2;
+  else if (len <= 10) size = 6.6;
+  else if (len <= 14) size = 5.2;
+  else if (len <= 18) size = 4.1;
+  if (hasLogo) size *= 0.84;
+  else if (logoSize >= 5) size *= 0.9;
   return `${size}cqw`;
 }
 
@@ -143,10 +142,11 @@ export function TruckSign({
   const printMc = fields.showMc !== false;
   const logoSize = clampLogoSize(fields.logoSize);
   const mark = logoBox(logoSize);
+  const hasLogo = Boolean(fields.logoDataUrl);
 
   return (
     <div
-      className={cn("aspect-[10/20] w-full select-none", className)}
+      className={cn("aspect-[20/10] w-full select-none", className)}
       style={{ containerType: "inline-size", backgroundColor: colors.face }}
       {...props}
     >
@@ -154,88 +154,106 @@ export function TruckSign({
         className="h-full w-full"
         style={{
           backgroundColor: colors.outerBorder,
-          borderRadius: "5.5% / 2.8%",
-          padding: "1.8% 2.4%",
+          borderRadius: "2.4% / 4.8%",
+          padding: "1.15% 1.05%",
         }}
       >
         <div
           className="h-full w-full"
           style={{
             backgroundColor: colors.innerBorder,
-            borderRadius: "4.6% / 2.3%",
-            padding: "1.3% 1.8%",
+            borderRadius: "1.9% / 3.8%",
+            padding: "0.8% 0.75%",
           }}
         >
           <div
-            className="flex h-full w-full flex-col items-center justify-center"
+            className="flex h-full w-full flex-col items-stretch justify-center"
             style={{
               backgroundColor: colors.face,
-              borderRadius: "3.6% / 1.8%",
-              padding: "8cqw 8cqw",
+              borderRadius: "1.5% / 3%",
+              padding: "2.4cqw 3.2cqw 2cqw",
             }}
           >
-            {fields.logoDataUrl ? (
-              // Data-URL logos from the order form; next/image does not fit this flow.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={fields.logoDataUrl}
-                alt=""
-                className="shrink object-contain"
-                style={{
-                  marginBottom: "2cqw",
-                  maxHeight: mark.maxHeight,
-                  maxWidth: mark.maxWidth,
-                }}
-              />
-            ) : null}
-            <p
+            <div
               className={cn(
-                "max-w-full shrink-0 text-center font-bold leading-[0.9] tracking-[-0.03em]",
-                nameFontClass,
-                !company && "opacity-35",
+                "flex min-h-0 items-center",
+                hasLogo ? "justify-start gap-[2.4cqw]" : "flex-col justify-center",
               )}
-              style={{
-                color: colors.name,
-                fontSize: displaySize(displayName, logoSize),
-                transform: "scaleX(0.96)",
-              }}
             >
-              {displayName}
-            </p>
-            <GoldRedRule rule={colors.rule} accent={colors.accent} />
-            {legal || !company ? (
-              <>
+              {hasLogo ? (
+                // Data-URL logos from the order form; next/image does not fit this flow.
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={fields.logoDataUrl}
+                  alt=""
+                  className="shrink-0 object-contain"
+                  style={{
+                    maxHeight: mark.maxHeight,
+                    maxWidth: mark.maxWidth,
+                  }}
+                />
+              ) : null}
+              <div
+                className={cn(
+                  "flex min-w-0 flex-col",
+                  hasLogo ? "items-start" : "items-center",
+                )}
+              >
                 <p
                   className={cn(
-                    "font-sign-condensed max-w-full shrink-0 px-[1%] text-center font-semibold leading-none tracking-[0.16em]",
-                    !legal && "opacity-35",
+                    "max-w-full shrink-0 font-bold leading-[0.88] tracking-[-0.03em]",
+                    hasLogo ? "text-left" : "text-center",
+                    nameFontClass,
+                    !company && "opacity-35",
                   )}
                   style={{
-                    color: colors.legal,
-                    fontSize: "3.4cqw",
+                    color: colors.name,
+                    fontSize: displaySize(displayName, logoSize, hasLogo),
+                    transform: "scaleX(0.97)",
                   }}
                 >
-                  {displayLegal}
+                  {displayName}
                 </p>
                 <GoldRedRule rule={colors.rule} accent={colors.accent} />
-              </>
-            ) : null}
-            <NumberPlate
-              label="USDOT"
-              value={fields.dotNumber}
-              placeholder="00000000"
-              plate={colors.plate}
-              plateText={colors.plateText}
-            />
-            {printMc ? (
+                {legal || !company ? (
+                  <p
+                    className={cn(
+                      "font-sign-condensed max-w-full shrink-0 font-semibold leading-none tracking-[0.16em]",
+                      hasLogo ? "text-left" : "text-center",
+                      !legal && "opacity-35",
+                    )}
+                    style={{
+                      color: colors.legal,
+                      fontSize: "1.85cqw",
+                    }}
+                  >
+                    {displayLegal}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+
+            <div
+              className="flex w-full items-stretch"
+              style={{ marginTop: "1.5cqw", gap: "1.4cqw" }}
+            >
               <NumberPlate
-                label="MC"
-                value={fields.mcNumber}
-                placeholder="000000"
+                label="USDOT"
+                value={fields.dotNumber}
+                placeholder="00000000"
                 plate={colors.plate}
                 plateText={colors.plateText}
               />
-            ) : null}
+              {printMc ? (
+                <NumberPlate
+                  label="MC"
+                  value={fields.mcNumber}
+                  placeholder="000000"
+                  plate={colors.plate}
+                  plateText={colors.plateText}
+                />
+              ) : null}
+            </div>
             {fields.showChevrons !== false ? (
               <Chevrons rule={colors.rule} accent={colors.accent} />
             ) : null}
@@ -256,20 +274,20 @@ export function SignPair({
   return (
     <div
       className={cn(
-        "flex items-stretch rounded-md bg-neutral-100 shadow-xl ring-1 ring-black/10",
+        "flex flex-col rounded-md bg-neutral-100 shadow-xl ring-1 ring-black/10",
         className,
       )}
       style={{ gap: "0.55rem", padding: "0.65rem" }}
     >
-      <div className="min-w-0 flex-1">
+      <div>
         <p className="mb-1.5 text-center text-[10px] font-semibold tracking-[0.14em] text-neutral-600 uppercase">
-          Left · ~10×20 in
+          Left door · landscape
         </p>
         <TruckSign fields={fields} />
       </div>
-      <div className="min-w-0 flex-1">
+      <div>
         <p className="mb-1.5 text-center text-[10px] font-semibold tracking-[0.14em] text-neutral-600 uppercase">
-          Right · ~10×20 in
+          Right door · landscape
         </p>
         <TruckSign fields={fields} />
       </div>

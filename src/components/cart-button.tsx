@@ -69,7 +69,7 @@ export function CartButton() {
                 >
                   <TruckSign
                     fields={item.fields}
-                    className="w-14 shrink-0 shadow-none"
+                    className="w-24 shrink-0 shadow-none"
                   />
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-[var(--navy)]">

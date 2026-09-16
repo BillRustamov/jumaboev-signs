@@ -39,14 +39,12 @@ export function SignPreview({
         {children ?? <TruckSign fields={fields} className={signClassName} />}
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[min(92vh,52rem)] max-w-[22rem] overflow-y-auto p-4 sm:max-w-[24rem]">
+        <DialogContent className="max-h-[min(92vh,40rem)] max-w-[min(40rem,calc(100%-1.5rem))] overflow-y-auto p-4">
           <DialogTitle>{name}</DialogTitle>
           <DialogDescription>
-            Approximately 10×20 in for each side of the cab.
+            Approximately 10×20 in landscape for each side of the cab.
           </DialogDescription>
-          <div className="mx-auto w-full max-w-[16.5rem]">
-            <TruckSign fields={fields} />
-          </div>
+          <TruckSign fields={fields} />
         </DialogContent>
       </Dialog>
     </>
