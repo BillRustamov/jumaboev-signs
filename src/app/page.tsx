@@ -44,7 +44,7 @@ export default function HomePage() {
               </Button>
             </div>
           </div>
-          <div className="mx-auto w-full max-w-sm">
+          <div className="mx-auto w-full max-w-md">
             <SignPreview fields={HERO}>
               <SignPair fields={HERO} />
             </SignPreview>

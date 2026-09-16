@@ -4,12 +4,12 @@ import { DRIVER_SAMPLES } from "@/lib/samples";
 
 export function HomeSampleGrid() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {DRIVER_SAMPLES.map((sample) => (
         <Link
           key={sample.id}
           href={`/order?sample=${sample.id}`}
-          className="group rounded-xl border border-border bg-white p-3 shadow-sm transition hover:border-[var(--navy)]/35 hover:shadow-md"
+          className="group overflow-visible rounded-xl border border-border bg-white p-2.5 shadow-sm transition hover:border-[var(--navy)]/35 hover:shadow-md sm:p-3"
         >
           <TruckSign fields={sample.fields} />
           <p className="mt-3 font-heading text-sm font-semibold text-[var(--navy)]">

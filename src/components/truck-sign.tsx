@@ -8,12 +8,12 @@ function GoldRedRule({ rule, accent }: { rule: string; accent: string }) {
   return (
     <div
       aria-hidden
-      className="mx-auto"
+      className="mx-auto shrink-0"
       style={{
-        width: "74%",
-        height: "max(4px, 0.85cqw)",
-        marginTop: "1.15cqw",
-        marginBottom: "1.55cqw",
+        width: "78%",
+        height: "max(3px, 0.85cqw)",
+        marginTop: "1.6cqw",
+        marginBottom: "1.8cqw",
         display: "flex",
         gap: "1.1cqw",
       }}
@@ -54,23 +54,27 @@ function NumberPlate({
   const filled = value.trim();
   return (
     <div
-      className={cn("flex w-full items-center", !filled && "opacity-35")}
+      className={cn("flex w-full shrink-0 items-center", !filled && "opacity-35")}
       style={{
-        marginTop: "2.1%",
+        marginTop: "2.4cqw",
         backgroundColor: plate,
-        borderRadius: "2.4cqw",
-        padding: "2.3% 4.2%",
+        borderRadius: "2.2cqw",
+        padding: "2.8cqw 5cqw",
       }}
     >
       <span
         className="font-sign-condensed shrink-0 font-semibold leading-none tracking-wide"
-        style={{ fontSize: "5.4cqw", color: plateText }}
+        style={{ fontSize: "5.8cqw", color: plateText }}
       >
         {label}
       </span>
       <span
         className="font-sign-condensed min-w-0 font-bold leading-none tracking-wide"
-        style={{ fontSize: "10.6cqw", marginLeft: "2%", color: plateText }}
+        style={{
+          fontSize: "12.2cqw",
+          marginLeft: "2.4cqw",
+          color: plateText,
+        }}
       >
         {filled || placeholder}
       </span>
@@ -82,12 +86,10 @@ function Chevrons({ rule, accent }: { rule: string; accent: string }) {
   return (
     <div
       aria-hidden
-      className="flex items-end justify-center"
+      className="flex shrink-0 items-end justify-center"
       style={{
-        marginTop: "auto",
-        paddingTop: "3.2%",
-        marginBottom: "0.4%",
-        gap: "0.9cqw",
+        marginTop: "3.4cqw",
+        gap: "1cqw",
       }}
     >
       {[rule, accent, rule].map((color, i) => (
@@ -95,8 +97,8 @@ function Chevrons({ rule, accent }: { rule: string; accent: string }) {
           key={`${color}-${i}`}
           style={{
             display: "inline-block",
-            height: "max(4px, 1.35cqw)",
-            width: "7.2cqw",
+            height: "max(3px, 1.2cqw)",
+            width: "8cqw",
             backgroundColor: color,
             transform: "skewX(-32deg)",
             borderRadius: "0.2cqw",
@@ -109,13 +111,13 @@ function Chevrons({ rule, accent }: { rule: string; accent: string }) {
 
 function displaySize(name: string, logoSize: number): string {
   const len = name.length;
-  let size = 5.5;
-  if (len <= 7) size = 13.6;
-  else if (len <= 10) size = 11.2;
-  else if (len <= 14) size = 8.6;
-  else if (len <= 18) size = 6.8;
-  if (logoSize >= 5) size *= 0.82;
-  else if (logoSize >= 4) size *= 0.9;
+  let size = 6.2;
+  if (len <= 7) size = 14.8;
+  else if (len <= 10) size = 12.2;
+  else if (len <= 14) size = 9.2;
+  else if (len <= 18) size = 7.2;
+  if (logoSize >= 5) size *= 0.86;
+  else if (logoSize >= 4) size *= 0.92;
   return `${size}cqw`;
 }
 
@@ -144,7 +146,7 @@ export function TruckSign({
 
   return (
     <div
-      className={cn("aspect-square w-full select-none", className)}
+      className={cn("aspect-[10/20] w-full select-none", className)}
       style={{ containerType: "inline-size", backgroundColor: colors.face }}
       {...props}
     >
@@ -152,25 +154,24 @@ export function TruckSign({
         className="h-full w-full"
         style={{
           backgroundColor: colors.outerBorder,
-          borderRadius: "4.8%",
-          padding: "1.55%",
+          borderRadius: "5.5% / 2.8%",
+          padding: "1.8% 2.4%",
         }}
       >
         <div
           className="h-full w-full"
           style={{
             backgroundColor: colors.innerBorder,
-            borderRadius: "4%",
-            padding: "1.05%",
+            borderRadius: "4.6% / 2.3%",
+            padding: "1.3% 1.8%",
           }}
         >
           <div
-            className="flex h-full w-full flex-col items-center"
+            className="flex h-full w-full flex-col items-center justify-center"
             style={{
               backgroundColor: colors.face,
-              borderRadius: "3.2%",
-              padding: logoSize >= 4 ? "4.4% 5.4% 3.2%" : "6.6% 6.2% 3.6%",
-              overflow: "hidden",
+              borderRadius: "3.6% / 1.8%",
+              padding: "8cqw 8cqw",
             }}
           >
             {fields.logoDataUrl ? (
@@ -179,9 +180,9 @@ export function TruckSign({
               <img
                 src={fields.logoDataUrl}
                 alt=""
-                className="object-contain"
+                className="shrink object-contain"
                 style={{
-                  marginBottom: "1.1cqw",
+                  marginBottom: "2cqw",
                   maxHeight: mark.maxHeight,
                   maxWidth: mark.maxWidth,
                 }}
@@ -189,7 +190,7 @@ export function TruckSign({
             ) : null}
             <p
               className={cn(
-                "max-w-full text-center font-bold leading-[0.9] tracking-[-0.03em]",
+                "max-w-full shrink-0 text-center font-bold leading-[0.9] tracking-[-0.03em]",
                 nameFontClass,
                 !company && "opacity-35",
               )}
@@ -206,10 +207,13 @@ export function TruckSign({
               <>
                 <p
                   className={cn(
-                    "font-sign-condensed px-[2%] text-center font-semibold leading-none tracking-[0.18em]",
+                    "font-sign-condensed max-w-full shrink-0 px-[1%] text-center font-semibold leading-none tracking-[0.16em]",
                     !legal && "opacity-35",
                   )}
-                  style={{ color: colors.legal, fontSize: "3.15cqw" }}
+                  style={{
+                    color: colors.legal,
+                    fontSize: "3.4cqw",
+                  }}
                 >
                   {displayLegal}
                 </p>
@@ -234,9 +238,7 @@ export function TruckSign({
             ) : null}
             {fields.showChevrons !== false ? (
               <Chevrons rule={colors.rule} accent={colors.accent} />
-            ) : (
-              <div className="mt-auto" />
-            )}
+            ) : null}
           </div>
         </div>
       </div>
@@ -254,13 +256,23 @@ export function SignPair({
   return (
     <div
       className={cn(
-        "flex flex-col rounded-md bg-neutral-100 shadow-xl ring-1 ring-black/10",
+        "flex items-stretch rounded-md bg-neutral-100 shadow-xl ring-1 ring-black/10",
         className,
       )}
-      style={{ gap: "0.35rem", padding: "0.65rem" }}
+      style={{ gap: "0.55rem", padding: "0.65rem" }}
     >
-      <TruckSign fields={fields} />
-      <TruckSign fields={fields} />
+      <div className="min-w-0 flex-1">
+        <p className="mb-1.5 text-center text-[10px] font-semibold tracking-[0.14em] text-neutral-600 uppercase">
+          Left · ~10×20 in
+        </p>
+        <TruckSign fields={fields} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="mb-1.5 text-center text-[10px] font-semibold tracking-[0.14em] text-neutral-600 uppercase">
+          Right · ~10×20 in
+        </p>
+        <TruckSign fields={fields} />
+      </div>
     </div>
   );
 }

@@ -7,7 +7,7 @@ export default function Loading() {
       <Skeleton className="mt-3 h-4 w-96 max-w-full" />
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <Skeleton className="h-80 rounded-xl" />
-        <Skeleton className="aspect-square rounded-[4%]" />
+        <Skeleton className="aspect-[10/20] max-w-[17.5rem] rounded-[4%]" />
       </div>
     </main>
   );

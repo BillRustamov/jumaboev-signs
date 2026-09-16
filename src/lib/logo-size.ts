@@ -23,11 +23,11 @@ export function clampLogoSize(value: unknown): LogoSize {
 /** How large the mark prints on the vinyl (container query units). */
 export function logoBox(size: unknown): { maxHeight: string; maxWidth: string } {
   const map: Record<LogoSize, { maxHeight: string; maxWidth: string }> = {
-    1: { maxHeight: "11cqw", maxWidth: "36%" },
-    2: { maxHeight: "16cqw", maxWidth: "50%" },
-    3: { maxHeight: "22cqw", maxWidth: "64%" },
-    4: { maxHeight: "28cqw", maxWidth: "76%" },
-    5: { maxHeight: "36cqw", maxWidth: "88%" },
+    1: { maxHeight: "14cqw", maxWidth: "42%" },
+    2: { maxHeight: "20cqw", maxWidth: "54%" },
+    3: { maxHeight: "26cqw", maxWidth: "68%" },
+    4: { maxHeight: "32cqw", maxWidth: "80%" },
+    5: { maxHeight: "40cqw", maxWidth: "90%" },
   };
   return map[clampLogoSize(size)];
 }
