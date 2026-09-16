@@ -170,7 +170,7 @@ export function OrderStudio() {
       return;
     }
     if (!layoutReady) {
-      setFormError("Set logo size and plates, then mark the layout ready.");
+      setFormError("Set logo size if you have a mark, then mark the layout ready.");
       document.getElementById("must-layout")?.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -265,7 +265,7 @@ export function OrderStudio() {
                   id="mcNumber"
                   label="MC (FMCSA) number"
                   requiredMark
-                  hint="Prints as MC plus the digits. Required on both sides."
+                  hint="Prints as MC plus the digits under USDOT. Required on this shop ticket. FMCSA does not require MC on the truck."
                   placeholder="Your MC"
                   inputMode="numeric"
                   value={fields.mcNumber}
@@ -397,7 +397,7 @@ export function OrderStudio() {
                   onChange={(value) => updateColor("name", value)}
                 />
                 <ColorField
-                  label="Second line"
+                  label="USDOT and MC"
                   value={fields.colors.legal}
                   onChange={(value) => updateColor("legal", value)}
                 />
@@ -407,34 +407,9 @@ export function OrderStudio() {
                   onChange={(value) => updateColor("face", value)}
                 />
                 <ColorField
-                  label="Number plate"
-                  value={fields.colors.plate}
-                  onChange={(value) => updateColor("plate", value)}
-                />
-                <ColorField
-                  label="Plate type"
-                  value={fields.colors.plateText}
-                  onChange={(value) => updateColor("plateText", value)}
-                />
-                <ColorField
-                  label="Outer border"
-                  value={fields.colors.outerBorder}
-                  onChange={(value) => updateColor("outerBorder", value)}
-                />
-                <ColorField
-                  label="Inner border"
+                  label="Border"
                   value={fields.colors.innerBorder}
                   onChange={(value) => updateColor("innerBorder", value)}
-                />
-                <ColorField
-                  label="Rule"
-                  value={fields.colors.rule}
-                  onChange={(value) => updateColor("rule", value)}
-                />
-                <ColorField
-                  label="Accent"
-                  value={fields.colors.accent}
-                  onChange={(value) => updateColor("accent", value)}
                 />
               </MustSection>
 
@@ -443,7 +418,7 @@ export function OrderStudio() {
                 step="3"
                 icon={<LayoutTemplate className="size-4" />}
                 title="Layout"
-                hint="Required. Set how large the logo prints, then confirm the plates."
+                hint="Required. Confirm the stacked plaque: company name, USDOT, then MC."
                 done={layoutReady}
               >
                 <LogoSizeControl
@@ -458,7 +433,8 @@ export function OrderStudio() {
                   <div>
                     <Label htmlFor="nameFont">Condensed door name</Label>
                     <p className="text-xs text-muted-foreground">
-                      Off = Elbrus serif. On = gothic condensed.
+                      Off = serif. On = gothic condensed. Stack is always
+                      company name, USDOT, then MC.
                     </p>
                   </div>
                   <Switch
@@ -466,22 +442,6 @@ export function OrderStudio() {
                     checked={fields.nameFont === "condensed"}
                     onCheckedChange={(checked) => {
                       update("nameFont", checked ? "condensed" : "serif");
-                      markLayoutReady();
-                    }}
-                  />
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <Label htmlFor="showChevrons">Gold/red chevrons</Label>
-                    <p className="text-xs text-muted-foreground">
-                      Decorative only. Not part of 390.21.
-                    </p>
-                  </div>
-                  <Switch
-                    id="showChevrons"
-                    checked={fields.showChevrons}
-                    onCheckedChange={(checked) => {
-                      update("showChevrons", checked);
                       markLayoutReady();
                     }}
                   />
@@ -529,7 +489,7 @@ export function OrderStudio() {
             </DialogTitle>
             <DialogDescription>
               {added
-                ? `${added.fields.companyName} · USDOT ${added.fields.dotNumber}. Approximately 10×20 in for each cab side. Checkout shows them on the truck.`
+                ? `${added.fields.companyName} · USDOT ${added.fields.dotNumber}. Recommended 20–24 × 10–12 in for each cab side. Checkout shows them on the truck.`
                 : null}
             </DialogDescription>
           </DialogHeader>

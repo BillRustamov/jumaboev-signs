@@ -46,7 +46,7 @@ export const STYLE_PRESETS: {
   {
     id: "elbrus",
     label: "Elbrus",
-    hint: "Forest green serif, gold/navy doors",
+    hint: "Forest green name, navy numbers",
     nameFont: "serif",
     showChevrons: true,
     colors: ELBRUS_PALETTE,
@@ -54,7 +54,7 @@ export const STYLE_PRESETS: {
   {
     id: "highway",
     label: "Highway",
-    hint: "Black lettering, white face, max contrast",
+    hint: "Suggested layout — black lettering, white face",
     nameFont: "condensed",
     showChevrons: false,
     colors: {
@@ -72,7 +72,7 @@ export const STYLE_PRESETS: {
   {
     id: "gold-navy",
     label: "Gold plates",
-    hint: "Navy name, gold number plates",
+    hint: "Navy name, gold border",
     nameFont: "serif",
     showChevrons: true,
     colors: {
@@ -90,13 +90,13 @@ export const STYLE_PRESETS: {
   {
     id: "red-line",
     label: "Red line",
-    hint: "Black type, red rules and plates",
+    hint: "Black name, red USDOT and MC",
     nameFont: "condensed",
     showChevrons: true,
     colors: {
       face: "#ffffff",
       name: "#1a1a1a",
-      legal: "#1a1a1a",
+      legal: "#8b1e1e",
       plate: "#8b1e1e",
       plateText: "#ffffff",
       outerBorder: "#1a1a1a",
@@ -151,8 +151,8 @@ export function contrastWarnings(colors: SignPalette): string[] {
   if (contrastRatio(colors.name, colors.face) < 3) {
     notes.push("Door name vs background is low contrast for 50-foot daylight reading.");
   }
-  if (contrastRatio(colors.plateText, colors.plate) < 3) {
-    notes.push("USDOT plate type vs plate color is low contrast.");
+  if (contrastRatio(colors.legal, colors.face) < 3) {
+    notes.push("USDOT and MC vs background is low contrast for 50-foot daylight reading.");
   }
   return notes;
 }

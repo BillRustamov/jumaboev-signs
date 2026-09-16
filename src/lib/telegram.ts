@@ -10,7 +10,7 @@ export function shopTicketText(order: SignOrder): string {
     `@${order.username}`,
     `${order.companyName} · USDOT ${order.dotNumber} · MC ${order.mcNumber}`,
   ];
-  lines.push("Approximately 10×20 in for each side of the cab.");
+  lines.push("Recommended 20–24 × 10–12 in for each side of the cab.");
   if (order.telegramChatId) {
     lines.push(`Telegram chat ${order.telegramChatId}`);
   }

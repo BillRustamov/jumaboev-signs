@@ -106,8 +106,8 @@ export function AdminPrintDesk() {
         </div>
       </div>
       <p className="print-hide max-w-2xl text-sm text-muted-foreground">
-        Two doors, ~10×20 in each. Left and right. In the print dialog use
-        100% scale and turn off “fit to page”.
+        Two doors, 20 × 10 in each (recommended 20–24 × 10–12 in). Left and
+        right. In the print dialog use 100% scale and turn off “fit to page”.
       </p>
       <div className="print-hide overflow-auto rounded-xl border bg-neutral-200 p-3">
         <div className="h-[8.16in] sm:h-[9.12in]">

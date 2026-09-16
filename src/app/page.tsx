@@ -12,11 +12,11 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { HomeSampleGrid } from "@/components/home-sample-grid";
+import { VinylSpecPanel } from "@/components/vinyl-spec-panel";
 import { WhiteSemiTruck } from "@/components/white-semi-truck";
-import { DRIVER_SAMPLES } from "@/lib/samples";
+import { SUGGESTED_LAYOUT } from "@/lib/samples";
 import { TELEGRAM_BOT_URL } from "@/lib/telegram";
-
-const HERO = DRIVER_SAMPLES[0].fields;
+import { VINYL } from "@/lib/vinyl-spec";
 
 export default function HomePage() {
   return (
@@ -24,15 +24,17 @@ export default function HomePage() {
       <section className="border-b bg-[color-mix(in_oklch,var(--navy),white_94%)]">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.9fr)] lg:py-14">
           <div>
-            <Badge variant="secondary">Set of two · ~10×20 in each side</Badge>
+            <Badge variant="secondary">Set of two · {VINYL.size} each side</Badge>
             <h1 className="font-heading mt-4 text-3xl font-semibold tracking-tight text-[var(--navy)] sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
               Tap a shop door. Put your USDOT on it.
             </h1>
             <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
-              Jumaboev Signs prints a matched pair — approximately 10×20 in for
-              each side of the cab. MCS-150 name, USDOT, and MC (FMCSA) are
-              required. Logo size is yours to set. Unit numbers are a separate
-              small print. Letters still have to read from 50 feet in daylight.
+              Jumaboev Signs prints a matched pair — recommended {VINYL.size}{" "}
+              for each side of the cab. Company name and USDOT are required by{" "}
+              {VINYL.cfr}. This shop also prints MC on the plaque and requires
+              it on the ticket. Logo size is yours to set. Unit numbers are a
+              separate small print. Letters still have to read from{" "}
+              {VINYL.readabilityFt} feet in daylight.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" asChild>
@@ -44,9 +46,9 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mx-auto w-full max-w-xl">
-            <WhiteSemiTruck fields={HERO} />
+            <WhiteSemiTruck fields={SUGGESTED_LAYOUT.fields} />
             <p className="mt-3 text-center text-xs text-muted-foreground">
-              Vinyl on a white sleeper · ~10×20 in each cab side
+              Suggested layout on a white sleeper · {VINYL.sizeEach}
             </p>
           </div>
         </div>
@@ -65,7 +67,9 @@ export default function HomePage() {
           </h2>
           <p className="mt-2 text-muted-foreground">
             Each card is that color on a white sleeper — same truck the cart
-            uses. Tap one to open the designer with that door loaded.
+            uses. The first door is the recommended stacked plaque: company
+            name, USDOT, then MC. Tap one to open the designer with that door
+            loaded.
           </p>
         </div>
         <HomeSampleGrid />
@@ -75,41 +79,41 @@ export default function HomePage() {
 
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <h2 className="font-heading text-2xl font-semibold text-[var(--navy)]">
-          What prints on the vinyl
+          Layout and federal marking
         </h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Required on both sides: MCS-150 name, USDOT, and MC (FMCSA). Logo is
-          extra. Unit numbers print as a separate small sticker. Each door is
-          approximately 10×20 in outdoor vinyl, one per cab side.
+          Stacked white plaque: company name, USDOT, MC. Recommended cut is{" "}
+          {VINYL.size}. FMCSA does not set a letter height — it has to read from{" "}
+          {VINYL.readabilityFt} feet, on both sides of the power unit, in strong
+          contrast. MC is not required on the truck; this shop still prints it.
         </p>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8">
+          <VinylSpecPanel />
+        </div>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Spec
-            title="MCS-150 name"
-            body="Legal name or one trade name, as filed with FMCSA. Optional second line for the LLC under a trade mark."
+            title="Company name"
+            body="Legal name or one trade name, as filed with FMCSA. Optional second line for the LLC under a trade mark. Letters 2–3 in."
           />
           <Spec
             title="USDOT number"
-            body="Prints as USDOT plus the digits. Required. Letters must stay readable from 50 feet in daylight."
+            body="Prints as USDOT plus the digits on the line under the name. Required. Letters 2–3 in, readable from 50 feet."
           />
           <Spec
-            title="MC (FMCSA) number"
-            body="Prints as MC plus the digits on its own line under USDOT. Required on both doors."
+            title="MC number"
+            body="Prints as MC plus the digits under USDOT, 2 in letters. Not required on the truck by 49 CFR § 390.21 — required on this shop ticket."
           />
           <Spec
             title="Logo"
-            body="Optional. Set how large the mark prints on the door. Unit numbers are not on this vinyl."
+            body="Optional. Set how large the mark prints above the name. Unit numbers are not on this vinyl."
           />
           <Spec
             title="Colors you can recut"
-            body="Elbrus, Highway, Gold plates, Red line, or pick every swatch. The designer warns if contrast is too weak for 50-foot reading."
+            body="Suggested layout is black on white. Elbrus, Gold plates, and Red line recut the same stack. The designer warns if contrast is too weak for 50-foot reading."
           />
           <Spec
             title="Pair of doors"
-            body="One design, two prints. Left and right cab doors match."
-          />
-          <Spec
-            title="Outdoor vinyl"
-            body="Cut for truck doors. Khurshid confirms material and ship-to in Telegram after the order."
+            body="One design, two prints. Left and right cab doors match. Shop cut is 20 × 10 in on a 24 in sheet."
           />
         </div>
       </section>
@@ -120,7 +124,7 @@ export default function HomePage() {
         <Step
           icon={<Printer className="size-4" />}
           title="1. Tap a sample"
-          body="Open a shop door that is close to yours. Swap the name and USDOT. Set logo size on the vinyl."
+          body="Open a shop door that is close to yours. Swap the name, USDOT, and MC. Set logo size on the vinyl."
         />
         <Step
           icon={<Smartphone className="size-4" />}
@@ -141,7 +145,8 @@ export default function HomePage() {
           </h2>
           <p className="mt-3 max-w-2xl text-white/80">
             The bot asks for language first, then the same print fields as this
-            site. It runs in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, and
+            site. Color picks send photos of this stacked plaque on a white cab.
+            It runs in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, and
             Ukrainian. Confirmed tickets land on the shop print desk.
           </p>
           <div className="mt-6">

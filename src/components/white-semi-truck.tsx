@@ -14,7 +14,7 @@ import {
 /** Customer mockup: white Volvo sleeper, landscape vinyl on the door. */
 const SRC = { w: 1312, h: 928 };
 
-/** Black frame on the mockup — close-up of the 20×10 in vinyl. */
+/** Black frame on the mockup — close-up of the recommended 20–24 × 10–12 in vinyl. */
 const INSET = { left: 20.05, top: 26.72, width: 26.75, height: 15.84 };
 /** Horizontal plaque on the sleeper door the green arrow points to. */
 const DOOR = { left: 48.15, top: 64.7, width: 11.5, height: 5.75 };
@@ -74,7 +74,7 @@ export function WhiteSemiTruck({
           >
             <DialogTitle className="sr-only">Door lettering</DialogTitle>
             <DialogDescription className="sr-only">
-              Close-up of the sleeper-door vinyl, landscape ~10×20 in.
+              Close-up of the sleeper-door vinyl, landscape 20–24 × 10–12 in.
             </DialogDescription>
             <div className="overflow-hidden rounded-[1.2rem] border-[5px] border-black bg-white p-[2%] shadow-2xl">
               <TruckSign fields={fields} />

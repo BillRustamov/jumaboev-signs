@@ -98,8 +98,8 @@ export function CheckoutDesk() {
             Order received
           </CardTitle>
           <CardDescription>
-            {placed.map((order) => order.id).join(", ")} · ~10×20 in each cab
-            side for @{placed[0]?.username}.
+            {placed.map((order) => order.id).join(", ")} · 20–24 × 10–12 in
+            each cab side for @{placed[0]?.username}.
           </CardDescription>
         </CardHeader>
         <CardFooter className="flex-wrap gap-2">

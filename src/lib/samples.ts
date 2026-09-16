@@ -18,7 +18,24 @@ export type DriverSample = {
   fields: SignFields;
 };
 
+export const SUGGESTED_LAYOUT: DriverSample = {
+  id: "suggested",
+  label: "Suggested layout",
+  hint: "Company · USDOT · MC · 20–24 × 10–12 in",
+  fields: {
+    companyName: "ABC TRANSPORT LLC",
+    legalName: "",
+    dotNumber: "1234567",
+    mcNumber: "123456",
+    fleetNumber: "",
+    logoDataUrl: "",
+    ...applyPreset("highway"),
+    logoSize: DEFAULT_LOGO_SIZE,
+  },
+};
+
 export const DRIVER_SAMPLES: DriverSample[] = [
+  SUGGESTED_LAYOUT,
   {
     id: "elbrus",
     label: "Elbrus",
@@ -35,24 +52,9 @@ export const DRIVER_SAMPLES: DriverSample[] = [
     },
   },
   {
-    id: "highway",
-    label: "Highway",
-    hint: "Black lettering · max contrast",
-    fields: {
-      companyName: "HIGHWAY",
-      legalName: "HIGHWAY LOGISTICS LLC",
-      dotNumber: "34882106",
-      mcNumber: "901244",
-      fleetNumber: "",
-      logoDataUrl: "",
-      ...applyPreset("highway"),
-      logoSize: DEFAULT_LOGO_SIZE,
-    },
-  },
-  {
     id: "gold-plates",
     label: "Gold plates",
-    hint: "Navy name · gold USDOT",
+    hint: "Navy name · gold border",
     fields: {
       companyName: "GOLD LINE",
       legalName: "GOLD LINE CARRIERS LLC",
@@ -67,7 +69,7 @@ export const DRIVER_SAMPLES: DriverSample[] = [
   {
     id: "red-line",
     label: "Red line",
-    hint: "Black type · red plates",
+    hint: "Black type · red USDOT and MC",
     fields: {
       companyName: "REDLINE",
       legalName: "REDLINE HAUL INC",
@@ -94,7 +96,7 @@ export function sampleById(id: string | null | undefined): DriverSample | undefi
   return DRIVER_SAMPLES.find((sample) => sample.id === id);
 }
 
-/** Keep the sample look (colors, logo, plates) but clear shop lettering. */
+/** Keep the sample look (colors, logo) but clear shop lettering. */
 export function lookFromSample(sample: DriverSample): SignFields {
   return {
     ...sample.fields,

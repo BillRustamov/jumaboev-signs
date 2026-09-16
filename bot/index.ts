@@ -451,10 +451,10 @@ function isImageDocument(
 async function configureBot(bot: Bot) {
   await bot.api.setMyName("Jumaboev Signs");
   await bot.api.setMyShortDescription(
-    "USDOT truck door vinyl · ~10×20 in each cab side. Order a matched pair.",
+    "USDOT truck door vinyl · 20–24 × 10–12 in each cab side. Order a matched pair.",
   );
   await bot.api.setMyDescription(
-    "Jumaboev Signs prints vinyl USDOT truck doors. Each item is about 10×20 in for each side of the cab — left and right match. MCS-150 name, USDOT, and MC required. Logo optional. Unit numbers are a separate small print. Send /start to order.",
+    "Jumaboev Signs prints vinyl USDOT truck doors. Recommended 20–24 × 10–12 in for each cab side — stacked company name, USDOT, and MC. Left and right match. Company name and USDOT required by FMCSA; MC required on this shop ticket. Logo optional. Unit numbers are a separate small print. Send /start to order.",
   );
   await bot.api.setMyCommands([
     { command: "start", description: "Start a new door vinyl order" },

@@ -20,11 +20,13 @@ export default function OrderPage() {
         </h1>
         <p className="mt-1 hidden text-muted-foreground sm:block">
           A sample is only the style. Before vinyl is cut you must set
-          lettering, colors, and layout on the print ticket — your MCS-150 name
-          and USDOT, not the shop demo.
+          lettering, colors, and layout on the print ticket — your company
+          name, USDOT, and MC, not the shop demo. Recommended cut is
+          20–24 × 10–12 in.
         </p>
         <p className="mt-1 text-sm text-muted-foreground sm:hidden">
-          The live door stays on screen. Put your name and USDOT on the ticket.
+          The live door stays on screen. Put your name, USDOT, and MC on the
+          ticket.
         </p>
       </div>
       <Suspense fallback={<DeskFallback />}>

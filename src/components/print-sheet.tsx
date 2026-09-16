@@ -1,10 +1,11 @@
 import { TruckSign } from "@/components/truck-sign";
 import type { SignFields } from "@/lib/order";
+import { VINYL } from "@/lib/vinyl-spec";
 
-/** Physical print: two ~20×10 in doors (left and right), laid out landscape. */
-export const SHEET_IN = 24;
-export const DOOR_W_IN = 20;
-export const DOOR_H_IN = 10;
+/** Physical print: two 20×10 in doors (left and right) on a 24 in sheet. */
+export const SHEET_IN = VINYL.sheetIn;
+export const DOOR_W_IN = VINYL.printWIn;
+export const DOOR_H_IN = VINYL.printHIn;
 
 export function PrintSheet({
   fields,
@@ -20,13 +21,13 @@ export function PrintSheet({
     >
       <p className="absolute left-[0.45in] top-[0.28in] font-sans text-[0.2in] tracking-wide text-neutral-700">
         Jumaboev Signs
-        {orderId ? ` · ${orderId}` : ""} · two landscape ~10×20 in doors, left and right
+        {orderId ? ` · ${orderId}` : ""} · two {VINYL.printSize} doors, left and right · recommended {VINYL.size}
       </p>
       <p
         className="absolute font-sans text-[0.22in] font-semibold tracking-[0.16em] text-neutral-800"
         style={{ left: "2in", top: "0.85in", width: "20in", textAlign: "center" }}
       >
-        LEFT · landscape ~10×20 in
+        LEFT · {VINYL.printSize}
       </p>
       <div
         className="absolute"
@@ -38,7 +39,7 @@ export function PrintSheet({
         className="absolute font-sans text-[0.22in] font-semibold tracking-[0.16em] text-neutral-800"
         style={{ left: "2in", top: "11.5in", width: "20in", textAlign: "center" }}
       >
-        RIGHT · landscape ~10×20 in
+        RIGHT · {VINYL.printSize}
       </p>
       <div
         className="absolute"

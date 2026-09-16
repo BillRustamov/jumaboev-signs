@@ -70,8 +70,9 @@ export function AdminDesk() {
         <CardHeader>
           <CardTitle>Cutter sheet</CardTitle>
           <CardDescription>
-            Physical pair is ~10×20 in on each cab side. Download places both
-            logos — left and right — on one sheet.
+            Physical pair is 20 × 10 in on each cab side (recommended
+            20–24 × 10–12 in). Download places both plaques — left and right —
+            on one sheet.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -93,8 +94,8 @@ export function AdminDesk() {
             </CardTitle>
             <CardDescription>
               When a driver checks out — or the Telegram bot posts a ticket —
-              the pair lands here for a ~10×20 left and right print. The sample
-              sheet above is always available.
+              the pair lands here for a 20 × 10 in left and right print. The
+              sample sheet above is always available.
             </CardDescription>
           </CardHeader>
         </Card>

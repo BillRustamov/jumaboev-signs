@@ -11,7 +11,8 @@ export function SiteFooter() {
           </p>
           <p className="mt-1 max-w-sm text-sm text-white/75">
             Khurshid Jumaboev prints US DOT truck door vinyl for owner-operators
-            and small fleets. Telegram is the shop’s main channel.
+            and small fleets — stacked company name, USDOT, and MC, recommended
+            20–24 × 10–12 in each cab side. Telegram is the shop’s main channel.
           </p>
         </div>
         <div className="text-sm text-white/80">

@@ -16,8 +16,8 @@ export default function AdminPage() {
           Print sheets
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Each download is a matched pair — approximately 10×20 in for the
-          left cab and 10×20 in for the right cab.
+          Each download is a matched pair — 20 × 10 in shop cut for the left
+          cab and the right cab (recommended 20–24 × 10–12 in).
         </p>
       </div>
       <AdminDesk />

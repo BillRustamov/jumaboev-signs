@@ -12,7 +12,7 @@ export function SiteHeader() {
             Jumaboev Signs
           </p>
           <p className="hidden truncate text-[11px] text-muted-foreground sm:block">
-            USDOT door vinyl · ~10×20 each side
+            USDOT door vinyl · 20–24 × 10–12 in each side
           </p>
         </Link>
         <nav className="flex items-center gap-1">

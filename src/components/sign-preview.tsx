@@ -42,7 +42,7 @@ export function SignPreview({
         <DialogContent className="max-h-[min(92vh,40rem)] max-w-[min(40rem,calc(100%-1.5rem))] overflow-y-auto p-4">
           <DialogTitle>{name}</DialogTitle>
           <DialogDescription>
-            Approximately 10×20 in landscape for each side of the cab.
+            Recommended 20–24 × 10–12 in landscape for each side of the cab.
           </DialogDescription>
           <TruckSign fields={fields} />
         </DialogContent>
