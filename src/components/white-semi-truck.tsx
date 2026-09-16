@@ -14,8 +14,8 @@ import {
 /** Customer mockup: white Volvo sleeper with a 20×12 in door plaque. */
 const SRC = { w: 1312, h: 928 };
 
-/** Close-up frame on the photo, filled with the 20×12 plaque. */
-const INSET = { left: 22.2, top: 26.83, width: 22.4, height: 15.52 };
+/** 20×12 plaque centered in the photo’s black callout (frame is wider). */
+const INSET = { left: 24.25, top: 26.83, width: 18.3, height: 15.52 };
 /** 20×12 plaque on the sleeper door the green arrow points to. */
 const DOOR = { left: 48.2, top: 63.4, width: 11.6, height: 9.85 };
 
@@ -62,7 +62,7 @@ export function WhiteSemiTruck({
             box={INSET}
             label="Open plaque close-up"
           >
-            <TruckSign fields={fields} className="h-full w-full [aspect-ratio:auto]" />
+            <TruckSign fields={fields} className="h-full w-full" />
           </Hotspot>
         </div>
       </div>
