@@ -1,17 +1,24 @@
-/** Cropped white Cascadia cab — driver door. 20×12 overlay stays 5:3. */
+/** Compatibility wrapper around the calibrated door-zone mockup. */
+
+import {
+  WHITE_CASCADIA_DRIVER,
+  fitSignToDoor,
+} from "@/lib/truck-mockups";
 
 export const CAB_PHOTO = {
-  src: "/white-cab-door.jpg",
-  widthPx: 520,
-  heightPx: 560,
-  alt: "White truck cab, driver-side door",
+  src: WHITE_CASCADIA_DRIVER.image,
+  widthPx: WHITE_CASCADIA_DRIVER.imageWidthPx,
+  heightPx: WHITE_CASCADIA_DRIVER.imageHeightPx,
+  alt: WHITE_CASCADIA_DRIVER.alt,
 } as const;
 
-/** Percent of the cab photo. Height is derived so the vinyl never squashes. */
+const fitted = fitSignToDoor(WHITE_CASCADIA_DRIVER);
+
+/** Derived from the calibrated door zone — not a one-off CSS nudge. */
 export const CAB_DOOR = {
-  leftPct: 23.0,
-  topPct: 43.2,
-  widthPct: 17.4,
+  leftPct: fitted.rect.x * 100,
+  topPct: fitted.rect.y * 100,
+  widthPct: fitted.rect.width * 100,
 } as const;
 
 export function doorOverlayStyle(

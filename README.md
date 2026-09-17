@@ -28,7 +28,7 @@ Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0
 - `/samples` — sign-first gallery with categories and filters; Customize this design opens the print desk
 - `/order` — live designer (`/order?sample=clean-white` loads the default plaque)
 - `/preview/signs` — five template compositions at print proportion (visual QA)
-- `/preview/truck` — cab-door mockup (sign close-up vs on the door)
+- `/preview/truck` — cab-door mockup with a calibrated door zone (`?calibrate=1` in development)
 - `/cart` — shopping cart (click the sign to preview)
 - `/checkout` — white sleeper-door preview and send to the shop
 - `/orders` — tickets from this server and this browser
