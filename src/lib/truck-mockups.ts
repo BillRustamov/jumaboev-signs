@@ -33,6 +33,11 @@ export type TruckMockupConfig = {
   perspective?: boolean;
   /** Sign width as % of the door-zone AABB, not the whole image. */
   mockupSignScale?: number;
+  /**
+   * Occupancy of the usable safe panel width (0–1).
+   * Primary size lever — not a CSS zoom, not % of the photo.
+   */
+  recommendedScale?: number;
   forbiddenZones?: ForbiddenZone[];
 };
 
@@ -80,10 +85,11 @@ export const WHITE_CASCADIA_DRIVER: TruckMockupConfig = {
     bottomLeft: { x: 0.168, y: 0.678 },
   },
   safeInset: { top: 0.04, right: 0.07, bottom: 0.06, left: 0.1 },
-  maxSignWidthPercent: 65,
-  maxSignHeightPercent: 58,
+  maxSignWidthPercent: 93,
+  maxSignHeightPercent: 75,
   perspective: false,
-  mockupSignScale: 55,
+  mockupSignScale: 56,
+  recommendedScale: 0.91,
   forbiddenZones: [
     {
       type: "window",
@@ -446,8 +452,9 @@ export function fitSignToDoor(
   const usable = usableDoorPanel(config);
   const zones = config.forbiddenZones ?? [];
   const scalePct = config.mockupSignScale ?? 55;
-  const maxWPct = config.maxSignWidthPercent ?? 65;
-  const maxHPct = config.maxSignHeightPercent ?? 58;
+  const maxWPct = config.maxSignWidthPercent ?? 92;
+  const maxHPct = config.maxSignHeightPercent ?? 72;
+  const occupancy = Math.min(0.96, Math.max(0.45, config.recommendedScale ?? 0.9));
 
   let warning: string | null = null;
   if (usable.width <= 0.01 || usable.height <= 0.01) {
@@ -469,9 +476,10 @@ export function fitSignToDoor(
   }
 
   const desired = door.width * (scalePct / 100);
+  const occupancyW = usable.width * occupancy;
   const maxW = usable.width * (maxWPct / 100);
   const maxH = usable.height * (maxHPct / 100);
-  let width = Math.min(desired, maxW, usable.width);
+  let width = Math.min(desired, occupancyW, maxW, usable.width);
   let height = signHeightNorm(width, config.imageWidthPx, config.imageHeightPx);
   if (height > maxH || height > usable.height) {
     height = Math.min(maxH, usable.height);

@@ -54,27 +54,30 @@ test("sign does not overlap window, mirror, handle, seam, or trim", () => {
 
 test("recommended placement is right and down of the high-forward regression", () => {
   const fit = fitSignToDoor(WHITE_CASCADIA_DRIVER);
+  const cx = fit.rect.x + fit.rect.width / 2;
   assert.ok(
-    fit.rect.x > OLD_BAD.x + 0.02,
-    `expected right of ${OLD_BAD.x}, got ${fit.rect.x}`,
+    fit.rect.x > OLD_BAD.x - 0.002,
+    `left edge must stay right of the old high-forward box (${fit.rect.x})`,
   );
   assert.ok(
     fit.rect.y > OLD_BAD.y + 0.06,
     `expected down from ${OLD_BAD.y}, got ${fit.rect.y}`,
   );
   assert.ok(fit.rect.y > 0.49, "must sit below the window glass");
-  assert.ok(fit.rect.x > 0.24, "must sit right of the mirror support");
+  assert.ok(fit.rect.x >= fit.usable.x - 1e-6, "must sit right of the mirror keepout");
   assert.ok(aabbRight(fit.rect) < 0.41, "must sit left of the handle");
   assert.ok(aabbBottom(fit.rect) < 0.67, "must sit above the chrome belt");
+  assert.ok(cx > 0.3 && cx < 0.35, `center should stay in the door panel (${cx})`);
 });
 
-test("sign is a realistic fraction of the usable door, not the whole photo", () => {
+test("sign occupies most of the usable door, not a postage stamp", () => {
   const fit = fitSignToDoor(WHITE_CASCADIA_DRIVER);
   const ofUsable = fit.rect.width / fit.usable.width;
   const ofImage = fit.rect.width;
-  assert.ok(ofUsable >= 0.44 && ofUsable <= 0.67, `usable fraction ${ofUsable}`);
+  assert.ok(ofUsable >= 0.85 && ofUsable <= 0.94, `usable fraction ${ofUsable}`);
   assert.ok(ofImage < 0.22, `must not be % of the whole photo (${ofImage})`);
-  assert.ok(fit.scaleOfDoor >= 0.3 && fit.scaleOfDoor <= 0.65);
+  assert.ok(fit.scaleOfDoor >= 0.5 && fit.scaleOfDoor <= 0.62, `door scale ${fit.scaleOfDoor}`);
+  assert.ok(fit.rect.width > 0.15, `must be larger than the 0.114 postage-stamp (${fit.rect.width})`);
 });
 
 test("object-fit contain mapping letterboxes a wide container", () => {
