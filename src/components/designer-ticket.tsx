@@ -329,10 +329,12 @@ export function LayoutFields({
                   markLayoutReady();
                 }}
               >
-                <TruckSign
-                  fields={preview}
-                  className="pointer-events-none w-full shadow-none"
-                />
+                <div className="w-full min-w-0">
+                  <TruckSign
+                    fields={preview}
+                    className="pointer-events-none w-full shadow-none"
+                  />
+                </div>
                 <span className="px-1 text-xs font-medium">{template.label}</span>
               </Button>
             );
