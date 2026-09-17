@@ -30,7 +30,7 @@ Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0
 - `/cart` — shopping cart (click the sign to preview)
 - `/checkout` — white sleeper-door preview and send to the shop
 - `/orders` — tickets from this server and this browser
-- `/admin` — shop print desk. Download a cutter sheet with two 20 × 10 in plaques, left and right. `/admin/print/sample` opens a sample sheet without an order.
+- `/admin` — shop print desk. Download a 24 in roll sheet with two **20 × 12 in** plaques, left then right. `/admin/print/sample` opens a sample sheet without an order.
 - `/api/health` — `{ ok: true }` for the Telegram bot to ping
 - `/api/orders` — GET the shop list, POST a confirmed ticket
 
@@ -64,7 +64,9 @@ The bot loads `.env` itself, pings `/api/health` on start, and retries the shop 
 
 The customer sample is a 20 × 12 in filled plaque: logo box, company name, a rule, city and state, then `USDOT` plus the digits, then `MC` plus the digits. Company name is required; USDOT is required; MC is required on the shop ticket even though 390.21 does not require it on the truck. Recolor face, name, and number lines in the designer. Logo size is a 1–5 scale on the vinyl. Navy-gold example: USDOT `3311300`, MC `1051891`.
 
-Admin download: two doors on one sheet, each **20 × 10 in** (left and right), so both fit a 24 in cutter. The customer-facing example stays **20 × 12 in**. In the print dialog set 100% scale and turn off “fit to page”. Never tell customers the sheet is 24×24.
+Admin download: two **20 × 12 in** doors laid out along a **24 in** roll (about 26.5 in long). Artwork is never squashed to 20×10. In the print dialog set 100% scale and turn off “fit to page”. Never tell customers the sheet is 24×24.
+
+`npm run test` checks the shared design engine (logo scale, fonts, chevrons, templates, city/state migration). `npm run bot:profile` is the only command that calls Telegram setMyName / setMyDescription — not on every bot start.
 
 ## Stack
 

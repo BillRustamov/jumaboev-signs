@@ -22,6 +22,8 @@ function fieldsFromQuery(
     ...preset,
     companyName: pick("company") || EXAMPLE.companyName,
     legalName: pick("legal") ?? EXAMPLE.legalName,
+    city: pick("city") || EXAMPLE.city,
+    state: pick("state") || EXAMPLE.state,
     dotNumber: pick("dot") || EXAMPLE.dotNumber,
     mcNumber: pick("mc") || EXAMPLE.mcNumber,
     showMc: true,

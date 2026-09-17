@@ -147,7 +147,7 @@
 
 @media print {
   @page {
-    size: 24in 24in;
+    size: 24in 26.5in;
     margin: 0;
   }
 

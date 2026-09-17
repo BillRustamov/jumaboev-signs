@@ -1,6 +1,7 @@
 import { DEFAULT_LOGO_SIZE } from "@/lib/logo-size";
+import type { SignFontId, TemplateId } from "@/lib/design/schema";
 
-export type NameFont = "serif" | "condensed";
+export type NameFont = SignFontId;
 
 export type SignPalette = {
   face: string;
@@ -21,6 +22,7 @@ export type SignStyle = {
   paletteId: string;
   colors: SignPalette;
   logoSize: number;
+  templateId: TemplateId;
 };
 
 function tone(face: string, ink: string, accent: string): SignPalette {
@@ -100,6 +102,7 @@ export function applyPreset(id: string): SignStyle {
     paletteId: preset.id,
     colors: { ...preset.colors },
     logoSize: DEFAULT_LOGO_SIZE,
+    templateId: "premium-plaque",
   };
 }
 

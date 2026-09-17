@@ -54,7 +54,7 @@ export function WhiteSemiTruck({
             box={DOOR}
             label="Open door plaque"
           >
-            <TruckSign fields={fields} className="h-full w-full [aspect-ratio:auto]" />
+            <TruckSign fields={fields} className="h-full w-full" />
           </Hotspot>
           <Hotspot
             interactive={interactive}

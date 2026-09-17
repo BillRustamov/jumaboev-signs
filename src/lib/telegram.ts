@@ -9,6 +9,7 @@ export function shopTicketText(order: SignOrder): string {
     `New ${order.source} ticket ${order.id}`,
     `@${order.username}`,
     `${order.companyName} · USDOT ${order.dotNumber} · MC ${order.mcNumber}`,
+    `Size: 20 × 12 in · quantity: 1 pair (2 decals)`,
   ];
   lines.push("Example cut is 20 × 12 in for each side of the cab.");
   if (order.telegramChatId) {

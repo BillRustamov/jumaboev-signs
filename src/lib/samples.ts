@@ -9,20 +9,32 @@ export type DriverSample = {
   fields: SignFields;
 };
 
+function sampleFields(
+  preset: string,
+  city: string,
+  state: string,
+  dot: string,
+  mc: string,
+): SignFields {
+  return {
+    companyName: "COMPANY NAME",
+    legalName: "",
+    city,
+    state,
+    dotNumber: dot,
+    mcNumber: mc,
+    fleetNumber: "",
+    logoDataUrl: "",
+    ...applyPreset(preset),
+    logoSize: DEFAULT_LOGO_SIZE,
+  };
+}
+
 export const SUGGESTED_LAYOUT: DriverSample = {
   id: "gold-navy",
   label: "Navy gold",
   hint: "20 × 12 in example · gold on navy",
-  fields: {
-    companyName: "COMPANY NAME",
-    legalName: "DALLAS, TX",
-    dotNumber: "3311300",
-    mcNumber: "1051891",
-    fleetNumber: "",
-    logoDataUrl: "",
-    ...applyPreset("gold-navy"),
-    logoSize: DEFAULT_LOGO_SIZE,
-  },
+  fields: sampleFields("gold-navy", "DALLAS", "TX", "3311300", "1051891"),
 };
 
 export const DRIVER_SAMPLES: DriverSample[] = [
@@ -31,46 +43,19 @@ export const DRIVER_SAMPLES: DriverSample[] = [
     id: "black",
     label: "Black",
     hint: "20 × 12 in · white on black",
-    fields: {
-      companyName: "COMPANY NAME",
-      legalName: "HOUSTON, TX",
-      dotNumber: "91244018",
-      mcNumber: "441902",
-      fleetNumber: "",
-      logoDataUrl: "",
-      ...applyPreset("black"),
-      logoSize: DEFAULT_LOGO_SIZE,
-    },
+    fields: sampleFields("black", "HOUSTON", "TX", "91244018", "441902"),
   },
   {
     id: "red-line",
     label: "Red",
     hint: "20 × 12 in · white on red",
-    fields: {
-      companyName: "COMPANY NAME",
-      legalName: "PHOENIX, AZ",
-      dotNumber: "17550331",
-      mcNumber: "628114",
-      fleetNumber: "",
-      logoDataUrl: "",
-      ...applyPreset("red-line"),
-      logoSize: DEFAULT_LOGO_SIZE,
-    },
+    fields: sampleFields("red-line", "PHOENIX", "AZ", "17550331", "628114"),
   },
   {
     id: "asphalt",
     label: "Asphalt",
     hint: "20 × 12 in · charcoal with orange",
-    fields: {
-      companyName: "COMPANY NAME",
-      legalName: "CHICAGO, IL",
-      dotNumber: "34882106",
-      mcNumber: "901244",
-      fleetNumber: "",
-      logoDataUrl: "",
-      ...applyPreset("asphalt"),
-      logoSize: DEFAULT_LOGO_SIZE,
-    },
+    fields: sampleFields("asphalt", "CHICAGO", "IL", "34882106", "901244"),
   },
 ];
 
@@ -100,6 +85,8 @@ export function lookFromSample(sample: DriverSample): SignFields {
     ...sample.fields,
     companyName: "",
     legalName: "",
+    city: "",
+    state: "",
     dotNumber: "",
     mcNumber: "",
     fleetNumber: "",

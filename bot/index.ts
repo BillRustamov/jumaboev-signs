@@ -22,6 +22,7 @@ import {
 } from "../src/lib/order";
 import { STYLE_PRESETS, applyPreset } from "../src/lib/sign-style";
 import { screenshotTruck, styledFields, telegramSendPhoto } from "./previews";
+import { formatPlace, parsePlace } from "../src/lib/design/migrate";
 
 type Step =
   | "lang"
@@ -132,7 +133,7 @@ function summary(draft: Draft): string {
   const body = t(draft.lang, "confirmBody", {
     username: draft.username,
     company: draft.fields.companyName,
-    legal: draft.fields.legalName || "—",
+    legal: formatPlace(draft.fields.city, draft.fields.state) || "—",
     dot: draft.fields.dotNumber,
     mc,
     logo: draft.fields.logoDataUrl ? "yes" : "—",
@@ -291,7 +292,16 @@ async function handleText(
       return draft;
     }
     case "legal": {
-      draft.fields.legalName = isSkipText(trimmed, draft.lang) ? "" : trimmed;
+      if (isSkipText(trimmed, draft.lang)) {
+        draft.fields.city = "";
+        draft.fields.state = "";
+        draft.fields.legalName = "";
+      } else {
+        const parsed = parsePlace(trimmed);
+        draft.fields.city = parsed?.city ?? trimmed;
+        draft.fields.state = parsed?.state ?? "";
+        draft.fields.legalName = "";
+      }
       draft.step = "dot";
       await chat.send(t(draft.lang, "askDot"));
       return draft;
@@ -365,6 +375,8 @@ async function handleCallback(
   }
   if (data === "skip" && draft.step === "legal") {
     draft.fields.legalName = "";
+    draft.fields.city = "";
+    draft.fields.state = "";
     draft.step = "dot";
     await chat.send(t(draft.lang, "askDot"));
     return draft;
@@ -648,10 +660,13 @@ async function runTelegram(token: string) {
     console.error("Telegram update failed.", error);
   });
 
-  try {
-    await configureBot(bot);
-  } catch (error) {
-    console.error("Could not update Telegram bot profile.", error);
+  if (process.argv.includes("--configure-profile")) {
+    try {
+      await configureBot(bot);
+      console.log("Telegram bot profile updated.");
+    } catch (error) {
+      console.error("Could not update Telegram bot profile.", error);
+    }
   }
   console.log("Jumaboev Signs Telegram bot is polling.");
   await bot.start();

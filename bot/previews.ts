@@ -94,8 +94,13 @@ export function styledFields(base: SignFields, presetId: string): SignFields {
     showMc: true,
     logoDataUrl: base.logoDataUrl,
     logoSize: base.logoSize,
+    logoAspect: base.logoAspect,
+    templateId: base.templateId,
+    nameFont: base.nameFont,
     companyName: base.companyName,
     legalName: base.legalName,
+    city: base.city,
+    state: base.state,
     dotNumber: base.dotNumber,
     mcNumber: base.mcNumber,
   };

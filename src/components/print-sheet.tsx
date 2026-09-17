@@ -2,8 +2,9 @@ import { TruckSign } from "@/components/truck-sign";
 import type { SignFields } from "@/lib/order";
 import { VINYL } from "@/lib/vinyl-spec";
 
-/** Physical print: two 20×10 in doors (left and right) on a 24 in sheet. */
-export const SHEET_IN = VINYL.sheetIn;
+/** 24 in wide roll. Two 20×12 in doors laid out along the length — never 20×10. */
+export const SHEET_W_IN = VINYL.sheetIn;
+export const SHEET_H_IN = VINYL.sheetLengthIn;
 export const DOOR_W_IN = VINYL.printWIn;
 export const DOOR_H_IN = VINYL.printHIn;
 
@@ -14,41 +15,62 @@ export function PrintSheet({
   fields: SignFields;
   orderId?: string;
 }) {
+  const left = (SHEET_W_IN - DOOR_W_IN) / 2;
+  const firstTop = 1.15;
+  const secondTop = firstTop + DOOR_H_IN + 0.7;
+
   return (
     <div
       className="print-sheet relative bg-white text-black"
-      style={{ width: `${SHEET_IN}in`, height: `${SHEET_IN}in` }}
+      style={{ width: `${SHEET_W_IN}in`, height: `${SHEET_H_IN}in` }}
     >
       <p className="absolute left-[0.45in] top-[0.28in] font-sans text-[0.2in] tracking-wide text-neutral-700">
         Jumaboev Signs
-        {orderId ? ` · ${orderId}` : ""} · two {VINYL.printSize} doors, left and right · recommended {VINYL.size}
+        {orderId ? ` · ${orderId}` : ""} · matched pair · {VINYL.printSize} each ·
+        24 in roll
       </p>
       <p
-        className="absolute font-sans text-[0.22in] font-semibold tracking-[0.16em] text-neutral-800"
-        style={{ left: "2in", top: "0.85in", width: "20in", textAlign: "center" }}
+        className="absolute font-sans text-[0.2in] font-semibold tracking-[0.16em] text-neutral-800"
+        style={{ left: `${left}in`, top: "0.78in", width: `${DOOR_W_IN}in`, textAlign: "center" }}
       >
         LEFT · {VINYL.printSize}
       </p>
       <div
         className="absolute"
-        style={{ left: "2in", top: "1.2in", width: "20in", height: "10in" }}
+        style={{
+          left: `${left}in`,
+          top: `${firstTop}in`,
+          width: `${DOOR_W_IN}in`,
+          height: `${DOOR_H_IN}in`,
+        }}
       >
         <DoorCell fields={fields} />
       </div>
       <p
-        className="absolute font-sans text-[0.22in] font-semibold tracking-[0.16em] text-neutral-800"
-        style={{ left: "2in", top: "11.5in", width: "20in", textAlign: "center" }}
+        className="absolute font-sans text-[0.2in] font-semibold tracking-[0.16em] text-neutral-800"
+        style={{
+          left: `${left}in`,
+          top: `${secondTop - 0.38}in`,
+          width: `${DOOR_W_IN}in`,
+          textAlign: "center",
+        }}
       >
         RIGHT · {VINYL.printSize}
       </p>
       <div
         className="absolute"
-        style={{ left: "2in", top: "11.85in", width: "20in", height: "10in" }}
+        style={{
+          left: `${left}in`,
+          top: `${secondTop}in`,
+          width: `${DOOR_W_IN}in`,
+          height: `${DOOR_H_IN}in`,
+        }}
       >
         <DoorCell fields={fields} />
       </div>
-      <p className="absolute bottom-[0.35in] left-[0.45in] font-sans text-[0.18in] text-neutral-600">
-        Matched pair · print at 100% scale · do not fit to page
+      <p className="absolute bottom-[0.28in] left-[0.45in] font-sans text-[0.16in] text-neutral-600">
+        Artwork is 20 × 12 in. Print at 100% scale. Do not fit to page. Do not
+        squash.
       </p>
     </div>
   );
@@ -57,14 +79,11 @@ export function PrintSheet({
 function DoorCell({ fields }: { fields: SignFields }) {
   return (
     <div
-      className="relative h-full w-full"
+      className="relative"
       style={{ width: `${DOOR_W_IN}in`, height: `${DOOR_H_IN}in` }}
     >
       <CropMarks />
-      <TruckSign
-        fields={fields}
-        className="h-full w-full shadow-none [aspect-ratio:auto]"
-      />
+      <TruckSign fields={fields} className="h-full w-full shadow-none" />
     </div>
   );
 }

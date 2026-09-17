@@ -70,9 +70,8 @@ export function AdminDesk() {
         <CardHeader>
           <CardTitle>Cutter sheet</CardTitle>
           <CardDescription>
-            Physical pair is 20 × 10 in on each cab side so two doors fit a
-            24 in sheet. The customer example is 20 × 12 in. Download places
-            both plaques — left and right — on one sheet.
+            Physical pair is two 20 × 12 in doors, laid out along a 24 in
+            roll. Download places both plaques — left and right — at true size.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -94,7 +93,7 @@ export function AdminDesk() {
             </CardTitle>
             <CardDescription>
               When a driver checks out — or the Telegram bot posts a ticket —
-              the pair lands here for a 20 × 10 in left and right print. The
+              the pair lands here for a 20 × 12 in left and right print. The
               sample sheet above is always available.
             </CardDescription>
           </CardHeader>

@@ -1,4 +1,4 @@
-/** Shop example cut: 20 × 12 in navy-gold door plaque. */
+/** Customer and production cut: 20 × 12 in. Never squash to 20×10. */
 
 export const VINYL = {
   widthIn: "20",
@@ -10,10 +10,12 @@ export const VINYL = {
   mcLetters: "2 in",
   readabilityFt: "50",
   printWIn: 20,
-  printHIn: 10,
-  printSize: "20 × 10 in",
+  printHIn: 12,
+  printSize: "20 × 12 in",
+  /** Usable cutter width (inches). Pair is laid out along the roll. */
   sheetIn: 24,
-  cfr: "49 CFR § 390.21",
+  sheetLengthIn: 26.5,
+  cfr: "49 CFR § 390.21T",
 } as const;
 
 export const VINYL_SIZE_ROWS = [
@@ -26,11 +28,11 @@ export const VINYL_SIZE_ROWS = [
 
 export const FMCSA_ROWS = [
   { requirement: "Minimum letter height", rule: "No fixed federal measurement" },
-  { requirement: "Readability", rule: "At least 50 feet" },
+  { requirement: "Readability", rule: "At least 50 feet in daylight" },
   { requirement: "Placement", rule: "Both sides of the truck's power unit" },
   { requirement: "Color", rule: "Strong contrast with the truck" },
-  { requirement: "Company name", rule: "Required" },
-  { requirement: "USDOT number", rule: "Required" },
+  { requirement: "Company name", rule: "Legal name or one registered trade name" },
+  { requirement: "USDOT number", rule: "Required, preceded by USDOT" },
   { requirement: "MC number", rule: "Not required on the truck" },
   { requirement: "Material", rule: "Paint or a suitable removable marking, such as a decal" },
 ] as const;

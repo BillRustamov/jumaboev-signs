@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import type { SignOrder } from "@/lib/order";
 
@@ -7,6 +7,7 @@ const DATA_FILE = path.join(DATA_DIR, "orders.json");
 
 type GlobalOrders = typeof globalThis & {
   __jumaboevOrders?: Map<string, SignOrder>;
+  __jumaboevWriteQueue?: Promise<void>;
 };
 
 function hydrate(): Map<string, SignOrder> {
@@ -33,18 +34,26 @@ function ordersMap(): Map<string, SignOrder> {
 }
 
 function persist(): void {
-  try {
+  const g = globalThis as GlobalOrders;
+  const run = async () => {
     mkdirSync(DATA_DIR, { recursive: true });
+    const tmp = path.join(DATA_DIR, `.orders.${process.pid}.tmp`);
     writeFileSync(
-      DATA_FILE,
+      tmp,
       JSON.stringify(Array.from(ordersMap().values()), null, 2),
     );
-  } catch (error) {
-    console.error("Could not persist shop orders.", error);
-  }
+    renameSync(tmp, DATA_FILE);
+  };
+  g.__jumaboevWriteQueue = (g.__jumaboevWriteQueue ?? Promise.resolve())
+    .then(run)
+    .catch((error) => {
+      console.error("Could not persist shop orders.", error);
+    });
 }
 
 export function saveOrder(order: SignOrder): SignOrder {
+  const existing = ordersMap().get(order.id);
+  if (existing) return existing;
   ordersMap().set(order.id, order);
   persist();
   return order;

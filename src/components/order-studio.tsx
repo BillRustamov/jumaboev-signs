@@ -58,6 +58,8 @@ import {
   contrastWarnings,
   type SignPalette,
 } from "@/lib/sign-style";
+import { TEMPLATES, type SignFontId, type TemplateId } from "@/lib/design";
+import { formatPlace, parsePlace } from "@/lib/design/migrate";
 
 const MAX_LOGO_BYTES = 4 * 1024 * 1024;
 const SAMPLE_QUERY = "sample";
@@ -148,7 +150,27 @@ export function OrderStudio() {
       setLogoError(err.message);
       return "";
     });
-    if (dataUrl) update("logoDataUrl", dataUrl);
+    if (dataUrl) {
+      const image = new Image();
+      image.onload = () => {
+        const aspect =
+          image.naturalHeight > 0
+            ? image.naturalWidth / image.naturalHeight
+            : undefined;
+        setFields((current) => ({
+          ...current,
+          logoDataUrl: dataUrl,
+          logoAspect: aspect,
+        }));
+        setActiveSample(null);
+        setFormError(null);
+      };
+      image.onerror = () => {
+        setFields((current) => ({ ...current, logoDataUrl: dataUrl }));
+        setActiveSample(null);
+      };
+      image.src = dataUrl;
+    }
   }
 
   function onPlaceClick(event: React.FormEvent) {
@@ -246,10 +268,19 @@ export function OrderStudio() {
                 <Field
                   id="legalName"
                   label="City, State"
-                  hint="Prints under the company name on the 20 × 12 in plaque."
+                  hint="Optional. Prints under the company name. Not a federal marking field."
                   placeholder="DALLAS, TX"
-                  value={fields.legalName}
-                  onChange={(value) => update("legalName", value)}
+                  value={formatPlace(fields.city, fields.state)}
+                  onChange={(value) => {
+                    const parsed = parsePlace(value);
+                    setFields((current) => ({
+                      ...current,
+                      city: parsed?.city ?? value.trim(),
+                      state: parsed?.state ?? "",
+                    }));
+                    setActiveSample(null);
+                    setFormError(null);
+                  }}
                 />
                 <Field
                   id="dotNumber"
@@ -287,7 +318,7 @@ export function OrderStudio() {
                   <Input
                     id="logo"
                     type="file"
-                    accept="image/*"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml"
                     className="sr-only"
                     onChange={(event) => {
                       void onLogo(event.target.files?.[0]);
@@ -302,7 +333,14 @@ export function OrderStudio() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() => update("logoDataUrl", "")}
+                      onClick={() => {
+                        setFields((current) => ({
+                          ...current,
+                          logoDataUrl: "",
+                          logoAspect: undefined,
+                        }));
+                        setActiveSample(null);
+                      }}
                     >
                       Remove logo
                     </Button>
@@ -343,13 +381,16 @@ export function OrderStudio() {
                         variant={selected ? "default" : "outline"}
                         className="h-auto flex-col items-stretch gap-2 p-2 text-left"
                         onClick={() => {
-                          setFields((current) => ({
-                            ...current,
-                            ...applyPreset(preset.id),
-                            showMc: true,
-                            logoSize: current.logoSize,
-                            logoDataUrl: current.logoDataUrl,
-                          }));
+                        setFields((current) => ({
+                          ...current,
+                          ...applyPreset(preset.id),
+                          showMc: true,
+                          nameFont: current.nameFont,
+                          logoSize: current.logoSize,
+                          templateId: current.templateId,
+                          logoDataUrl: current.logoDataUrl,
+                          logoAspect: current.logoAspect,
+                        }));
                           setColorPicked(true);
                           setFormError(null);
                         }}
@@ -418,9 +459,45 @@ export function OrderStudio() {
                 step="3"
                 icon={<LayoutTemplate className="size-4" />}
                 title="Layout"
-                hint="Required. Confirm the 20 × 12 in plaque: logo, company name, city and state, USDOT, then MC."
+                hint="Required. Pick a layout, set logo size, and choose a door font. What you see is what prints."
                 done={layoutReady}
               >
+                <div className="space-y-2">
+                  <Label>Layout</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Each card is a different composition, not a recolor.
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {TEMPLATES.map((template) => {
+                      const preview = {
+                        ...fields,
+                        templateId: template.id as TemplateId,
+                        showMc: true,
+                      };
+                      const selected = fields.templateId === template.id;
+                      return (
+                        <Button
+                          key={template.id}
+                          type="button"
+                          variant={selected ? "default" : "outline"}
+                          className="h-auto flex-col items-stretch gap-1.5 p-1.5 text-left"
+                          onClick={() => {
+                            update("templateId", template.id);
+                            markLayoutReady();
+                          }}
+                        >
+                          <TruckSign
+                            fields={preview}
+                            className="pointer-events-none w-full shadow-none"
+                          />
+                          <span className="px-1 text-xs font-medium">
+                            {template.label}
+                          </span>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
                 <LogoSizeControl
                   value={fields.logoSize}
                   disabled={!fields.logoDataUrl}
@@ -429,19 +506,43 @@ export function OrderStudio() {
                     markLayoutReady();
                   }}
                 />
+                <div className="space-y-2">
+                  <Label>Door font</Label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {(
+                      [
+                        ["condensed", "Condensed"],
+                        ["sans", "Bold sans"],
+                        ["serif", "Serif"],
+                      ] as const
+                    ).map(([id, label]) => (
+                      <Button
+                        key={id}
+                        type="button"
+                        size="sm"
+                        variant={fields.nameFont === id ? "default" : "outline"}
+                        onClick={() => {
+                          update("nameFont", id as SignFontId);
+                          markLayoutReady();
+                        }}
+                      >
+                        {label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <Label htmlFor="nameFont">Condensed door name</Label>
+                    <Label htmlFor="chevrons">Side chevrons</Label>
                     <p className="text-xs text-muted-foreground">
-                      Off = serif. On = gothic condensed. Plaque is always
-                      logo, company name, city and state, USDOT, then MC.
+                      Accent marks on the left and right of the plaque.
                     </p>
                   </div>
                   <Switch
-                    id="nameFont"
-                    checked={fields.nameFont === "condensed"}
+                    id="chevrons"
+                    checked={fields.showChevrons}
                     onCheckedChange={(checked) => {
-                      update("nameFont", checked ? "condensed" : "serif");
+                      update("showChevrons", checked);
                       markLayoutReady();
                     }}
                   />

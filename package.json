@@ -8,7 +8,9 @@
     "start": "next start --hostname 0.0.0.0 --port 43147",
     "lint": "eslint",
     "bot": "tsx bot/index.ts",
-    "bot:demo": "tsx bot/index.ts --demo"
+    "bot:demo": "tsx bot/index.ts --demo",
+    "bot:profile": "tsx bot/index.ts --configure-profile",
+    "test": "tsx --test src/lib/design/design.test.ts src/lib/design/migrate.test.ts"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

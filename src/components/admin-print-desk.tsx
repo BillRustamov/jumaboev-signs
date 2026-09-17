@@ -106,12 +106,12 @@ export function AdminPrintDesk() {
         </div>
       </div>
       <p className="print-hide max-w-2xl text-sm text-muted-foreground">
-        Two doors, 20 × 10 in each so they fit the 24 in sheet. Customer
-        example is 20 × 12 in. Left and right. In the print dialog use 100%
-        scale and turn off “fit to page”.
+        Two 20 × 12 in doors on a 24 in wide roll, one after the other. Artwork
+        is never squashed to 20 × 10. Left and right. In the print dialog use
+        100% scale and turn off “fit to page”.
       </p>
       <div className="print-hide overflow-auto rounded-xl border bg-neutral-200 p-3">
-        <div className="h-[8.16in] sm:h-[9.12in]">
+        <div className="h-[9.2in] sm:h-[10.2in]">
           <div className="origin-top-left scale-[0.34] sm:scale-[0.38]">
             <PrintSheet fields={order} orderId={order.id} />
           </div>

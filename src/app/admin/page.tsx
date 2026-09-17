@@ -16,8 +16,8 @@ export default function AdminPage() {
           Print sheets
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Each download is a matched pair — 20 × 10 in shop cut for the left
-          cab and the right cab. The customer example is 20 × 12 in.
+          Each download is a matched pair of 20 × 12 in doors on a 24 in
+          wide roll. Artwork is never resized to 20 × 10.
         </p>
       </div>
       <AdminDesk />
