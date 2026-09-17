@@ -3,16 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import {
-  AlertCircle,
-  CheckCircle2,
-  ImagePlus,
-  Palette,
-  Type,
-  LayoutTemplate,
-} from "lucide-react";
+import { AlertCircle, CheckCircle2, RotateCcw, Sparkles } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,21 +22,25 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { LogoSizeControl } from "@/components/logo-size-control";
-import { TruckSign } from "@/components/truck-sign";
-import { WhiteSemiTruck } from "@/components/white-semi-truck";
 import { LiveVinylDock } from "@/components/live-vinyl-dock";
 import { SampleGallery } from "@/components/sample-gallery";
-import { addToCart, type CartItem } from "@/lib/cart";
-import { clampLogoSize, type LogoSize } from "@/lib/logo-size";
 import {
-  digitsOnly,
-  validateSign,
-  type SignFields,
-} from "@/lib/order";
+  CheckItem,
+  ColorFields,
+  LayoutFields,
+  LetteringFields,
+  MustSection,
+  TICKET_ICONS,
+  type TicketApi,
+} from "@/components/designer-ticket";
+import {
+  MobileDesigner,
+  type WizardStep,
+} from "@/components/mobile-designer";
+import { addToCart, type CartItem } from "@/lib/cart";
+import { autoImprove } from "@/lib/auto-improve";
+import { clampLogoSize } from "@/lib/logo-size";
+import { validateSign, type SignFields } from "@/lib/order";
 import {
   DRIVER_SAMPLES,
   isDemoLettering,
@@ -52,14 +48,7 @@ import {
   sampleById,
   type DriverSample,
 } from "@/lib/samples";
-import {
-  STYLE_PRESETS,
-  applyPreset,
-  contrastWarnings,
-  type SignPalette,
-} from "@/lib/sign-style";
-import { TEMPLATES, type SignFontId, type TemplateId } from "@/lib/design";
-import { formatPlace, parsePlace } from "@/lib/design/migrate";
+import { contrastWarnings, type SignPalette } from "@/lib/sign-style";
 
 const MAX_LOGO_BYTES = 4 * 1024 * 1024;
 const SAMPLE_QUERY = "sample";
@@ -70,10 +59,13 @@ export function OrderStudio() {
     sampleById(searchParams.get(SAMPLE_QUERY)) ?? DRIVER_SAMPLES[0];
   const [fields, setFields] = useState<SignFields>(lookFromSample(start));
   const [activeSample, setActiveSample] = useState<string | null>(start.id);
+  const [resetSampleId, setResetSampleId] = useState(start.id);
   const [colorPicked, setColorPicked] = useState(false);
   const [layoutReady, setLayoutReady] = useState(false);
   const [logoError, setLogoError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [improveNotes, setImproveNotes] = useState<string[]>([]);
+  const [wizardStep, setWizardStep] = useState<WizardStep>("lettering");
   const [added, setAdded] = useState<CartItem | null>(null);
 
   const requestedSample = searchParams.get(SAMPLE_QUERY);
@@ -99,19 +91,27 @@ export function OrderStudio() {
   const letteringDone = letteringIssues.length === 0;
   const canPrint = letteringDone && colorPicked && layoutReady;
 
+  function touch() {
+    setActiveSample(null);
+    setFormError(null);
+    setImproveNotes([]);
+  }
+
   function applySample(sample: DriverSample) {
     setFields(lookFromSample(sample));
     setActiveSample(sample.id);
+    setResetSampleId(sample.id);
     setColorPicked(false);
     setLayoutReady(false);
     setFormError(null);
     setLogoError(null);
+    setImproveNotes([]);
+    setWizardStep("lettering");
   }
 
   function update<K extends keyof SignFields>(key: K, value: SignFields[K]) {
     setFields((current) => ({ ...current, [key]: value }));
-    setActiveSample(null);
-    setFormError(null);
+    touch();
   }
 
   function updateColor<K extends keyof SignPalette>(key: K, value: string) {
@@ -121,8 +121,7 @@ export function OrderStudio() {
       colors: { ...current.colors, [key]: value },
     }));
     setColorPicked(true);
-    setActiveSample(null);
-    setFormError(null);
+    touch();
   }
 
   function markLayoutReady() {
@@ -162,15 +161,23 @@ export function OrderStudio() {
           logoDataUrl: dataUrl,
           logoAspect: aspect,
         }));
-        setActiveSample(null);
-        setFormError(null);
+        touch();
       };
       image.onerror = () => {
         setFields((current) => ({ ...current, logoDataUrl: dataUrl }));
-        setActiveSample(null);
+        touch();
       };
       image.src = dataUrl;
     }
+  }
+
+  function placePair() {
+    const item = addToCart({
+      ...fields,
+      fleetNumber: "",
+      logoSize: clampLogoSize(fields.logoSize),
+    });
+    setAdded(item);
   }
 
   function onPlaceClick(event: React.FormEvent) {
@@ -199,390 +206,215 @@ export function OrderStudio() {
       });
       return;
     }
-    const item = addToCart({
-      ...fields,
-      fleetNumber: "",
-      logoSize: clampLogoSize(fields.logoSize),
-    });
-    setAdded(item);
+    placePair();
   }
+
+  function onWizardContinue() {
+    if (wizardStep === "lettering") {
+      if (!letteringDone) {
+        setFormError(letteringIssues[0] ?? "Put your name and USDOT on the door.");
+        return;
+      }
+      setFormError(null);
+      setWizardStep("colors");
+      return;
+    }
+    if (wizardStep === "colors") {
+      setColorPicked(true);
+      setFormError(null);
+      setWizardStep("layout");
+      return;
+    }
+    if (!letteringDone) {
+      setFormError(letteringIssues[0] ?? "Put your name and USDOT on the door.");
+      setWizardStep("lettering");
+      return;
+    }
+    setColorPicked(true);
+    setLayoutReady(true);
+    setFormError(null);
+    placePair();
+  }
+
+  function onAutoImprove() {
+    const result = autoImprove(fields);
+    setFields(result.fields);
+    setImproveNotes(result.notes);
+    setFormError(null);
+    setActiveSample(null);
+    if (result.fields.paletteId) setColorPicked(true);
+    setLayoutReady(true);
+  }
+
+  function onReset() {
+    const sample = sampleById(resetSampleId) ?? DRIVER_SAMPLES[0];
+    applySample(sample);
+  }
+
+  const ticket: TicketApi = {
+    fields,
+    setFields,
+    update,
+    updateColor,
+    onLogo,
+    logoError,
+    contrastNotes,
+    colorPicked,
+    setColorPicked: (value) => {
+      setColorPicked(value);
+      setFormError(null);
+      setImproveNotes([]);
+    },
+    layoutReady,
+    markLayoutReady,
+    onEdit: touch,
+  };
 
   return (
     <>
-    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:grid-rows-[auto_1fr] lg:gap-8">
-      <div className="order-1 lg:order-none lg:col-start-1 lg:row-start-2">
-        <LiveVinylDock fields={fields} />
-      </div>
+      <MobileDesigner
+        fields={fields}
+        step={wizardStep}
+        onStep={(next) => {
+          setWizardStep(next);
+          setFormError(null);
+        }}
+        letteringDone={letteringDone}
+        colorPicked={colorPicked}
+        layoutReady={layoutReady}
+        formError={formError}
+        improveNotes={improveNotes}
+        activeSample={activeSample}
+        onPickSample={applySample}
+        onContinue={onWizardContinue}
+        onAutoImprove={onAutoImprove}
+        onReset={onReset}
+        ticket={ticket}
+      />
 
-      <div className="order-2 lg:order-none lg:col-span-2 lg:row-start-1">
-        <SampleGallery activeId={activeSample} onPick={applySample} />
-      </div>
+      <div className="hidden lg:block">
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:grid-rows-[auto_1fr] lg:gap-8">
+          <div className="lg:col-start-1 lg:row-start-2">
+            <LiveVinylDock fields={fields} />
+          </div>
 
-      <form
-        className="order-3 space-y-4 lg:order-none lg:col-start-2 lg:row-start-2"
-        onSubmit={onPlaceClick}
-        autoComplete="off"
-      >
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle>Print ticket</CardTitle>
-              <CardDescription className="hidden sm:block">
-                Do these three, then add the pair to your cart. Unit numbers
-                are a separate small print.
-              </CardDescription>
-              <CardDescription className="sm:hidden">
-                Required before the cart.
-              </CardDescription>
-              <ol className="mt-3 grid grid-cols-3 gap-1 text-xs sm:gap-2 sm:text-sm">
-                <CheckItem done={letteringDone} label="1. Lettering" />
-                <CheckItem done={colorPicked} label="2. Colors" />
-                <CheckItem done={layoutReady} label="3. Layout" />
-              </ol>
-            </CardHeader>
-            <CardContent className="space-y-8 pt-6">
-              {formError ? (
-                <Alert variant="destructive">
-                  <AlertCircle />
-                  <AlertTitle>Could not finish that order</AlertTitle>
-                  <AlertDescription>{formError}</AlertDescription>
-                </Alert>
-              ) : null}
+          <div className="lg:col-span-2 lg:row-start-1">
+            <SampleGallery activeId={activeSample} onPick={applySample} />
+          </div>
 
-              <MustSection
-                id="must-lettering"
-                step="1"
-                icon={<Type className="size-4" />}
-                title="Lettering"
-                hint="Required. Put the name, USDOT, and MC that should actually print — not the sample."
-                done={letteringDone}
-              >
-                <Field
-                  id="companyName"
-                  label="MCS-150 name (legal or one trade name)"
-                  requiredMark
-                  hint="Must match the name on the motor carrier identification report."
-                  placeholder="Your door name"
-                  value={fields.companyName}
-                  onChange={(value) => update("companyName", value)}
-                />
-                <Field
-                  id="legalName"
-                  label="City, State"
-                  hint="Optional. Prints under the company name. Not a federal marking field."
-                  placeholder="DALLAS, TX"
-                  value={formatPlace(fields.city, fields.state)}
-                  onChange={(value) => {
-                    const parsed = parsePlace(value);
-                    setFields((current) => ({
-                      ...current,
-                      city: parsed?.city ?? value.trim(),
-                      state: parsed?.state ?? "",
-                    }));
-                    setActiveSample(null);
-                    setFormError(null);
-                  }}
-                />
-                <Field
-                  id="dotNumber"
-                  label="USDOT number"
-                  requiredMark
-                  hint="Prints as USDOT plus the digits. Required on both sides."
-                  placeholder="Your USDOT"
-                  inputMode="numeric"
-                  value={fields.dotNumber}
-                  onChange={(value) => update("dotNumber", digitsOnly(value, 12))}
-                />
-                <Field
-                  id="mcNumber"
-                  label="MC (FMCSA) number"
-                  requiredMark
-                  hint="Prints as MC plus the digits under USDOT. Required on this shop ticket. FMCSA does not require MC on the truck."
-                  placeholder="Your MC"
-                  inputMode="numeric"
-                  value={fields.mcNumber}
-                  onChange={(value) => update("mcNumber", digitsOnly(value, 10))}
-                />
-                <div className="space-y-2">
-                  <Label htmlFor="logo">Logo (optional)</Label>
-                  <label
-                    htmlFor="logo"
-                    className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed px-3 py-3 text-sm hover:bg-muted/60"
-                  >
-                    <ImagePlus className="size-4 shrink-0" />
-                    <span className="text-muted-foreground">
-                      {fields.logoDataUrl
-                        ? "Logo attached — click to replace the sample mark"
-                        : "PNG or JPG, sits above the company name"}
-                    </span>
-                  </label>
-                  <Input
-                    id="logo"
-                    type="file"
-                    accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                    className="sr-only"
-                    onChange={(event) => {
-                      void onLogo(event.target.files?.[0]);
-                      event.target.value = "";
-                    }}
-                  />
-                  {logoError ? (
-                    <p className="text-sm text-destructive">{logoError}</p>
-                  ) : null}
-                  {fields.logoDataUrl ? (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setFields((current) => ({
-                          ...current,
-                          logoDataUrl: "",
-                          logoAspect: undefined,
-                        }));
-                        setActiveSample(null);
-                      }}
-                    >
-                      Remove logo
-                    </Button>
-                  ) : null}
-                </div>
-              </MustSection>
-
-              <MustSection
-                id="must-colors"
-                step="2"
-                icon={<Palette className="size-4" />}
-                title="Colors"
-                hint="Required. Tap a look — each card is that color on the door. The truck below matches the cart."
-                done={colorPicked}
-              >
-                {contrastNotes.length ? (
-                  <Alert>
+          <form
+            className="space-y-4 lg:col-start-2 lg:row-start-2"
+            onSubmit={onPlaceClick}
+            autoComplete="off"
+          >
+            <Card>
+              <CardHeader className="border-b">
+                <CardTitle>Print ticket</CardTitle>
+                <CardDescription>
+                  Do these three, then add the pair to your cart. Unit numbers
+                  are a separate small print.
+                </CardDescription>
+                <ol className="mt-3 grid grid-cols-3 gap-2 text-sm">
+                  <CheckItem done={letteringDone} label="1. Lettering" />
+                  <CheckItem done={colorPicked} label="2. Colors" />
+                  <CheckItem done={layoutReady} label="3. Layout" />
+                </ol>
+              </CardHeader>
+              <CardContent className="space-y-8 pt-6">
+                {formError ? (
+                  <Alert variant="destructive">
                     <AlertCircle />
-                    <AlertTitle>Check daylight contrast</AlertTitle>
-                    <AlertDescription>{contrastNotes[0]}</AlertDescription>
+                    <AlertTitle>Could not finish that order</AlertTitle>
+                    <AlertDescription>{formError}</AlertDescription>
                   </Alert>
                 ) : null}
-                <div className="grid grid-cols-2 gap-2">
-                  {STYLE_PRESETS.map((preset) => {
-                    const preview = {
-                      ...fields,
-                      ...applyPreset(preset.id),
-                      showMc: true,
-                      logoSize: fields.logoSize,
-                      logoDataUrl: fields.logoDataUrl,
-                      logoAspect: fields.logoAspect,
-                      templateId: fields.templateId,
-                      nameFont: fields.nameFont,
-                    };
-                    const selected =
-                      colorPicked && fields.paletteId === preset.id;
-                    return (
-                      <Button
-                        key={preset.id}
-                        type="button"
-                        variant={selected ? "default" : "outline"}
-                        className="h-auto flex-col items-stretch gap-2 p-2 text-left"
-                        onClick={() => {
-                        setFields((current) => ({
-                          ...current,
-                          ...applyPreset(preset.id),
-                          showMc: true,
-                          nameFont: current.nameFont,
-                          logoSize: current.logoSize,
-                          templateId: current.templateId,
-                          logoDataUrl: current.logoDataUrl,
-                          logoAspect: current.logoAspect,
-                        }));
-                          setColorPicked(true);
-                          setFormError(null);
-                        }}
-                      >
-                        <TruckSign
-                          fields={preview}
-                          className="pointer-events-none w-full shadow-none"
-                        />
-                        <span className="flex gap-1 px-1" aria-hidden>
-                          {[
-                            preset.colors.face,
-                            preset.colors.name,
-                            preset.colors.plate,
-                            preset.colors.outerBorder,
-                          ].map((swatch, index) => (
-                            <span
-                              key={`${preset.id}-${index}`}
-                              className="size-3 rounded-full ring-1 ring-black/15"
-                              style={{ backgroundColor: swatch }}
-                            />
-                          ))}
-                        </span>
-                        <span className="px-1">{preset.label}</span>
-                        <span className="px-1 text-[11px] font-normal text-muted-foreground">
-                          {preset.hint}
-                        </span>
-                      </Button>
-                    );
-                  })}
-                </div>
-                {colorPicked ? (
-                  <div className="space-y-2">
-                    <p className="text-xs font-medium text-[var(--navy)]">
-                      On the cab door
-                    </p>
-                    <WhiteSemiTruck fields={fields} defaultView="truck" />
-                  </div>
+                {improveNotes.length ? (
+                  <Alert>
+                    <Sparkles />
+                    <AlertTitle>Auto Improve</AlertTitle>
+                    <AlertDescription>
+                      <ul className="list-disc pl-4">
+                        {improveNotes.map((note) => (
+                          <li key={note}>{note}</li>
+                        ))}
+                      </ul>
+                    </AlertDescription>
+                  </Alert>
                 ) : null}
-                <p className="text-xs font-medium text-[var(--navy)]">
-                  Recut any swatch
-                </p>
-                <ColorField
-                  label="Door name"
-                  value={fields.colors.name}
-                  onChange={(value) => updateColor("name", value)}
-                />
-                <ColorField
-                  label="USDOT and MC"
-                  value={fields.colors.legal}
-                  onChange={(value) => updateColor("legal", value)}
-                />
-                <ColorField
-                  label="Face"
-                  value={fields.colors.face}
-                  onChange={(value) => updateColor("face", value)}
-                />
-                <ColorField
-                  label="Border"
-                  value={fields.colors.innerBorder}
-                  onChange={(value) => updateColor("innerBorder", value)}
-                />
-              </MustSection>
 
-              <MustSection
-                id="must-layout"
-                step="3"
-                icon={<LayoutTemplate className="size-4" />}
-                title="Layout"
-                hint="Required. Pick a layout, set logo size, and choose a door font. What you see is what prints."
-                done={layoutReady}
-              >
-                <div className="space-y-2">
-                  <Label>Layout</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Each card is a different composition, not a recolor.
-                  </p>
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {TEMPLATES.map((template) => {
-                      const preview = {
-                        ...fields,
-                        templateId: template.id as TemplateId,
-                        showMc: true,
-                      };
-                      const selected = fields.templateId === template.id;
-                      return (
-                        <Button
-                          key={template.id}
-                          type="button"
-                          variant={selected ? "default" : "outline"}
-                          className="h-auto flex-col items-stretch gap-1.5 p-1.5 text-left"
-                          onClick={() => {
-                            update("templateId", template.id);
-                            markLayoutReady();
-                          }}
-                        >
-                          <TruckSign
-                            fields={preview}
-                            className="pointer-events-none w-full shadow-none"
-                          />
-                          <span className="px-1 text-xs font-medium">
-                            {template.label}
-                          </span>
-                        </Button>
-                      );
-                    })}
-                  </div>
-                </div>
-                <LogoSizeControl
-                  value={fields.logoSize}
-                  disabled={!fields.logoDataUrl}
-                  onChange={(size: LogoSize) => {
-                    setFields((current) => ({ ...current, logoSize: size }));
-                    markLayoutReady();
-                  }}
-                />
-                <div className="space-y-2">
-                  <Label>Door font</Label>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {(
-                      [
-                        ["condensed", "Condensed"],
-                        ["sans", "Bold sans"],
-                        ["serif", "Serif"],
-                      ] as const
-                    ).map(([id, label]) => (
-                      <Button
-                        key={id}
-                        type="button"
-                        size="sm"
-                        variant={fields.nameFont === id ? "default" : "outline"}
-                        onClick={() => {
-                          update("nameFont", id as SignFontId);
-                          markLayoutReady();
-                        }}
-                      >
-                        {label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <Label htmlFor="chevrons">Side chevrons</Label>
-                    <p className="text-xs text-muted-foreground">
-                      Accent marks on the left and right of the plaque.
-                    </p>
-                  </div>
-                  <Switch
-                    id="chevrons"
-                    checked={fields.showChevrons}
-                    onCheckedChange={(checked) => {
-                      update("showChevrons", checked);
-                      markLayoutReady();
-                    }}
-                  />
-                </div>
-                <Button
-                  type="button"
-                  variant={layoutReady ? "default" : "outline"}
-                  className="w-full"
-                  onClick={markLayoutReady}
+                <MustSection
+                  id="must-lettering"
+                  step="1"
+                  icon={TICKET_ICONS.lettering}
+                  title="Lettering"
+                  hint="Required. Put the name, USDOT, and MC that should actually print — not the sample."
+                  done={letteringDone}
                 >
-                  {layoutReady
-                    ? "Layout ready for print"
-                    : "This layout is ready"}
+                  <LetteringFields {...ticket} />
+                </MustSection>
+
+                <MustSection
+                  id="must-colors"
+                  step="2"
+                  icon={TICKET_ICONS.colors}
+                  title="Colors"
+                  hint="Required. Tap a look — each card is that color on the door. The truck below matches the cart."
+                  done={colorPicked}
+                >
+                  <ColorFields {...ticket} showTruck />
+                </MustSection>
+
+                <MustSection
+                  id="must-layout"
+                  step="3"
+                  icon={TICKET_ICONS.layout}
+                  title="Layout"
+                  hint="Required. Pick a layout, set logo size, and choose a door font. What you see is what prints."
+                  done={layoutReady}
+                >
+                  <LayoutFields {...ticket} />
+                  <Button
+                    type="button"
+                    variant={layoutReady ? "default" : "outline"}
+                    className="w-full"
+                    onClick={markLayoutReady}
+                  >
+                    {layoutReady
+                      ? "Layout ready for print"
+                      : "This layout is ready"}
+                  </Button>
+                </MustSection>
+              </CardContent>
+              <CardFooter className="flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+                <Button
+                  type="submit"
+                  className="h-auto min-h-9 whitespace-normal sm:whitespace-nowrap"
+                >
+                  {canPrint ? "Add pair to cart" : "Finish required steps first"}
                 </Button>
-              </MustSection>
-            </CardContent>
-            <CardFooter className="flex-col items-stretch gap-2 sm:flex-row sm:items-center">
-              <Button
-                type="submit"
-                className="h-auto min-h-9 whitespace-normal sm:whitespace-nowrap"
-              >
-                {canPrint ? "Add pair to cart" : "Finish required steps first"}
-              </Button>
-              {!canPrint ? (
-                <p className="text-xs text-muted-foreground">
-                  Vinyl does not go in the cart until lettering, colors, and
-                  layout are set.
-                </p>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  Checkout shows this door on a white semi.
-                </p>
-              )}
-            </CardFooter>
-          </Card>
-        </form>
-    </div>
+                <Button type="button" variant="outline" onClick={onAutoImprove}>
+                  <Sparkles className="size-4" />
+                  Auto Improve
+                </Button>
+                <Button type="button" variant="outline" onClick={onReset}>
+                  <RotateCcw className="size-4" />
+                  Reset
+                </Button>
+                {!canPrint ? (
+                  <p className="text-xs text-muted-foreground">
+                    Vinyl does not go in the cart until lettering, colors, and
+                    layout are set.
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Checkout shows this door on a white semi.
+                  </p>
+                )}
+              </CardFooter>
+            </Card>
+          </form>
+        </div>
+      </div>
 
       <Dialog open={Boolean(added)} onOpenChange={() => setAdded(null)}>
         <DialogContent>
@@ -608,135 +440,5 @@ export function OrderStudio() {
         </DialogContent>
       </Dialog>
     </>
-  );
-}
-
-function CheckItem({ done, label }: { done: boolean; label: string }) {
-  return (
-    <li
-      className={
-        done
-          ? "flex items-center gap-1.5 font-medium text-[var(--forest)]"
-          : "flex items-center gap-1.5 text-muted-foreground"
-      }
-    >
-      {done ? (
-        <CheckCircle2 className="size-3.5 shrink-0" />
-      ) : (
-        <span className="size-3.5 shrink-0 rounded-full border border-current" />
-      )}
-      {label}
-    </li>
-  );
-}
-
-function MustSection({
-  id,
-  step,
-  icon,
-  title,
-  hint,
-  done,
-  children,
-}: {
-  id: string;
-  step: string;
-  icon: React.ReactNode;
-  title: string;
-  hint: string;
-  done: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <section id={id} className="space-y-4 scroll-mt-[11.5rem] lg:scroll-mt-24">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2">
-          <span className="mt-0.5 text-[var(--navy)]">{icon}</span>
-          <div>
-            <h3 className="font-heading flex items-center gap-2 text-base font-semibold text-[var(--navy)]">
-              {step}. {title}
-              {done ? (
-                <Badge variant="secondary">Done</Badge>
-              ) : (
-                <Badge>Must</Badge>
-              )}
-            </h3>
-            <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
-          </div>
-        </div>
-      </div>
-      <div className="space-y-3">{children}</div>
-    </section>
-  );
-}
-
-function Field({
-  id,
-  label,
-  value,
-  onChange,
-  placeholder,
-  inputMode,
-  hint,
-  requiredMark,
-}: {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
-  hint?: string;
-  requiredMark?: boolean;
-}) {
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={id}>
-        {label}
-        {requiredMark ? (
-          <span className="ml-1 text-destructive">*</span>
-        ) : null}
-      </Label>
-      {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
-      <Input
-        id={id}
-        name={`vinyl-${id}`}
-        value={value}
-        placeholder={placeholder}
-        inputMode={inputMode}
-        autoComplete="off"
-        onChange={(event) => onChange(event.target.value)}
-      />
-    </div>
-  );
-}
-
-function ColorField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <Label>{label}</Label>
-      <div className="flex items-center gap-2">
-        <input
-          type="color"
-          aria-label={label}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className="h-11 w-11 cursor-pointer rounded border bg-transparent p-0.5 md:h-8 md:w-10"
-        />
-        <Input
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className="w-[6.75rem] font-mono text-xs"
-        />
-      </div>
-    </div>
   );
 }

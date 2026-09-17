@@ -14,10 +14,12 @@ export function LogoSizeControl({
   value,
   onChange,
   disabled,
+  id = "logo-size",
 }: {
   value: number;
   onChange: (size: LogoSize) => void;
   disabled?: boolean;
+  id?: string;
 }) {
   const size = clampLogoSize(value);
 
@@ -25,7 +27,7 @@ export function LogoSizeControl({
     <div className={disabled ? "space-y-3 opacity-50" : "space-y-3"}>
       <div className="flex items-end justify-between gap-3">
         <div>
-          <Label htmlFor="logo-size">Logo size on the vinyl</Label>
+          <Label htmlFor={id}>Logo size on the vinyl</Label>
           <p className="text-xs text-muted-foreground">
             {disabled
               ? "Upload a logo first, then set how large it prints on the door."
@@ -50,7 +52,7 @@ export function LogoSizeControl({
         ))}
       </div>
       <Slider
-        id="logo-size"
+        id={id}
         min={1}
         max={5}
         step={1}

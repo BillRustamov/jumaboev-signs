@@ -135,7 +135,7 @@
   }
   html {
     @apply font-sans;
-    scroll-padding-top: calc(var(--shop-header) + 9.5rem);
+    scroll-padding-top: 6rem;
   }
 }
 
@@ -177,4 +177,13 @@ body.bot-preview [data-next-badge-root] {
 
 body.bot-preview {
   background: #eceff2;
+}
+
+@media (max-width: 1023px) {
+  body:has([data-mobile-designer]) {
+    overflow: hidden;
+  }
+  body:has([data-mobile-designer]) footer {
+    display: none;
+  }
 }
