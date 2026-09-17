@@ -46,6 +46,7 @@ export default async function BotPreviewPage({
       <WhiteSemiTruck
         fields={fields}
         interactive={false}
+        showChrome={false}
         className="rounded-none ring-0"
       />
     </main>

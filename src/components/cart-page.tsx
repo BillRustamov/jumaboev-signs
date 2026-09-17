@@ -61,9 +61,9 @@ export function CartPage() {
           <CardContent className="space-y-3">
             <WhiteSemiTruck fields={item.fields} />
             <p className="text-sm text-muted-foreground">
-              Example cut is 20 × 12 in for each side of the cab. Click the
-              door or the zoom on the truck to preview. Unit numbers are a
-              separate small print.
+              Example cut is 20 × 12 in for each cab side. Use Sign close-up
+              to inspect the art, On the door to see it on the cab. Unit
+              numbers are a separate small print.
             </p>
           </CardContent>
           <CardFooter className="justify-between">

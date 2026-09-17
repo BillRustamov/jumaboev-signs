@@ -427,9 +427,9 @@ export function OrderStudio() {
                 {colorPicked ? (
                   <div className="space-y-2">
                     <p className="text-xs font-medium text-[var(--navy)]">
-                      On the cab — same mockup as the cart
+                      On the cab door
                     </p>
-                    <WhiteSemiTruck fields={fields} />
+                    <WhiteSemiTruck fields={fields} defaultView="truck" />
                   </div>
                 ) : null}
                 <p className="text-xs font-medium text-[var(--navy)]">

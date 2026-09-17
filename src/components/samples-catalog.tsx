@@ -250,7 +250,11 @@ function InspectDialog({
                   <TruckSign fields={sample.fields} />
                 </div>
               ) : (
-                <WhiteSemiTruck fields={sample.fields} interactive={false} />
+                <WhiteSemiTruck
+                  fields={sample.fields}
+                  interactive={false}
+                  showChrome={false}
+                />
               )}
             </div>
             <p className="text-xs text-muted-foreground">

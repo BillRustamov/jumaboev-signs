@@ -146,12 +146,11 @@ export function CheckoutDesk() {
         <section key={item.id} className="space-y-2">
           <div>
             <h2 className="font-heading text-lg font-semibold text-[var(--navy)]">
-              {item.fields.companyName.trim().toUpperCase() || "Door pair"} on
-              the sleeper door
+              {item.fields.companyName.trim().toUpperCase() || "Door pair"}
             </h2>
             <p className="text-sm text-muted-foreground">
-              Click the door or the zoom to pull up a larger picture. Lettering
-              stays inside the rounded square.
+              Sign close-up is the print. On the door is a preview on the cab
+              — not the cut file.
             </p>
           </div>
           <WhiteSemiTruck fields={item.fields} />

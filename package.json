@@ -10,7 +10,7 @@
     "bot": "tsx bot/index.ts",
     "bot:demo": "tsx bot/index.ts --demo",
     "bot:profile": "tsx bot/index.ts --configure-profile",
-    "test": "tsx --test src/lib/design/design.test.ts src/lib/design/migrate.test.ts src/lib/samples.test.ts"
+    "test": "tsx --test src/lib/design/design.test.ts src/lib/design/migrate.test.ts src/lib/samples.test.ts src/lib/cab-mockup.test.ts"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
