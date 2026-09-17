@@ -1,7 +1,6 @@
 import { SignCanvas } from "@/components/sign-canvas";
 import { HideShopChrome } from "@/components/hide-shop-chrome";
 import { DRIVER_SAMPLES } from "@/lib/samples";
-import { emptySign } from "@/lib/order";
 import { TEMPLATES, type TemplateId } from "@/lib/design";
 
 export const dynamic = "force-dynamic";
@@ -23,28 +22,19 @@ export default async function SignTemplatesPreview({
   return (
     <main className="min-h-screen bg-neutral-200 p-6">
       <HideShopChrome />
-      <div className={only ? "mx-auto max-w-5xl" : "grid gap-8"}>
-        {(samples.length ? samples : [{ id: only, fields: emptySign() }]).map(
-          (sample) => (
-            <section key={sample.id ?? "sign"} className="mx-auto w-full max-w-5xl">
-              <p className="mb-2 font-sans text-sm font-semibold tracking-wide text-neutral-700 uppercase">
-                {sample.id} · 20 × 12 in
-              </p>
-              <div className="bg-white p-3 shadow-md">
-                <SignCanvas
-                  fields={{
-                    ...emptySign(),
-                    ...("fields" in sample && sample.fields
-                      ? sample.fields
-                      : {}),
-                    templateId: (sample.id as TemplateId) ?? "clean-white",
-                  }}
-                  previewBackdrop
-                />
+      <div className="grid gap-8">
+        {samples.map((sample) => (
+          <section key={sample.id} className="mx-auto w-full max-w-5xl">
+            <p className="mb-2 font-sans text-sm font-semibold tracking-wide text-neutral-700 uppercase">
+              {sample.id} · 20 × 12 in
+            </p>
+            <div className="bg-white p-3 shadow-md">
+              <div className="aspect-[20/12] w-full">
+                <SignCanvas fields={sample.fields} previewBackdrop />
               </div>
-            </section>
-          ),
-        )}
+            </div>
+          </section>
+        ))}
       </div>
     </main>
   );

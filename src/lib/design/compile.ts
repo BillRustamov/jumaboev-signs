@@ -303,7 +303,11 @@ export function compileDesign(input: LayoutInput): DesignDocument {
   function spotlight(): DesignElement[] {
     const stack: DesignElement[] = [];
     const box = logoBox("spotlight");
-    const logoH = hasLogo ? box.heightIn : 2.8;
+    const reserved =
+      5.05 + (place ? 0.55 : 0) + (showMc ? 0 : -1.05);
+    const logoH = hasLogo
+      ? Math.min(box.heightIn, Math.max(2.8, CANVAS_HEIGHT_IN - reserved))
+      : 2.6;
     const logoW = hasLogo ? box.widthIn : 9.2;
     const top = 0.38;
     if (hasLogo) {
@@ -332,24 +336,42 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     }
 
     const textW = 18.2;
-    let y = top + logoH + 0.28;
-    const remain = CANVAS_HEIGHT_IN - y - 0.4;
-    const rows = 1 + (place ? 1 : 0) + 1 + (showMc ? 1 : 0);
-    const nameShare = Math.min(1.85, Math.max(1.25, remain * 0.42));
-    const idShare = Math.min(1.55, Math.max(1.05, (remain - nameShare) / Math.max(1, rows - 1)));
-    const nameM = measureName(company, font, textW, nameShare, 1.15);
+    let y = top + logoH + 0.2;
+    const bottomLimit = 11.58;
+    let nameStart = 1.55;
+    let nameM = measureName(company, font, textW, nameStart, 1.05);
+    let placeSize = place ? 0.46 : 0;
+    let usdotStart = 1.2;
+    let mcStart = 1.05;
+
+    const textHeight = () =>
+      nameM.height +
+      0.14 +
+      (place ? placeSize * 1.15 + 0.1 : 0) +
+      measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 0.95, 0.04) * 1.12 +
+      (showMc
+        ? 0.1 +
+          measureLineSize(`MC ${mc}`, font, textW, mcStart, 0.88, 0.04) * 1.12
+        : 0);
+
+    for (let i = 0; i < 10 && y + textHeight() > bottomLimit; i += 1) {
+      nameStart = Math.max(1.05, nameStart - 0.08);
+      usdotStart = Math.max(0.95, usdotStart - 0.05);
+      mcStart = Math.max(0.85, mcStart - 0.05);
+      nameM = measureName(company, font, textW, nameStart, 1.0);
+    }
+
     stack.push(
       ...nameLinesFromMeasure(nameM, y, textW, centerX(textW), "center", ghostName, ink.name),
     );
-    y += nameM.height + 0.18;
+    y += nameM.height + 0.12;
     if (place) {
-      const pSize = Math.min(0.5, idShare * 0.42);
       stack.push(
-        line("place", placeText, y, textW, pSize, false, 0.12, centerX(textW), "center", ink.legal, 600),
+        line("place", placeText, y, textW, placeSize, false, 0.12, centerX(textW), "center", ink.legal, 600),
       );
-      y += pSize * 1.2 + 0.12;
+      y += placeSize * 1.15 + 0.08;
     }
-    const usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, idShare, 1.05, 0.05);
+    const usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 0.95, 0.04);
     stack.push(
       line(
         "usdot",
@@ -358,17 +380,17 @@ export function compileDesign(input: LayoutInput): DesignDocument {
         textW,
         usdotSize,
         !input.dotNumber.trim(),
-        0.05,
+        0.04,
         centerX(textW),
         "center",
         ink.legal,
         700,
       ),
     );
-    y += usdotSize * 1.15;
+    y += usdotSize * 1.12;
     if (showMc) {
-      y += 0.12;
-      const mcSize = measureLineSize(`MC ${mc}`, font, textW, idShare * 0.92, 1, 0.05);
+      y += 0.08;
+      const mcSize = measureLineSize(`MC ${mc}`, font, textW, mcStart, 0.88, 0.04);
       stack.push(
         line(
           "mc",
@@ -377,7 +399,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
           textW,
           mcSize,
           !input.mcNumber.trim(),
-          0.05,
+          0.04,
           centerX(textW),
           "center",
           ink.legal,
@@ -422,13 +444,13 @@ export function compileDesign(input: LayoutInput): DesignDocument {
 
     const textX = logoX + logoW + 0.5;
     const textW = CANVAS_WIDTH_IN - textX - 0.55;
-    let nameStart = 2.05;
-    let usdotStart = 1.7;
-    let mcStart = 1.45;
-    let nameM = measureName(company, font, textW, nameStart, 1.15);
-    let usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 1.15, 0.04);
+    let nameStart = 1.85;
+    let usdotStart = 1.45;
+    let mcStart = 1.25;
+    let nameM = measureName(company, font, textW, nameStart, 1.05);
+    let usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 0.92, 0.03);
     let mcSize = showMc
-      ? measureLineSize(`MC ${mc}`, font, textW, mcStart, 1.05, 0.04)
+      ? measureLineSize(`MC ${mc}`, font, textW, mcStart, 0.85, 0.03)
       : 0;
     const placeSize = place ? Math.min(0.5, 0.48) : 0;
 
@@ -440,13 +462,13 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       (showMc ? mcSize * 1.18 + 0.22 : 0);
 
     for (let i = 0; i < 10 && colHeight() > 10.6; i += 1) {
-      nameStart = Math.max(1.15, nameStart - 0.1);
-      usdotStart = Math.max(1.1, usdotStart - 0.07);
-      mcStart = Math.max(1, mcStart - 0.06);
-      nameM = measureName(company, font, textW, nameStart, 1.1);
-      usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 1.1, 0.04);
+      nameStart = Math.max(1.05, nameStart - 0.1);
+      usdotStart = Math.max(0.92, usdotStart - 0.07);
+      mcStart = Math.max(0.85, mcStart - 0.06);
+      nameM = measureName(company, font, textW, nameStart, 1.05);
+      usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 0.92, 0.03);
       mcSize = showMc
-        ? measureLineSize(`MC ${mc}`, font, textW, mcStart, 1, 0.04)
+        ? measureLineSize(`MC ${mc}`, font, textW, mcStart, 0.85, 0.03)
         : 0;
     }
 

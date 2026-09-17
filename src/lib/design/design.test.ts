@@ -191,6 +191,27 @@ test("color does not change layout positions", () => {
   assert.equal(pos(white), pos(navy));
 });
 
+test("required IDs stay inside the 12 inch canvas", () => {
+  for (const id of [
+    "clean-white",
+    "logo-spotlight",
+    "side-by-side",
+    "direct-truck",
+    "classic-plaque",
+  ] as const) {
+    const doc = base({ templateId: id });
+    assert.ok(bottom(doc) <= 11.95, `${id} bottom ${bottom(doc)}`);
+    assert.ok(
+      doc.elements.some((el) => el.type === "text" && el.role === "usdot"),
+      `${id} missing USDOT`,
+    );
+    assert.ok(
+      doc.elements.some((el) => el.type === "text" && el.role === "mc"),
+      `${id} missing MC`,
+    );
+  }
+});
+
 test("long names wrap instead of using a single unreadable line", () => {
   const doc = base({
     companyName: "AMERICAN CONTINENTAL FREIGHTLINES EXPRESS",

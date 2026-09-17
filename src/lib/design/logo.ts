@@ -51,11 +51,11 @@ export function suggestedLogoBox(
   let maxW: number;
   let maxH: number;
   if (mode === "side") {
-    maxW = canvasW * 0.46;
-    maxH = canvasH * 0.84;
+    maxW = canvasW * 0.38;
+    maxH = canvasH * 0.78;
   } else if (mode === "spotlight") {
-    maxW = canvasW * 0.84;
-    maxH = canvasH * 0.56;
+    maxW = canvasW * 0.72;
+    maxH = canvasH * 0.46;
   } else if (mode === "small") {
     maxW = canvasW * 0.44;
     maxH = canvasH * 0.26;
