@@ -25,7 +25,7 @@ npm run dev
 Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0:43147`.
 
 - `/` — shop landing, 20 × 12 in sizes, and FMCSA table
-- `/samples` — door samples on the white Volvo mockup
+- `/samples` — sign-first gallery with categories and filters; Customize this design opens the print desk
 - `/order` — live designer (`/order?sample=clean-white` loads the default plaque)
 - `/preview/signs` — five template compositions at print proportion (visual QA)
 - `/cart` — shopping cart (click the sign to preview)

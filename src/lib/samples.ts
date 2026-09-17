@@ -1,4 +1,4 @@
-import { applyPreset } from "@/lib/sign-style";
+import { applyPreset, STYLE_PRESETS } from "@/lib/sign-style";
 import { DEFAULT_LOGO_SIZE } from "@/lib/logo-size";
 import { emptySign, type SignFields } from "@/lib/order";
 import type { TemplateId } from "@/lib/design/schema";
@@ -184,4 +184,108 @@ export function isDemoLettering(fields: SignFields): boolean {
       sample.fields.companyName.toUpperCase() === name &&
       sample.fields.dotNumber === dot,
   );
+}
+
+export type SampleCategory =
+  | "white-minimal"
+  | "logo-focused"
+  | "classic-lettering"
+  | "premium-plaque"
+  | "upload";
+
+export type CatalogFilter = "all" | "white" | "dark" | "with-logo" | "no-logo";
+
+export const SAMPLE_CATEGORIES: {
+  id: SampleCategory;
+  label: string;
+  blurb: string;
+}[] = [
+  {
+    id: "white-minimal",
+    label: "White & Minimal",
+    blurb: "White vinyl, large black type, no extra box.",
+  },
+  {
+    id: "logo-focused",
+    label: "Logo-Focused",
+    blurb: "The mark leads. Name and USDOT stay readable.",
+  },
+  {
+    id: "classic-lettering",
+    label: "Classic Lettering",
+    blurb: "Cut type on the truck — no filled plaque.",
+  },
+  {
+    id: "premium-plaque",
+    label: "Premium Plaques",
+    blurb: "Solid printed board with large ID bands.",
+  },
+  {
+    id: "upload",
+    label: "Upload Your Own",
+    blurb: "Start blank and drop in a logo or existing door photo.",
+  },
+];
+
+export const CATALOG_FILTERS: { id: CatalogFilter; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "white", label: "White" },
+  { id: "dark", label: "Dark" },
+  { id: "with-logo", label: "With logo" },
+  { id: "no-logo", label: "No logo" },
+];
+
+/** Five layouts plus the blank upload card. No color duplicates. */
+export const GALLERY_SAMPLES: DriverSample[] = [...DRIVER_SAMPLES, BLANK_SAMPLE];
+
+function faceLuminance(hex: string): number {
+  const raw = hex.replace("#", "").padEnd(6, "0");
+  const r = Number.parseInt(raw.slice(0, 2), 16);
+  const g = Number.parseInt(raw.slice(2, 4), 16);
+  const b = Number.parseInt(raw.slice(4, 6), 16);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+export function sampleCategory(sample: DriverSample): SampleCategory {
+  if (sample.id === "blank") return "upload";
+  const id = sample.fields.templateId;
+  if (id === "clean-white") return "white-minimal";
+  if (id === "logo-spotlight" || id === "side-by-side") return "logo-focused";
+  if (id === "direct-truck") return "classic-lettering";
+  return "premium-plaque";
+}
+
+export function sampleTone(sample: DriverSample): "white" | "dark" {
+  return faceLuminance(sample.fields.colors.face) > 180 ? "white" : "dark";
+}
+
+export function sampleHasLogo(sample: DriverSample): boolean {
+  return Boolean(sample.fields.logoDataUrl?.trim());
+}
+
+export function sampleProductType(sample: DriverSample): string {
+  if (sample.id === "blank") return "Your artwork";
+  if (sample.fields.templateId === "direct-truck") return "Cut lettering";
+  if (sample.fields.templateId === "classic-plaque") return "Printed plaque";
+  return "White vinyl";
+}
+
+export function sampleColorLabel(sample: DriverSample): string {
+  const preset = STYLE_PRESETS.find((item) => item.id === sample.fields.paletteId);
+  return preset?.label ?? "Custom";
+}
+
+export function filterCatalog(
+  samples: DriverSample[],
+  category: SampleCategory | "all",
+  filter: CatalogFilter,
+): DriverSample[] {
+  return samples.filter((sample) => {
+    if (category !== "all" && sampleCategory(sample) !== category) return false;
+    if (filter === "white") return sampleTone(sample) === "white";
+    if (filter === "dark") return sampleTone(sample) === "dark";
+    if (filter === "with-logo") return sampleHasLogo(sample);
+    if (filter === "no-logo") return !sampleHasLogo(sample);
+    return true;
+  });
 }

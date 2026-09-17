@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { HomeSampleGrid } from "@/components/home-sample-grid";
+import { SamplesCatalog } from "@/components/samples-catalog";
+import { VINYL } from "@/lib/vinyl-spec";
 
 export const metadata: Metadata = {
   title: "Door samples",
@@ -13,16 +14,18 @@ export default function SamplesPage() {
           Samples
         </p>
         <h1 className="font-heading mt-1 text-3xl font-semibold tracking-tight text-[var(--navy)]">
-          Tap a shop door
+          Five layouts. Your numbers.
         </h1>
         <p className="mt-2 text-muted-foreground">
-          These are looks only. Each one is a 20 × 12 in filled plaque on a
-          white sleeper — logo, company name, city and state, USDOT, then MC.
-          Open it on the print desk, put your numbers on it, then add the pair
-          to your cart.
+          Each card is a {VINYL.size} door — the sign first, truck second.
+          White vinyl, logo-led, cut lettering, or a printed plaque. Open{" "}
+          <span className="font-medium text-[var(--navy)]">
+            Customize this design
+          </span>{" "}
+          to put your MCS-150 name, USDOT, and MC on the print ticket.
         </p>
       </div>
-      <HomeSampleGrid />
+      <SamplesCatalog />
     </main>
   );
 }
