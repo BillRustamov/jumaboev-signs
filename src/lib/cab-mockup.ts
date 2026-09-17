@@ -9,9 +9,9 @@ export const CAB_PHOTO = {
 
 /** Percent of the cab photo. Height is derived so the vinyl never squashes. */
 export const CAB_DOOR = {
-  leftPct: 22.4,
-  topPct: 39.6,
-  widthPct: 16.6,
+  leftPct: 23.0,
+  topPct: 43.2,
+  widthPct: 17.4,
 } as const;
 
 export function doorOverlayStyle(
