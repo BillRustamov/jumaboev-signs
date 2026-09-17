@@ -33,6 +33,11 @@ export function layoutInputFrom(fields: SignFields): LayoutInput {
     showChevrons: fields.showChevrons,
     showMc: fields.showMc,
     colors: fields.colors,
+    artworkRole: fields.artworkRole,
+    artworkFit: fields.artworkFit,
+    artworkOffsetX: fields.artworkOffsetX,
+    artworkOffsetY: fields.artworkOffsetY,
+    logoContainsName: fields.logoContainsName,
   };
 }
 
@@ -122,14 +127,18 @@ export function autoImprove(fields: SignFields): ImproveResult {
   }
 
   const suggested = suggestTemplate(next);
-  if (next.templateId !== suggested) {
+  if (next.artworkRole !== "existing-sign" && next.templateId !== suggested) {
     next.templateId = suggested;
     notes.push(
       `Moved to ${templateLabel(suggested)} so the mark and name share the 20 × 12 in board.`,
     );
   }
 
-  if (next.logoDataUrl.trim() && clampLogoSize(next.logoSize) < 4) {
+  if (
+    next.artworkRole !== "existing-sign" &&
+    next.logoDataUrl.trim() &&
+    clampLogoSize(next.logoSize) < 4
+  ) {
     next.logoSize = 4;
     notes.push("Enlarged the logo so it reads as a major mark.");
   }
@@ -143,13 +152,24 @@ export function autoImprove(fields: SignFields): ImproveResult {
 
   let doc = compileDesign(layoutInputFrom(next));
 
-  if (companySize(doc) < 1.15 && next.nameFont !== "condensed") {
+  if (
+    next.artworkRole !== "existing-sign" &&
+    companySize(doc) < 1.15 &&
+    next.nameFont !== "condensed"
+  ) {
     next.nameFont = "condensed";
     notes.push("Switched to condensed so the company name stays large.");
     doc = compileDesign(layoutInputFrom(next));
   }
 
-  if (next.logoDataUrl.trim()) {
+  if (next.artworkRole === "existing-sign") {
+    if (next.artworkFit === "cover") {
+      notes.push("Crop-to-fill stays on — it is an explicit choice, not a default.");
+    }
+    notes.push("Kept the upload on a 20 × 12 in board. Flattened type was not rewritten.");
+  }
+
+  if (next.artworkRole !== "existing-sign" && next.logoDataUrl.trim()) {
     const logo = doc.elements.find((item) => item.type === "logo");
     if (logo && logo.heightIn < 1.35 && clampLogoSize(next.logoSize) < 5) {
       next.logoSize = 5;
@@ -158,7 +178,7 @@ export function autoImprove(fields: SignFields): ImproveResult {
     }
   }
 
-  if (hasLogoTextCollision(doc) && next.logoDataUrl.trim()) {
+  if (next.artworkRole !== "existing-sign" && hasLogoTextCollision(doc) && next.logoDataUrl.trim()) {
     const fallback: TemplateId =
       next.templateId === "side-by-side" ? "logo-spotlight" : "side-by-side";
     const trial = cloneFields(next);
@@ -177,7 +197,11 @@ export function autoImprove(fields: SignFields): ImproveResult {
     }
   }
 
-  if (!requiredIdOnBoard(doc) && next.templateId !== "clean-white") {
+  if (
+    next.artworkRole !== "existing-sign" &&
+    !requiredIdOnBoard(doc) &&
+    next.templateId !== "clean-white"
+  ) {
     next.templateId = "clean-white";
     notes.push("Moved to Clean white so USDOT stays fully on the 20 × 12 in board.");
     doc = compileDesign(layoutInputFrom(next));

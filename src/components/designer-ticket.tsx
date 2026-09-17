@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { LogoSizeControl } from "@/components/logo-size-control";
+import { ArtworkControls } from "@/components/artwork-controls";
 import { TruckSign } from "@/components/truck-sign";
 import { WhiteSemiTruck } from "@/components/white-semi-truck";
 import { clampLogoSize, type LogoSize } from "@/lib/logo-size";
@@ -115,7 +116,7 @@ export function LetteringFields({
         onChange={(value) => update("mcNumber", digitsOnly(value, 10))}
       />
       <div className="space-y-2">
-        <Label htmlFor={uid(idPrefix, "logo")}>Logo (optional)</Label>
+        <Label htmlFor={uid(idPrefix, "logo")}>Logo or existing door sign</Label>
         <label
           htmlFor={uid(idPrefix, "logo")}
           className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border border-dashed px-3 py-3 text-sm hover:bg-muted/60"
@@ -123,8 +124,8 @@ export function LetteringFields({
           <ImagePlus className="size-4 shrink-0" />
           <span className="text-muted-foreground">
             {fields.logoDataUrl
-              ? "Logo attached — tap to replace"
-              : "PNG or JPG, sits with the company name"}
+              ? "File attached — tap to replace. Original is kept."
+              : "PNG, JPG, SVG, or WebP. Fits 20 × 12 in — never stretched."}
           </span>
         </label>
         <Input
@@ -150,13 +151,28 @@ export function LetteringFields({
                 ...current,
                 logoDataUrl: "",
                 logoAspect: undefined,
+                originalArtworkUrl: "",
+                artworkRole: "none",
+                artworkFit: "contain",
+                artworkOffsetX: 0,
+                artworkOffsetY: 0,
+                logoContainsName: false,
               }));
               onEdit?.();
             }}
           >
-            Remove logo
+            Remove file
           </Button>
         ) : null}
+      {fields.logoDataUrl ? (
+        <ArtworkControls
+          fields={fields}
+          onChange={(patch) => {
+            setFields((current) => ({ ...current, ...patch }));
+            onEdit?.();
+          }}
+        />
+      ) : null}
       </div>
     </div>
   );

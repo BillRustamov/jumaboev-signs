@@ -25,6 +25,11 @@ export function designFromFields(fields: SignFields): DesignDocument {
     showChevrons: fields.showChevrons,
     showMc: fields.showMc,
     colors: fields.colors,
+    artworkRole: fields.artworkRole,
+    artworkFit: fields.artworkFit,
+    artworkOffsetX: fields.artworkOffsetX,
+    artworkOffsetY: fields.artworkOffsetY,
+    logoContainsName: fields.logoContainsName,
   });
 }
 
@@ -130,8 +135,21 @@ export function SignCanvas({
           return <polygon key={el.id} points={points} fill={el.color} />;
         }
         if (el.type === "logo") {
+          const clipId = `crop-${el.id}-${paintId}`;
           return (
             <g key={el.id}>
+              {el.cropped ? (
+                <defs>
+                  <clipPath id={clipId}>
+                    <rect
+                      x={el.xIn}
+                      y={el.yIn}
+                      width={el.widthIn}
+                      height={el.heightIn}
+                    />
+                  </clipPath>
+                </defs>
+              ) : null}
               {el.boxed ? (
                 <rect
                   x={el.xIn}
@@ -147,12 +165,13 @@ export function SignCanvas({
               {el.src ? (
                 <image
                   href={el.src}
-                  x={el.xIn}
-                  y={el.yIn}
-                  width={el.widthIn}
-                  height={el.heightIn}
+                  x={el.imageXIn ?? el.xIn}
+                  y={el.imageYIn ?? el.yIn}
+                  width={el.imageWidthIn ?? el.widthIn}
+                  height={el.imageHeightIn ?? el.heightIn}
                   preserveAspectRatio="xMidYMid meet"
                   opacity={el.opacity ?? 1}
+                  clipPath={el.cropped ? `url(#${clipId})` : undefined}
                 />
               ) : null}
             </g>

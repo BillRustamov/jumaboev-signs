@@ -235,3 +235,44 @@ test("logo is never stretched by layout boxes using contain semantics", () => {
   assert.ok(wideLogo.widthIn / wideLogo.heightIn > 1.3);
   assert.ok(tallLogo.heightIn / tallLogo.widthIn > 1.1);
 });
+
+test("existing sign contain has no ghost type and stays 20 by 12", () => {
+  const doc = base({
+    companyName: "",
+    dotNumber: "",
+    mcNumber: "",
+    logoDataUrl: "data:image/png;base64,aaa",
+    logoAspect: 4 / 3,
+    artworkRole: "existing-sign",
+    artworkFit: "contain",
+  });
+  assert.equal(doc.widthIn, 20);
+  assert.equal(doc.heightIn, 12);
+  assert.equal(
+    doc.elements.some((el) => el.type === "text"),
+    false,
+  );
+  const logo = doc.elements.find((el) => el.type === "logo");
+  assert.ok(logo && logo.type === "logo");
+  assert.equal(logo.cropped, false);
+  const iw = logo.imageWidthIn ?? logo.widthIn;
+  const ih = logo.imageHeightIn ?? logo.heightIn;
+  assert.ok(Math.abs(iw / ih - 4 / 3) < 0.02);
+});
+
+test("crop to fill is explicit and keeps native aspect of the bitmap", () => {
+  const doc = base({
+    companyName: "",
+    logoAspect: 4 / 3,
+    artworkRole: "existing-sign",
+    artworkFit: "cover",
+  });
+  const logo = doc.elements.find((el) => el.type === "logo");
+  assert.ok(logo && logo.type === "logo");
+  assert.equal(logo.cropped, true);
+  const iw = logo.imageWidthIn ?? 0;
+  const ih = logo.imageHeightIn ?? 1;
+  assert.ok(Math.abs(iw / ih - 4 / 3) < 0.02);
+  assert.ok(logo.widthIn >= 18);
+  assert.ok(logo.heightIn >= 10);
+});

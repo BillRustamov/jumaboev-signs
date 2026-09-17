@@ -11,6 +11,13 @@ import {
   resolveTemplate,
 } from "@/lib/design/migrate";
 import type { DesignDocument } from "@/lib/design/schema";
+import {
+  defaultArtwork,
+  resolveArtworkFit,
+  resolveArtworkRole,
+  type ArtworkFit,
+  type ArtworkRole,
+} from "@/lib/artwork";
 
 export type OrderSource = "web" | "telegram";
 
@@ -25,6 +32,13 @@ export type SignFields = {
   fleetNumber: string;
   logoDataUrl: string;
   logoAspect?: number;
+  artworkRole: ArtworkRole;
+  artworkFit: ArtworkFit;
+  artworkOffsetX: number;
+  artworkOffsetY: number;
+  /** Untouched upload. Fitting and crop never overwrite this. */
+  originalArtworkUrl: string;
+  logoContainsName: boolean;
   design?: DesignDocument;
 } & SignStyle;
 
@@ -48,6 +62,7 @@ export const SAMPLE_SIGN: SignFields = {
   mcNumber: "1051891",
   fleetNumber: "",
   logoDataUrl: "",
+  ...defaultArtwork(),
   ...applyPreset("white-black"),
   templateId: "clean-white",
 };
@@ -75,6 +90,7 @@ export function emptySign(): SignFields {
     mcNumber: "",
     fleetNumber: "",
     logoDataUrl: "",
+    ...defaultArtwork(),
     ...defaultStyle(),
   };
 }
@@ -139,6 +155,20 @@ export function normalizeSign(input: Partial<SignFields>): SignFields {
     colors: { ...base.colors, ...input.colors },
     logoSize: clampLogoSize(input.logoSize ?? base.logoSize),
     templateId: resolveTemplate(input.templateId ?? base.templateId),
+    artworkRole: resolveArtworkRole(input.artworkRole ?? base.artworkRole),
+    artworkFit: resolveArtworkFit(input.artworkFit ?? base.artworkFit),
+    artworkOffsetX:
+      typeof input.artworkOffsetX === "number" && Number.isFinite(input.artworkOffsetX)
+        ? input.artworkOffsetX
+        : 0,
+    artworkOffsetY:
+      typeof input.artworkOffsetY === "number" && Number.isFinite(input.artworkOffsetY)
+        ? input.artworkOffsetY
+        : 0,
+    originalArtworkUrl: String(
+      input.originalArtworkUrl ?? input.logoDataUrl ?? "",
+    ).trim(),
+    logoContainsName: Boolean(input.logoContainsName),
   };
   fields.design = compileDesign({
     companyName: fields.companyName,
@@ -155,6 +185,11 @@ export function normalizeSign(input: Partial<SignFields>): SignFields {
     showChevrons: fields.showChevrons,
     showMc: fields.showMc,
     colors: fields.colors,
+    artworkRole: fields.artworkRole,
+    artworkFit: fields.artworkFit,
+    artworkOffsetX: fields.artworkOffsetX,
+    artworkOffsetY: fields.artworkOffsetY,
+    logoContainsName: fields.logoContainsName,
   });
   return fields;
 }

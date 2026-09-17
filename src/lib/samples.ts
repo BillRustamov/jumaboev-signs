@@ -2,6 +2,7 @@ import { applyPreset, STYLE_PRESETS } from "@/lib/sign-style";
 import { DEFAULT_LOGO_SIZE } from "@/lib/logo-size";
 import { emptySign, type SignFields } from "@/lib/order";
 import type { TemplateId } from "@/lib/design/schema";
+import { defaultArtwork } from "@/lib/artwork";
 
 export type DriverSample = {
   id: string;
@@ -56,6 +57,9 @@ function sampleFields(opts: {
     logoDataUrl: opts.logo ?? "",
     logoAspect: opts.aspect,
     ...style,
+    ...defaultArtwork(),
+    artworkRole: opts.logo ? "logo" : "none",
+    originalArtworkUrl: opts.logo ?? "",
     templateId: opts.templateId,
     showChevrons: opts.chevrons ?? style.showChevrons,
     logoSize: DEFAULT_LOGO_SIZE,

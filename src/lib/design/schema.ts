@@ -50,6 +50,13 @@ export type LogoElement = BaseElement & {
   boxed: boolean;
   boxColor: string;
   opacity?: number;
+  /** Bitmap rect. When omitted, same as the element box. */
+  imageXIn?: number;
+  imageYIn?: number;
+  imageWidthIn?: number;
+  imageHeightIn?: number;
+  /** True only when the customer chose crop-to-fill. */
+  cropped?: boolean;
 };
 
 export type RuleElement = BaseElement & {

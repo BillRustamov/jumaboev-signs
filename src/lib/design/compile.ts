@@ -13,10 +13,17 @@ import {
   type SignFontId,
   type TextElement,
 } from "@/lib/design/schema";
-import { suggestedLogoBox, logoScaleFromSize } from "@/lib/design/logo";
+import { suggestedLogoBox, logoScaleFromSize, logoSlotMax } from "@/lib/design/logo";
 import { resolveFont, resolvePlace, resolveTemplate } from "@/lib/design/migrate";
 import { fitFontSize, wrapText } from "@/lib/design/typography";
 import type { SignPalette } from "@/lib/sign-style";
+import {
+  artworkPlacement,
+  existingSignSlot,
+  resolveArtworkFit,
+  resolveArtworkRole,
+  type ArtworkPlacement,
+} from "@/lib/artwork";
 
 export type LayoutInput = {
   companyName: string;
@@ -33,6 +40,11 @@ export type LayoutInput = {
   showChevrons?: boolean;
   showMc?: boolean;
   colors: SignPalette;
+  artworkRole?: unknown;
+  artworkFit?: unknown;
+  artworkOffsetX?: number;
+  artworkOffsetY?: number;
+  logoContainsName?: boolean;
 };
 
 function uid(prefix: string, index: number): string {
@@ -99,7 +111,21 @@ export function compileDesign(input: LayoutInput): DesignDocument {
   const ink = input.colors;
   const cutLettering = templateId === "direct-truck";
 
-  const background = cutLettering
+  const artworkRole = resolveArtworkRole(input.artworkRole);
+  const artworkFit = resolveArtworkFit(input.artworkFit);
+  const artworkOffsetX =
+    typeof input.artworkOffsetX === "number" && Number.isFinite(input.artworkOffsetX)
+      ? input.artworkOffsetX
+      : 0;
+  const artworkOffsetY =
+    typeof input.artworkOffsetY === "number" && Number.isFinite(input.artworkOffsetY)
+      ? input.artworkOffsetY
+      : 0;
+  const logoContainsName = Boolean(input.logoContainsName);
+  const existingSign = artworkRole === "existing-sign" && hasLogo;
+  const nameCap = logoContainsName ? 0.78 : 1;
+
+  const background = cutLettering && !existingSign
     ? {
         fill: "none",
         radiusIn: 0,
@@ -113,6 +139,16 @@ export function compileDesign(input: LayoutInput): DesignDocument {
         borderIn: templateId === "classic-plaque" ? 0.12 : 0.07,
       };
 
+  function companyMeasure(maxWidth: number, startSize: number, minSize: number) {
+    return measureName(
+      company,
+      font,
+      maxWidth,
+      startSize * nameCap,
+      logoContainsName ? Math.max(0.85, minSize * 0.72) : minSize,
+    );
+  }
+
   function logoBox(mode: "spotlight" | "balanced" | "side" | "small") {
     return suggestedLogoBox(
       CANVAS_WIDTH_IN,
@@ -124,8 +160,9 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     );
   }
 
-  const elements =
-    templateId === "logo-spotlight"
+  const elements = existingSign
+    ? existingSignLayout()
+    : templateId === "logo-spotlight"
       ? spotlight()
       : templateId === "side-by-side"
         ? sideBySide()
@@ -135,13 +172,18 @@ export function compileDesign(input: LayoutInput): DesignDocument {
             ? classicPlaque()
             : stackedLettering({ plaque: true, logoMode: hasLogo ? "balanced" : "none" });
 
-  if (input.showChevrons && !cutLettering && !elements.some((item) => item.type === "chevron")) {
+  if (
+    input.showChevrons &&
+    !cutLettering &&
+    !existingSign &&
+    !elements.some((item) => item.type === "chevron")
+  ) {
     elements.push(...chevrons());
   }
 
   if (hasLogo) {
     const logo = elements.find((item): item is LogoElement => item.type === "logo");
-    if (logo && logo.heightIn < 1.1) {
+    if (logo && logo.heightIn < 1.1 && !existingSign) {
       warnings.push("Logo is small on this layout. Increase size or pick Logo spotlight.");
     }
   }
@@ -154,7 +196,17 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       "Company name is under 1 in. Check 50-foot daylight reading before you approve.",
     );
   }
-  if (cutLettering) {
+  if (existingSign) {
+    warnings.push(
+      "Flattened JPG/PNG type is not editable. Add MCS-150 name and USDOT on the ticket if they are missing from the photo.",
+    );
+  }
+  if (logoContainsName && hasLogo && !existingSign) {
+    warnings.push(
+      "The mark already includes the company name. Registered name still prints at a readable size.",
+    );
+  }
+  if (cutLettering && !existingSign) {
     warnings.push("Direct lettering is cut vinyl on the truck — no filled plaque prints.");
   }
 
@@ -163,7 +215,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     widthIn: CANVAS_WIDTH_IN,
     heightIn: CANVAS_HEIGHT_IN,
     templateId,
-    production: productionOf(templateId),
+    production: existingSign ? "printed-plaque" : productionOf(templateId),
     background,
     elements,
     warnings,
@@ -189,7 +241,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     let mcStart = 1.92;
     let placeStart = 0.58;
 
-    let nameM = measureName(company, font, textW, nameStart, 1.25);
+    let nameM = companyMeasure(textW, nameStart, 1.25);
     let usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 1.5, 0.05);
     let mcSize = showMc
       ? measureLineSize(`MC ${mc}`, font, textW, mcStart, 1.35, 0.05)
@@ -217,7 +269,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       usdotStart = Math.max(1.5, usdotStart - 0.08);
       mcStart = Math.max(1.3, mcStart - 0.07);
       if (logoH > 2.1) logoH -= 0.12;
-      nameM = measureName(company, font, textW, nameStart, 1.2);
+      nameM = companyMeasure(textW, nameStart, 1.2);
       usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 1.45, 0.05);
       mcSize = showMc
         ? measureLineSize(`MC ${mc}`, font, textW, mcStart, 1.3, 0.05)
@@ -228,7 +280,16 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     let y = Math.max(0.42, Math.min(1.55, (CANVAS_HEIGHT_IN - total) / 2));
 
     if (hasLogo && logoH > 0) {
-      stack.push(logoEl(centerX(logoW), y, logoW, logoH, false));
+      stack.push(
+        logoEl(
+          centerX(logoW),
+          y,
+          logoW,
+          logoH,
+          false,
+          opts.logoMode === "small" ? "small" : "balanced",
+        ),
+      );
       y += logoH + 0.3;
     }
 
@@ -311,7 +372,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     const logoW = hasLogo ? box.widthIn : 9.2;
     const top = 0.38;
     if (hasLogo) {
-      stack.push(logoEl(centerX(logoW), top, logoW, logoH, false));
+      stack.push(logoEl(centerX(logoW), top, logoW, logoH, false, "spotlight"));
     } else {
       stack.push(
         textBlock({
@@ -339,7 +400,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     let y = top + logoH + 0.2;
     const bottomLimit = 11.58;
     let nameStart = 1.55;
-    let nameM = measureName(company, font, textW, nameStart, 1.05);
+    let nameM = companyMeasure(textW, nameStart, 1.05);
     let placeSize = place ? 0.46 : 0;
     let usdotStart = 1.2;
     let mcStart = 1.05;
@@ -358,7 +419,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       nameStart = Math.max(1.05, nameStart - 0.08);
       usdotStart = Math.max(0.95, usdotStart - 0.05);
       mcStart = Math.max(0.85, mcStart - 0.05);
-      nameM = measureName(company, font, textW, nameStart, 1.0);
+      nameM = companyMeasure(textW, nameStart, 1.0);
     }
 
     stack.push(
@@ -418,7 +479,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     const logoX = 0.55;
     const logoY = (CANVAS_HEIGHT_IN - logoH) / 2;
     if (hasLogo) {
-      stack.push(logoEl(logoX, logoY, logoW, logoH, false));
+      stack.push(logoEl(logoX, logoY, logoW, logoH, false, "side"));
     } else {
       stack.push(
         textBlock({
@@ -447,7 +508,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     let nameStart = 1.85;
     let usdotStart = 1.45;
     let mcStart = 1.25;
-    let nameM = measureName(company, font, textW, nameStart, 1.05);
+    let nameM = companyMeasure(textW, nameStart, 1.05);
     let usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 0.92, 0.03);
     let mcSize = showMc
       ? measureLineSize(`MC ${mc}`, font, textW, mcStart, 0.85, 0.03)
@@ -465,7 +526,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       nameStart = Math.max(1.05, nameStart - 0.1);
       usdotStart = Math.max(0.92, usdotStart - 0.07);
       mcStart = Math.max(0.85, mcStart - 0.06);
-      nameM = measureName(company, font, textW, nameStart, 1.05);
+      nameM = companyMeasure(textW, nameStart, 1.05);
       usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 0.92, 0.03);
       mcSize = showMc
         ? measureLineSize(`MC ${mc}`, font, textW, mcStart, 0.85, 0.03)
@@ -531,12 +592,12 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       const box = logoBox("small");
       logoW = box.widthIn;
       logoH = box.heightIn;
-      stack.push(logoEl(centerX(logoW), y, logoW, logoH, false));
+      stack.push(logoEl(centerX(logoW), y, logoW, logoH, false, "small"));
       y += logoH + 0.18;
     }
 
     let nameStart = hasLogo ? 1.85 : 2.55;
-    let nameM = measureName(company, font, textW, nameStart, 1.2);
+    let nameM = companyMeasure(textW, nameStart, 1.2);
     const placeSize = place ? 0.46 : 0;
     const ruleBlock = 0.28;
     const bottomPad = 0.32;
@@ -550,7 +611,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
 
     for (let i = 0; i < 10 && bandH < 1.75; i += 1) {
       nameStart = Math.max(1.2, nameStart - 0.12);
-      nameM = measureName(company, font, textW, nameStart, 1.15);
+      nameM = companyMeasure(textW, nameStart, 1.15);
       remaining = CANVAS_HEIGHT_IN - usedAbove() - bottomPad;
       bandH = (remaining - (bandCount - 1) * bandGap) / bandCount;
     }
@@ -653,26 +714,173 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     };
   }
 
+  function logoFromPlacement(placed: ArtworkPlacement, boxed: boolean): LogoElement {
+    const box = placed.cropped
+      ? {
+          xIn: placed.clipX,
+          yIn: placed.clipY,
+          widthIn: placed.clipW,
+          heightIn: placed.clipH,
+        }
+      : {
+          xIn: placed.imageX,
+          yIn: placed.imageY,
+          widthIn: placed.imageW,
+          heightIn: placed.imageH,
+        };
+    return {
+      id: "logo",
+      type: "logo",
+      ...box,
+      src: input.logoDataUrl ?? "",
+      boxed,
+      boxColor: ink.name,
+      visible: true,
+      locked: false,
+      imageXIn: placed.imageX,
+      imageYIn: placed.imageY,
+      imageWidthIn: placed.imageW,
+      imageHeightIn: placed.imageH,
+      cropped: placed.cropped,
+    };
+  }
+
+  function fittedLogo(
+    xIn: number,
+    yIn: number,
+    widthIn: number,
+    heightIn: number,
+    mode: "spotlight" | "balanced" | "side" | "small",
+    boxed: boolean,
+  ): LogoElement {
+    const max = logoSlotMax(CANVAS_WIDTH_IN, CANVAS_HEIGHT_IN, scale, mode);
+    const aspect =
+      typeof input.logoAspect === "number" && input.logoAspect > 0.05
+        ? input.logoAspect
+        : widthIn / Math.max(0.2, heightIn);
+    if (artworkFit === "cover") {
+      const slotX = xIn - (max.maxW - widthIn) / 2;
+      const slotY = yIn;
+      return logoFromPlacement(
+        artworkPlacement({
+          slotX,
+          slotY,
+          slotW: max.maxW,
+          slotH: Math.max(heightIn, max.maxH),
+          aspect,
+          fit: "cover",
+          offsetX: artworkOffsetX,
+          offsetY: artworkOffsetY,
+        }),
+        boxed,
+      );
+    }
+    return logoFromPlacement(
+      artworkPlacement({
+        slotX: xIn,
+        slotY: yIn,
+        slotW: widthIn,
+        slotH: heightIn,
+        aspect,
+        fit: artworkFit,
+        offsetX: artworkOffsetX,
+        offsetY: artworkOffsetY,
+      }),
+      boxed,
+    );
+  }
+
+  function existingSignLayout(): DesignElement[] {
+    const slot = existingSignSlot();
+    const aspect =
+      typeof input.logoAspect === "number" && input.logoAspect > 0.05
+        ? input.logoAspect
+        : CANVAS_WIDTH_IN / CANVAS_HEIGHT_IN;
+    const placed = artworkPlacement({
+      ...slot,
+      aspect,
+      fit: artworkFit,
+      offsetX: artworkOffsetX,
+      offsetY: artworkOffsetY,
+    });
+    const stack: DesignElement[] = [logoFromPlacement(placed, false)];
+    const hasName = Boolean(input.companyName.trim());
+    const hasDot = Boolean(input.dotNumber.trim());
+    const hasMc = Boolean(input.mcNumber.trim()) && showMc;
+    if (!hasName && !hasDot && !hasMc) return stack;
+
+    const bandH = 2.42;
+    const bandY = CANVAS_HEIGHT_IN - 0.22 - bandH;
+    const bandX = 0.35;
+    const bandW = CANVAS_WIDTH_IN - 0.7;
+    stack.push(bandEl("overlay-band", bandX, bandY, bandW, bandH));
+    let y = bandY + 0.22;
+    const textW = bandW - 0.5;
+    const textX = bandX + 0.25;
+    if (hasName && !logoContainsName) {
+      const nameM = companyMeasure(textW, 0.72, 0.48);
+      stack.push(
+        ...nameLinesFromMeasure(
+          nameM,
+          y,
+          textW,
+          textX,
+          "center",
+          false,
+          ink.plateText,
+        ),
+      );
+      y += nameM.height + 0.08;
+    }
+    if (hasDot) {
+      const usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, 0.7, 0.48, 0.04);
+      stack.push(
+        line(
+          "usdot",
+          `USDOT ${dot}`,
+          y,
+          textW,
+          usdotSize,
+          false,
+          0.04,
+          textX,
+          "center",
+          ink.plateText,
+          700,
+        ),
+      );
+      y += usdotSize * 1.12;
+    }
+    if (hasMc) {
+      const mcSize = measureLineSize(`MC ${mc}`, font, textW, 0.62, 0.42, 0.04);
+      stack.push(
+        line(
+          "mc",
+          `MC ${mc}`,
+          y,
+          textW,
+          mcSize,
+          false,
+          0.04,
+          textX,
+          "center",
+          ink.plateText,
+          700,
+        ),
+      );
+    }
+    return stack;
+  }
+
   function logoEl(
     xIn: number,
     yIn: number,
     widthIn: number,
     heightIn: number,
     boxed: boolean,
+    mode: "spotlight" | "balanced" | "side" | "small" = "balanced",
   ): LogoElement {
-    return {
-      id: "logo",
-      type: "logo",
-      xIn,
-      yIn,
-      widthIn,
-      heightIn,
-      src: input.logoDataUrl ?? "",
-      boxed,
-      boxColor: ink.name,
-      visible: true,
-      locked: false,
-    };
+    return fittedLogo(xIn, yIn, widthIn, heightIn, mode, boxed);
   }
 
   function nameLinesFromMeasure(

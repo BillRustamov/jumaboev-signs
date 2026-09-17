@@ -39,6 +39,7 @@ import {
 } from "@/components/mobile-designer";
 import { addToCart, type CartItem } from "@/lib/cart";
 import { autoImprove } from "@/lib/auto-improve";
+import { suggestArtworkRole } from "@/lib/artwork";
 import { clampLogoSize } from "@/lib/logo-size";
 import { validateSign, type SignFields } from "@/lib/order";
 import {
@@ -159,12 +160,22 @@ export function OrderStudio() {
         setFields((current) => ({
           ...current,
           logoDataUrl: dataUrl,
+          originalArtworkUrl: dataUrl,
           logoAspect: aspect,
+          artworkRole:
+            current.artworkRole === "existing-sign" || current.artworkRole === "logo"
+              ? current.artworkRole
+              : suggestArtworkRole(aspect),
+          artworkFit: current.artworkFit || "contain",
         }));
         touch();
       };
       image.onerror = () => {
-        setFields((current) => ({ ...current, logoDataUrl: dataUrl }));
+        setFields((current) => ({
+          ...current,
+          logoDataUrl: dataUrl,
+          originalArtworkUrl: dataUrl,
+        }));
         touch();
       };
       image.src = dataUrl;

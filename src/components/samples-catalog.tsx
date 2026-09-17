@@ -182,7 +182,8 @@ function SampleCard({
               Your logo or door photo
             </p>
             <p className="mt-1 max-w-[16rem] text-center text-xs text-muted-foreground">
-              Fit on {VINYL.size}. We never stretch it to fill.
+              Fit entire, crop to fill, add margins, or keep aspect on{" "}
+              {VINYL.size}. We never stretch a file to fill.
             </p>
           </div>
         ) : (

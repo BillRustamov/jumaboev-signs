@@ -14,6 +14,33 @@ export function logoScaleFromSize(size: unknown): number {
   return SCALE[clampLogoSize(size)];
 }
 
+export function logoSlotMax(
+  canvasW: number,
+  canvasH: number,
+  scale: number,
+  mode: "spotlight" | "balanced" | "side" | "small",
+): { maxW: number; maxH: number } {
+  const clamped = Math.min(1.55, Math.max(0.5, scale));
+  let maxW: number;
+  let maxH: number;
+  if (mode === "side") {
+    maxW = canvasW * 0.38;
+    maxH = canvasH * 0.78;
+  } else if (mode === "spotlight") {
+    maxW = canvasW * 0.72;
+    maxH = canvasH * 0.46;
+  } else if (mode === "small") {
+    maxW = canvasW * 0.44;
+    maxH = canvasH * 0.26;
+  } else {
+    maxW = canvasW * 0.62;
+    maxH = canvasH * 0.32;
+  }
+  maxW = Math.min(canvasW - 0.9, maxW * clamped);
+  maxH = Math.min(canvasH - 0.9, maxH * clamped);
+  return { maxW: Math.max(1.2, maxW), maxH: Math.max(1.1, maxH) };
+}
+
 function aspectFor(shape: LogoShape, ratio?: number): number {
   if (typeof ratio === "number" && ratio > 0.05 && Number.isFinite(ratio)) {
     return ratio;
@@ -46,24 +73,7 @@ export function suggestedLogoBox(
   mode: "spotlight" | "balanced" | "side" | "small",
   ratio?: number,
 ): { widthIn: number; heightIn: number } {
-  const clamped = Math.min(1.55, Math.max(0.5, scale));
+  const { maxW, maxH } = logoSlotMax(canvasW, canvasH, scale, mode);
   const aspect = aspectFor(shape, ratio);
-  let maxW: number;
-  let maxH: number;
-  if (mode === "side") {
-    maxW = canvasW * 0.38;
-    maxH = canvasH * 0.78;
-  } else if (mode === "spotlight") {
-    maxW = canvasW * 0.72;
-    maxH = canvasH * 0.46;
-  } else if (mode === "small") {
-    maxW = canvasW * 0.44;
-    maxH = canvasH * 0.26;
-  } else {
-    maxW = canvasW * 0.62;
-    maxH = canvasH * 0.32;
-  }
-  maxW = Math.min(canvasW - 0.9, maxW * clamped);
-  maxH = Math.min(canvasH - 0.9, maxH * clamped);
-  return fitAspect(Math.max(1.2, maxW), Math.max(1.1, maxH), aspect);
+  return fitAspect(maxW, maxH, aspect);
 }
