@@ -7,16 +7,22 @@ import { SignCanvas } from "@/components/sign-canvas";
 export function TruckSign({
   fields,
   className,
+  previewBackdrop = true,
   ...props
 }: {
   fields: SignFields;
+  previewBackdrop?: boolean;
 } & HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn("relative aspect-[20/12] w-full select-none", className)}
       {...props}
     >
-      <SignCanvas fields={fields} className="h-full w-full overflow-visible" />
+      <SignCanvas
+        fields={fields}
+        previewBackdrop={previewBackdrop}
+        className="h-full w-full overflow-visible"
+      />
     </div>
   );
 }

@@ -1,3 +1,6 @@
+"use client";
+
+import { useId } from "react";
 import { cn } from "@/lib/utils";
 import {
   compileDesign,
@@ -30,16 +33,21 @@ export function SignCanvas({
   design,
   className,
   title,
+  previewBackdrop = true,
 }: {
   fields?: SignFields;
   design?: DesignDocument;
   className?: string;
   title?: string;
+  /** Checkerboard behind cut lettering. Off for production sheets. */
+  previewBackdrop?: boolean;
 }) {
   const doc = design ?? (fields ? designFromFields(fields) : null);
+  const paintId = useId().replace(/:/g, "");
   if (!doc) return null;
   const { widthIn, heightIn, background } = doc;
   const radius = background.radiusIn;
+  const transparent = background.fill === "none" || background.fill === "transparent";
 
   return (
     <svg
@@ -51,19 +59,56 @@ export function SignCanvas({
       role="img"
       aria-label={title ?? "Truck door decal"}
     >
-      <rect
-        x={background.borderIn / 2}
-        y={background.borderIn / 2}
-        width={widthIn - background.borderIn}
-        height={heightIn - background.borderIn}
-        rx={radius}
-        ry={radius}
-        fill={background.fill}
-        stroke={background.borderColor}
-        strokeWidth={background.borderIn}
-      />
+      {transparent && previewBackdrop ? (
+        <>
+          <defs>
+            <pattern
+              id={`paint-${paintId}`}
+              width={0.45}
+              height={0.45}
+              patternUnits="userSpaceOnUse"
+            >
+              <rect width={0.45} height={0.45} fill="#d5d9dd" />
+              <rect width={0.225} height={0.225} fill="#eceff1" />
+              <rect x={0.225} y={0.225} width={0.225} height={0.225} fill="#eceff1" />
+            </pattern>
+          </defs>
+          <rect
+            width={widthIn}
+            height={heightIn}
+            fill={`url(#paint-${paintId})`}
+          />
+        </>
+      ) : null}
+      {transparent ? null : (
+        <rect
+          x={background.borderIn / 2}
+          y={background.borderIn / 2}
+          width={widthIn - background.borderIn}
+          height={heightIn - background.borderIn}
+          rx={radius}
+          ry={radius}
+          fill={background.fill}
+          stroke={background.borderColor}
+          strokeWidth={background.borderIn}
+        />
+      )}
       {doc.elements.map((el) => {
         if (!el.visible) return null;
+        if (el.type === "band") {
+          return (
+            <rect
+              key={el.id}
+              x={el.xIn}
+              y={el.yIn}
+              width={el.widthIn}
+              height={el.heightIn}
+              rx={el.radiusIn}
+              ry={el.radiusIn}
+              fill={el.fill}
+            />
+          );
+        }
         if (el.type === "rule") {
           return (
             <rect
@@ -113,6 +158,7 @@ export function SignCanvas({
             </g>
           );
         }
+        if (el.type !== "text") return null;
         const anchor =
           el.align === "left" ? "start" : el.align === "right" ? "end" : "middle";
         const x =

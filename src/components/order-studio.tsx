@@ -371,6 +371,9 @@ export function OrderStudio() {
                       showMc: true,
                       logoSize: fields.logoSize,
                       logoDataUrl: fields.logoDataUrl,
+                      logoAspect: fields.logoAspect,
+                      templateId: fields.templateId,
+                      nameFont: fields.nameFont,
                     };
                     const selected =
                       colorPicked && fields.paletteId === preset.id;

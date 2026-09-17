@@ -83,7 +83,11 @@ function DoorCell({ fields }: { fields: SignFields }) {
       style={{ width: `${DOOR_W_IN}in`, height: `${DOOR_H_IN}in` }}
     >
       <CropMarks />
-      <TruckSign fields={fields} className="h-full w-full shadow-none" />
+      <TruckSign
+        fields={fields}
+        previewBackdrop={false}
+        className="h-full w-full shadow-none"
+      />
     </div>
   );
 }

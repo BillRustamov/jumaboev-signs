@@ -1,6 +1,6 @@
 # Jumaboev Signs
 
-Khurshid Jumaboev’s shop slice: vinyl USDOT truck door decals that follow FMCSA 49 CFR § 390.21. The customer example is a **20 × 12 in filled plaque** — logo, company name, city and state, USDOT, then MC — gold on navy. Name and USDOT letters are **2–3 in** and MC letters are **2 in**.
+Khurshid Jumaboev’s shop slice: vinyl USDOT truck door decals that follow FMCSA 49 CFR § 390.21. The customer product is a **20 × 12 in** door (never 24×24, never 20×10). Default look is **white vinyl with black lettering** — large company name, USDOT, then MC. Dark printed plaques are an option.
 
 FMCSA requires company name and USDOT on both sides of the power unit, readable from 50 feet, in strong contrast. There is no fixed federal letter height. **MC is not required on the truck**; this shop still prints MC on the plaque and requires it on the ticket. Logo is optional. **Unit numbers are a separate small print** and do not go on this vinyl.
 
@@ -24,9 +24,10 @@ npm run dev
 
 Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0:43147`.
 
-- `/` — shop landing, navy-gold example, 20 × 12 in sizes, and FMCSA table
+- `/` — shop landing, 20 × 12 in sizes, and FMCSA table
 - `/samples` — door samples on the white Volvo mockup
-- `/order` — live designer (`/order?sample=gold-navy` loads the example plaque)
+- `/order` — live designer (`/order?sample=clean-white` loads the default plaque)
+- `/preview/signs` — five template compositions at print proportion (visual QA)
 - `/cart` — shopping cart (click the sign to preview)
 - `/checkout` — white sleeper-door preview and send to the shop
 - `/orders` — tickets from this server and this browser

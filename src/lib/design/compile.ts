@@ -2,11 +2,14 @@ import {
   CANVAS_HEIGHT_IN,
   CANVAS_WIDTH_IN,
   DESIGN_VERSION,
+  TEMPLATES,
   classifyLogo,
+  type BandElement,
   type ChevronElement,
   type DesignDocument,
   type DesignElement,
   type LogoElement,
+  type ProductionMode,
   type SignFontId,
   type TextElement,
 } from "@/lib/design/schema";
@@ -40,8 +43,38 @@ function centerX(widthIn: number): number {
   return (CANVAS_WIDTH_IN - widthIn) / 2;
 }
 
+function productionOf(templateId: DesignDocument["templateId"]): ProductionMode {
+  return TEMPLATES.find((item) => item.id === templateId)?.production ?? "printed-plaque";
+}
+
 function textBlock(partial: Omit<TextElement, "type" | "locked">): TextElement {
   return { ...partial, type: "text", locked: partial.role !== "ghost-logo" };
+}
+
+function measureName(
+  text: string,
+  usedFont: SignFontId,
+  maxWidth: number,
+  startSize: number,
+  minSize: number,
+  tracking = -0.03,
+): { size: number; lines: string[]; height: number; lineH: number } {
+  const trial = wrapText(text, usedFont, startSize, maxWidth, tracking);
+  const size = fitFontSize(trial, usedFont, maxWidth, startSize, minSize, tracking);
+  const lines = wrapText(text, usedFont, size, maxWidth, tracking).slice(0, 3);
+  const lineH = size * 0.94;
+  return { size, lines, height: lines.length * lineH, lineH };
+}
+
+function measureLineSize(
+  text: string,
+  usedFont: SignFontId,
+  maxWidth: number,
+  startSize: number,
+  minSize: number,
+  tracking: number,
+): number {
+  return fitFontSize([text], usedFont, maxWidth, startSize, minSize, tracking);
 }
 
 export function compileDesign(input: LayoutInput): DesignDocument {
@@ -63,26 +96,46 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       ? "unknown"
       : "wide";
   const warnings: string[] = [];
+  const ink = input.colors;
+  const cutLettering = templateId === "direct-truck";
 
-  const background = {
-    fill: input.colors.face,
-    radiusIn: templateId === "minimal" ? 0.18 : 0.42,
-    borderColor: input.colors.accent,
-    borderIn: templateId === "minimal" ? 0.06 : 0.1,
-  };
+  const background = cutLettering
+    ? {
+        fill: "none",
+        radiusIn: 0,
+        borderColor: "transparent",
+        borderIn: 0,
+      }
+    : {
+        fill: ink.face,
+        radiusIn: templateId === "classic-plaque" ? 0.28 : 0.22,
+        borderColor: ink.accent,
+        borderIn: templateId === "classic-plaque" ? 0.12 : 0.07,
+      };
+
+  function logoBox(mode: "spotlight" | "balanced" | "side" | "small") {
+    return suggestedLogoBox(
+      CANVAS_WIDTH_IN,
+      CANVAS_HEIGHT_IN,
+      shape,
+      scale,
+      mode,
+      input.logoAspect,
+    );
+  }
 
   const elements =
-    templateId === "side-by-side"
-      ? sideBySide()
-      : templateId === "logo-spotlight"
-        ? spotlight()
-        : templateId === "classic"
-          ? classic()
-          : templateId === "minimal"
-            ? minimal()
-            : plaque();
+    templateId === "logo-spotlight"
+      ? spotlight()
+      : templateId === "side-by-side"
+        ? sideBySide()
+        : templateId === "direct-truck"
+          ? stackedLettering({ plaque: false, logoMode: "small" })
+          : templateId === "classic-plaque"
+            ? classicPlaque()
+            : stackedLettering({ plaque: true, logoMode: hasLogo ? "balanced" : "none" });
 
-  if (input.showChevrons && !elements.some((item) => item.type === "chevron")) {
+  if (input.showChevrons && !cutLettering && !elements.some((item) => item.type === "chevron")) {
     elements.push(...chevrons());
   }
 
@@ -96,10 +149,13 @@ export function compileDesign(input: LayoutInput): DesignDocument {
   const nameEl = elements.find(
     (item): item is TextElement => item.type === "text" && item.role === "company",
   );
-  if (nameEl && nameEl.fontSizeIn < 0.85) {
+  if (nameEl && nameEl.fontSizeIn < 1) {
     warnings.push(
-      "Company name is under 0.85 in. Check 50-foot daylight reading before you approve.",
+      "Company name is under 1 in. Check 50-foot daylight reading before you approve.",
     );
+  }
+  if (cutLettering) {
+    warnings.push("Direct lettering is cut vinyl on the truck — no filled plaque prints.");
   }
 
   return {
@@ -107,215 +163,225 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     widthIn: CANVAS_WIDTH_IN,
     heightIn: CANVAS_HEIGHT_IN,
     templateId,
+    production: productionOf(templateId),
     background,
     elements,
     warnings,
   };
 
-  function plaque(): DesignElement[] {
-    const box = suggestedLogoBox(
-      CANVAS_WIDTH_IN,
-      CANVAS_HEIGHT_IN,
-      shape,
-      scale,
-      "balanced",
-    );
-    const logoW = hasLogo ? box.widthIn : 5.4;
-    const logoH = hasLogo ? box.heightIn : 1.35;
-    const top = 0.55;
+  function stackedLettering(opts: {
+    plaque: boolean;
+    logoMode: "none" | "small" | "balanced";
+  }): DesignElement[] {
+    const padX = opts.plaque ? 0.85 : 0.7;
+    const textW = CANVAS_WIDTH_IN - padX * 2;
     const stack: DesignElement[] = [];
-    if (hasLogo) {
-      stack.push(logoEl(centerX(logoW), top, logoW, logoH, false));
-    } else {
-      stack.push(
-        textBlock({
-          id: uid("ghost", 0),
-          role: "ghost-logo",
-          xIn: centerX(5.6),
-          yIn: top,
-          widthIn: 5.6,
-          heightIn: 1.35,
-          text: "LOGO",
-          font: "condensed",
-          fontSizeIn: 0.72,
-          weight: 600,
-          color: input.colors.name,
-          align: "center",
-          letterSpacingEm: 0.22,
-          uppercase: true,
-          visible: true,
-          opacity: 1,
-        }),
-      );
+    let logoW = 0;
+    let logoH = 0;
+    if (hasLogo && opts.logoMode !== "none") {
+      const box = logoBox(opts.logoMode === "small" ? "small" : "balanced");
+      logoW = box.widthIn;
+      logoH = box.heightIn;
     }
-    let y = top + (hasLogo ? logoH : 1.35) + 0.28;
-    stack.push(
-      ...nameLines(company, font, y, 18.2, 1.55, 0.9, ghostName),
-    );
-    const nameHeight = nameBlockHeight(company, font, 18.2, 1.55, 0.9);
-    y += nameHeight + 0.22;
-    stack.push({
-      id: uid("rule", 0),
-      type: "rule",
-      xIn: centerX(7.2),
-      yIn: y,
-      widthIn: 7.2,
-      heightIn: 0.06,
-      color: input.colors.accent,
-      visible: true,
-      locked: true,
-    });
-    y += 0.32;
-    stack.push(
-      line("place", placeText, y, 16, 0.62, 0.48, ghostPlace, 0.18),
-    );
-    y += 0.78;
-    stack.push(
-      line(
-        "usdot",
-        `USDOT ${dot}`,
-        y,
-        16,
-        0.72,
-        0.55,
-        !input.dotNumber.trim(),
-        0.08,
-      ),
-    );
-    y += 0.78;
-    if (showMc) {
-      stack.push(
-        line(
-          "mc",
-          `MC ${mc}`,
-          y,
-          16,
-          0.72,
-          0.55,
-          !input.mcNumber.trim(),
-          0.08,
-        ),
-      );
-    }
-    return stack;
-  }
 
-  function classic(): DesignElement[] {
-    const stack: DesignElement[] = [];
-    let y = 0.7;
-    if (hasLogo) {
-      const box = suggestedLogoBox(
-        CANVAS_WIDTH_IN,
-        CANVAS_HEIGHT_IN,
-        shape,
-        scale,
-        "small",
+    let nameStart = hasLogo ? 1.95 : 2.72;
+    let usdotStart = 2.22;
+    let mcStart = 1.92;
+    let placeStart = 0.58;
+
+    let nameM = measureName(company, font, textW, nameStart, 1.25);
+    let usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 1.5, 0.05);
+    let mcSize = showMc
+      ? measureLineSize(`MC ${mc}`, font, textW, mcStart, 1.35, 0.05)
+      : 0;
+    let placeSize = place ? measureLineSize(placeText, font, textW, placeStart, 0.42, 0.14) : 0;
+
+    const stackHeight = () => {
+      const logoBlock = logoH > 0 ? logoH + 0.3 : 0;
+      const placeBlock = place ? placeSize * 1.2 + 0.22 : 0;
+      const ruleBlock = opts.plaque ? 0.34 : 0.22;
+      const mcBlock = showMc ? mcSize * 1.18 + 0.28 : 0;
+      return (
+        logoBlock +
+        nameM.height +
+        0.32 +
+        placeBlock +
+        ruleBlock +
+        usdotSize * 1.18 +
+        mcBlock
       );
-      stack.push(logoEl(centerX(box.widthIn), y, box.widthIn, box.heightIn, false));
-      y += box.heightIn + 0.35;
+    };
+
+    for (let i = 0; i < 14 && stackHeight() > 10.9; i += 1) {
+      nameStart = Math.max(1.25, nameStart - 0.1);
+      usdotStart = Math.max(1.5, usdotStart - 0.08);
+      mcStart = Math.max(1.3, mcStart - 0.07);
+      if (logoH > 2.1) logoH -= 0.12;
+      nameM = measureName(company, font, textW, nameStart, 1.2);
+      usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 1.45, 0.05);
+      mcSize = showMc
+        ? measureLineSize(`MC ${mc}`, font, textW, mcStart, 1.3, 0.05)
+        : 0;
     }
-    const names = nameLines(company, font, y, 18.4, 1.85, 1.05, ghostName);
-    stack.push(...names);
-    y += nameBlockHeight(company, font, 18.4, 1.85, 1.05) + 0.45;
+
+    const total = stackHeight();
+    let y = Math.max(0.42, Math.min(1.55, (CANVAS_HEIGHT_IN - total) / 2));
+
+    if (hasLogo && logoH > 0) {
+      stack.push(logoEl(centerX(logoW), y, logoW, logoH, false));
+      y += logoH + 0.3;
+    }
+
+    stack.push(
+      ...nameLinesFromMeasure(nameM, y, textW, centerX(textW), "center", ghostName, ink.name),
+    );
+    y += nameM.height + 0.28;
+
     if (place) {
-      stack.push(line("place", placeText, y, 16, 0.48, 0.4, false, 0.16));
-      y += 0.7;
+      stack.push(
+        line("place", placeText, y, textW, placeSize, ghostPlace, 0.14, centerX(textW), "center", ink.legal, 600),
+      );
+      y += placeSize * 1.2 + 0.2;
     }
+
+    if (opts.plaque) {
+      stack.push({
+        id: uid("rule", 0),
+        type: "rule",
+        xIn: centerX(8.4),
+        yIn: y,
+        widthIn: 8.4,
+        heightIn: 0.07,
+        color: ink.accent,
+        visible: true,
+        locked: true,
+      });
+      y += 0.32;
+    } else {
+      y += 0.18;
+    }
+
     stack.push(
       line(
         "usdot",
         `USDOT ${dot}`,
         y,
-        18,
-        0.7,
-        0.55,
+        textW,
+        usdotSize,
         !input.dotNumber.trim(),
-        0.12,
+        0.05,
+        centerX(textW),
+        "center",
+        ink.legal,
+        700,
       ),
     );
-    y += 0.85;
+    y += usdotSize * 1.18;
+
     if (showMc) {
+      y += 0.22;
       stack.push(
         line(
           "mc",
           `MC ${mc}`,
           y,
-          18,
-          0.62,
-          0.5,
+          textW,
+          mcSize,
           !input.mcNumber.trim(),
-          0.12,
+          0.05,
+          centerX(textW),
+          "center",
+          ink.legal,
+          700,
         ),
       );
     }
+
     return stack;
   }
 
   function spotlight(): DesignElement[] {
     const stack: DesignElement[] = [];
-    const box = suggestedLogoBox(
-      CANVAS_WIDTH_IN,
-      CANVAS_HEIGHT_IN,
-      shape,
-      Math.max(scale, hasLogo ? 1.05 : 0.8),
-      "spotlight",
-    );
-    const top = 0.45;
+    const box = logoBox("spotlight");
+    const logoH = hasLogo ? box.heightIn : 2.8;
+    const logoW = hasLogo ? box.widthIn : 9.2;
+    const top = 0.38;
     if (hasLogo) {
-      stack.push(logoEl(centerX(box.widthIn), top, box.widthIn, box.heightIn, false));
+      stack.push(logoEl(centerX(logoW), top, logoW, logoH, false));
     } else {
       stack.push(
         textBlock({
           id: uid("ghost", 1),
           role: "ghost-logo",
-          xIn: centerX(8),
+          xIn: centerX(logoW),
           yIn: top,
-          widthIn: 8,
-          heightIn: 2.4,
+          widthIn: logoW,
+          heightIn: logoH,
           text: "YOUR LOGO",
           font,
-          fontSizeIn: 0.7,
+          fontSizeIn: 0.72,
           weight: 600,
-          color: input.colors.name,
+          color: ink.name,
           align: "center",
-          letterSpacingEm: 0.14,
+          letterSpacingEm: 0.16,
           uppercase: true,
           visible: true,
-          opacity: 0.45,
+          opacity: 0.4,
         }),
       );
     }
-    let y = top + (hasLogo ? box.heightIn : 2.4) + 0.32;
-    stack.push(...nameLines(company, font, y, 18.2, 1.25, 0.8, ghostName));
-    y += nameBlockHeight(company, font, 18.2, 1.25, 0.8) + 0.28;
+
+    const textW = 18.2;
+    let y = top + logoH + 0.28;
+    const remain = CANVAS_HEIGHT_IN - y - 0.4;
+    const rows = 1 + (place ? 1 : 0) + 1 + (showMc ? 1 : 0);
+    const nameShare = Math.min(1.85, Math.max(1.25, remain * 0.42));
+    const idShare = Math.min(1.55, Math.max(1.05, (remain - nameShare) / Math.max(1, rows - 1)));
+    const nameM = measureName(company, font, textW, nameShare, 1.15);
+    stack.push(
+      ...nameLinesFromMeasure(nameM, y, textW, centerX(textW), "center", ghostName, ink.name),
+    );
+    y += nameM.height + 0.18;
     if (place) {
-      stack.push(line("place", placeText, y, 16, 0.5, 0.4, false, 0.14));
-      y += 0.62;
+      const pSize = Math.min(0.5, idShare * 0.42);
+      stack.push(
+        line("place", placeText, y, textW, pSize, false, 0.12, centerX(textW), "center", ink.legal, 600),
+      );
+      y += pSize * 1.2 + 0.12;
     }
+    const usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, idShare, 1.05, 0.05);
     stack.push(
       line(
         "usdot",
         `USDOT ${dot}`,
         y,
-        16,
-        0.62,
-        0.5,
+        textW,
+        usdotSize,
         !input.dotNumber.trim(),
-        0.08,
+        0.05,
+        centerX(textW),
+        "center",
+        ink.legal,
+        700,
       ),
     );
-    y += 0.7;
+    y += usdotSize * 1.15;
     if (showMc) {
+      y += 0.12;
+      const mcSize = measureLineSize(`MC ${mc}`, font, textW, idShare * 0.92, 1, 0.05);
       stack.push(
         line(
           "mc",
           `MC ${mc}`,
           y,
-          16,
-          0.58,
-          0.48,
+          textW,
+          mcSize,
           !input.mcNumber.trim(),
-          0.08,
+          0.05,
+          centerX(textW),
+          "center",
+          ink.legal,
+          700,
         ),
       );
     }
@@ -323,29 +389,77 @@ export function compileDesign(input: LayoutInput): DesignDocument {
   }
 
   function sideBySide(): DesignElement[] {
-    if (!hasLogo) return classic();
-    const box = suggestedLogoBox(
-      CANVAS_WIDTH_IN,
-      CANVAS_HEIGHT_IN,
-      shape,
-      scale,
-      "side",
+    const stack: DesignElement[] = [];
+    const box = logoBox("side");
+    const logoW = hasLogo ? box.widthIn : 7.6;
+    const logoH = hasLogo ? box.heightIn : 8.4;
+    const logoX = 0.55;
+    const logoY = (CANVAS_HEIGHT_IN - logoH) / 2;
+    if (hasLogo) {
+      stack.push(logoEl(logoX, logoY, logoW, logoH, false));
+    } else {
+      stack.push(
+        textBlock({
+          id: uid("ghost", 2),
+          role: "ghost-logo",
+          xIn: logoX,
+          yIn: logoY,
+          widthIn: logoW,
+          heightIn: logoH,
+          text: "LOGO",
+          font: "condensed",
+          fontSizeIn: 0.9,
+          weight: 600,
+          color: ink.name,
+          align: "center",
+          letterSpacingEm: 0.2,
+          uppercase: true,
+          visible: true,
+          opacity: 0.35,
+        }),
+      );
+    }
+
+    const textX = logoX + logoW + 0.5;
+    const textW = CANVAS_WIDTH_IN - textX - 0.55;
+    let nameStart = 2.05;
+    let usdotStart = 1.7;
+    let mcStart = 1.45;
+    let nameM = measureName(company, font, textW, nameStart, 1.15);
+    let usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 1.15, 0.04);
+    let mcSize = showMc
+      ? measureLineSize(`MC ${mc}`, font, textW, mcStart, 1.05, 0.04)
+      : 0;
+    const placeSize = place ? Math.min(0.5, 0.48) : 0;
+
+    const colHeight = () =>
+      nameM.height +
+      0.28 +
+      (place ? placeSize * 1.2 + 0.22 : 0) +
+      usdotSize * 1.18 +
+      (showMc ? mcSize * 1.18 + 0.22 : 0);
+
+    for (let i = 0; i < 10 && colHeight() > 10.6; i += 1) {
+      nameStart = Math.max(1.15, nameStart - 0.1);
+      usdotStart = Math.max(1.1, usdotStart - 0.07);
+      mcStart = Math.max(1, mcStart - 0.06);
+      nameM = measureName(company, font, textW, nameStart, 1.1);
+      usdotSize = measureLineSize(`USDOT ${dot}`, font, textW, usdotStart, 1.1, 0.04);
+      mcSize = showMc
+        ? measureLineSize(`MC ${mc}`, font, textW, mcStart, 1, 0.04)
+        : 0;
+    }
+
+    let y = Math.max(0.7, (CANVAS_HEIGHT_IN - colHeight()) / 2);
+    stack.push(
+      ...nameLinesFromMeasure(nameM, y, textW, textX, "left", ghostName, ink.name),
     );
-    const logoX = 0.7;
-    const logoY = (CANVAS_HEIGHT_IN - box.heightIn) / 2;
-    const textX = logoX + box.widthIn + 0.55;
-    const textW = CANVAS_WIDTH_IN - textX - 0.7;
-    const stack: DesignElement[] = [
-      logoEl(logoX, logoY, box.widthIn, box.heightIn, false),
-    ];
-    let y = 1.5;
-    stack.push(...nameLines(company, font, y, textW, 1.35, 0.8, ghostName, textX, "left"));
-    y += nameBlockHeight(company, font, textW, 1.35, 0.8) + 0.4;
+    y += nameM.height + 0.28;
     if (place) {
       stack.push(
-        line("place", placeText, y, textW, 0.5, 0.4, false, 0.12, textX, "left"),
+        line("place", placeText, y, textW, placeSize, false, 0.1, textX, "left", ink.legal, 600),
       );
-      y += 0.7;
+      y += placeSize * 1.2 + 0.22;
     }
     stack.push(
       line(
@@ -353,82 +467,168 @@ export function compileDesign(input: LayoutInput): DesignDocument {
         `USDOT ${dot}`,
         y,
         textW,
-        0.68,
-        0.52,
+        usdotSize,
         !input.dotNumber.trim(),
-        0.08,
+        0.04,
         textX,
         "left",
+        ink.legal,
+        700,
       ),
     );
-    y += 0.82;
+    y += usdotSize * 1.18;
     if (showMc) {
+      y += 0.18;
       stack.push(
         line(
           "mc",
           `MC ${mc}`,
           y,
           textW,
-          0.62,
-          0.5,
+          mcSize,
           !input.mcNumber.trim(),
-          0.08,
+          0.04,
           textX,
           "left",
+          ink.legal,
+          700,
         ),
       );
     }
     return stack;
   }
 
-  function minimal(): DesignElement[] {
+  function classicPlaque(): DesignElement[] {
     const stack: DesignElement[] = [];
-    let y = 1.15;
+    const padX = 0.62;
+    const textW = CANVAS_WIDTH_IN - padX * 2;
+    let y = 0.42;
+    let logoH = 0;
+    let logoW = 0;
     if (hasLogo) {
-      const box = suggestedLogoBox(
-        CANVAS_WIDTH_IN,
-        CANVAS_HEIGHT_IN,
-        shape,
-        scale,
-        "small",
-      );
-      stack.push(logoEl(0.85, 0.7, box.widthIn, box.heightIn, false));
-      y = Math.max(y, 0.7 + box.heightIn + 0.35);
+      const box = logoBox("small");
+      logoW = box.widthIn;
+      logoH = box.heightIn;
+      stack.push(logoEl(centerX(logoW), y, logoW, logoH, false));
+      y += logoH + 0.18;
     }
-    stack.push(...nameLines(company, font, y, 18.3, 1.7, 0.95, ghostName));
-    y += nameBlockHeight(company, font, 18.3, 1.7, 0.95) + 0.55;
+
+    let nameStart = hasLogo ? 1.85 : 2.55;
+    let nameM = measureName(company, font, textW, nameStart, 1.2);
+    const placeSize = place ? 0.46 : 0;
+    const ruleBlock = 0.28;
+    const bottomPad = 0.32;
+    const bandGap = 0.14;
+    const bandCount = showMc ? 2 : 1;
+
+    const usedAbove = () =>
+      y + nameM.height + 0.16 + (place ? placeSize * 1.15 + 0.12 : 0) + ruleBlock;
+    let remaining = CANVAS_HEIGHT_IN - usedAbove() - bottomPad;
+    let bandH = (remaining - (bandCount - 1) * bandGap) / bandCount;
+
+    for (let i = 0; i < 10 && bandH < 1.75; i += 1) {
+      nameStart = Math.max(1.2, nameStart - 0.12);
+      nameM = measureName(company, font, textW, nameStart, 1.15);
+      remaining = CANVAS_HEIGHT_IN - usedAbove() - bottomPad;
+      bandH = (remaining - (bandCount - 1) * bandGap) / bandCount;
+    }
+
+    bandH = Math.max(1.7, bandH);
+
+    stack.push(
+      ...nameLinesFromMeasure(nameM, y, textW, centerX(textW), "center", ghostName, ink.name),
+    );
+    y += nameM.height + 0.14;
+    if (place) {
+      stack.push(
+        line("place", placeText, y, textW, placeSize, ghostPlace, 0.16, centerX(textW), "center", ink.legal, 600),
+      );
+      y += placeSize * 1.15 + 0.1;
+    }
+
+    stack.push({
+      id: uid("rule", 0),
+      type: "rule",
+      xIn: centerX(10.5),
+      yIn: y,
+      widthIn: 10.5,
+      heightIn: 0.08,
+      color: ink.accent,
+      visible: true,
+      locked: true,
+    });
+    y += 0.22;
+
+    remaining = CANVAS_HEIGHT_IN - y - bottomPad;
+    bandH = Math.max(1.7, (remaining - (bandCount - 1) * bandGap) / bandCount);
+
+    const bandW = CANVAS_WIDTH_IN - 1.1;
+    const bandX = centerX(bandW);
+    const idTextW = bandW - 0.7;
+
+    const usdotLabel = `USDOT ${dot}`;
+    const usdotSize = measureLineSize(usdotLabel, font, idTextW, bandH * 0.62, 1.25, 0.04);
+    stack.push(bandEl("band-usdot", bandX, y, bandW, bandH));
     stack.push(
       line(
         "usdot",
-        `USDOT ${dot}`,
-        y,
-        18,
-        0.7,
-        0.55,
+        usdotLabel,
+        y + (bandH - usdotSize * 1.05) / 2,
+        idTextW,
+        usdotSize,
         !input.dotNumber.trim(),
-        0.16,
+        0.04,
+        centerX(idTextW),
+        "center",
+        ink.plateText,
+        700,
       ),
     );
-    y += 0.9;
+    y += bandH + bandGap;
+
     if (showMc) {
+      const mcLabel = `MC ${mc}`;
+      const mcSize = measureLineSize(mcLabel, font, idTextW, bandH * 0.58, 1.15, 0.04);
+      stack.push(bandEl("band-mc", bandX, y, bandW, bandH));
       stack.push(
         line(
           "mc",
-          `MC ${mc}`,
-          y,
-          18,
-          0.62,
-          0.5,
+          mcLabel,
+          y + (bandH - mcSize * 1.05) / 2,
+          idTextW,
+          mcSize,
           !input.mcNumber.trim(),
-          0.16,
+          0.04,
+          centerX(idTextW),
+          "center",
+          ink.plateText,
+          700,
         ),
       );
     }
-    if (place) {
-      y += 0.85;
-      stack.push(line("place", placeText, y, 16, 0.42, 0.36, false, 0.18));
-    }
+
     return stack;
+  }
+
+  function bandEl(
+    id: string,
+    xIn: number,
+    yIn: number,
+    widthIn: number,
+    heightIn: number,
+  ): BandElement {
+    return {
+      id,
+      type: "band",
+      xIn,
+      yIn,
+      widthIn,
+      heightIn,
+      fill: ink.plate,
+      radiusIn: 0.16,
+      visible: true,
+      locked: true,
+    };
   }
 
   function logoEl(
@@ -447,40 +647,34 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       heightIn,
       src: input.logoDataUrl ?? "",
       boxed,
-      boxColor: input.colors.name,
+      boxColor: ink.name,
       visible: true,
       locked: false,
     };
   }
 
-  function nameLines(
-    text: string,
-    usedFont: SignFontId,
+  function nameLinesFromMeasure(
+    measured: ReturnType<typeof measureName>,
     yIn: number,
     maxWidth: number,
-    startSize: number,
-    minSize: number,
+    xIn: number,
+    align: TextElement["align"],
     ghost: boolean,
-    xIn = centerX(maxWidth),
-    align: TextElement["align"] = "center",
+    color: string,
   ): TextElement[] {
-    const trial = wrapText(text, usedFont, startSize, maxWidth, -0.03);
-    const size = fitFontSize(trial, usedFont, maxWidth, startSize, minSize, -0.03);
-    const lines = wrapText(text, usedFont, size, maxWidth, -0.03).slice(0, 3);
-    const lineH = size * 0.92;
-    return lines.map((lineText, index) =>
+    return measured.lines.map((lineText, index) =>
       textBlock({
         id: uid("name", index),
         role: "company",
         xIn,
-        yIn: yIn + index * lineH,
+        yIn: yIn + index * measured.lineH,
         widthIn: maxWidth,
-        heightIn: lineH,
+        heightIn: measured.lineH,
         text: lineText,
-        font: usedFont,
-        fontSizeIn: size,
+        font,
+        fontSizeIn: measured.size,
         weight: 700,
-        color: input.colors.name,
+        color,
         align,
         letterSpacingEm: -0.03,
         uppercase: true,
@@ -490,32 +684,19 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     );
   }
 
-  function nameBlockHeight(
-    text: string,
-    usedFont: SignFontId,
-    maxWidth: number,
-    startSize: number,
-    minSize: number,
-  ): number {
-    const trial = wrapText(text, usedFont, startSize, maxWidth, -0.03);
-    const size = fitFontSize(trial, usedFont, maxWidth, startSize, minSize, -0.03);
-    const lines = wrapText(text, usedFont, size, maxWidth, -0.03).slice(0, 3);
-    return lines.length * size * 0.92;
-  }
-
   function line(
     role: "place" | "usdot" | "mc",
     text: string,
     yIn: number,
     maxWidth: number,
-    startSize: number,
-    minSize: number,
+    size: number,
     ghost: boolean,
     tracking: number,
-    xIn = centerX(maxWidth),
-    align: TextElement["align"] = "center",
+    xIn: number,
+    align: TextElement["align"],
+    color: string,
+    weight: 600 | 700,
   ): TextElement {
-    const size = fitFontSize([text], font, maxWidth, startSize, minSize, tracking);
     return textBlock({
       id: role,
       role,
@@ -526,8 +707,8 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       text,
       font,
       fontSizeIn: size,
-      weight: 600,
-      color: input.colors.legal,
+      weight,
+      color,
       align,
       letterSpacingEm: tracking,
       uppercase: true,
@@ -537,18 +718,18 @@ export function compileDesign(input: LayoutInput): DesignDocument {
   }
 
   function chevrons(): ChevronElement[] {
-    const h = 3.4;
-    const w = 0.72;
+    const h = 3.6;
+    const w = 0.62;
     const y = (CANVAS_HEIGHT_IN - h) / 2;
     return [
       {
         id: "chevron-left",
         type: "chevron",
-        xIn: 0.28,
+        xIn: 0.22,
         yIn: y,
         widthIn: w,
         heightIn: h,
-        color: input.colors.accent,
+        color: ink.accent,
         direction: "right",
         visible: true,
         locked: true,
@@ -556,11 +737,11 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       {
         id: "chevron-right",
         type: "chevron",
-        xIn: CANVAS_WIDTH_IN - w - 0.28,
+        xIn: CANVAS_WIDTH_IN - w - 0.22,
         yIn: y,
         widthIn: w,
         heightIn: h,
-        color: input.colors.accent,
+        color: ink.accent,
         direction: "left",
         visible: true,
         locked: true,

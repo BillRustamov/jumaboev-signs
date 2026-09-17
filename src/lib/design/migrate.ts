@@ -1,5 +1,5 @@
 import type { SignFontId, TemplateId } from "@/lib/design/schema";
-import { isSignFontId, isTemplateId } from "@/lib/design/schema";
+import { isSignFontId, aliasTemplate, isTemplateId } from "@/lib/design/schema";
 
 const PLACE_RE = /^([A-Za-z .'-]+),\s*([A-Za-z]{2})$/;
 
@@ -54,6 +54,7 @@ export function resolveFont(value: unknown): SignFontId {
 }
 
 export function resolveTemplate(value: unknown): TemplateId {
-  if (isTemplateId(value)) return value;
-  return "premium-plaque";
+  const aliased = aliasTemplate(value);
+  if (aliased) return aliased;
+  return "clean-white";
 }

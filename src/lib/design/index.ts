@@ -7,6 +7,7 @@ export {
   isSignFontId,
   isTemplateId,
   type DesignDocument,
+  type ProductionMode,
   type SignFontId,
   type TemplateId,
 } from "@/lib/design/schema";

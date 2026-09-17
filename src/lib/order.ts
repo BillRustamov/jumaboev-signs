@@ -48,7 +48,8 @@ export const SAMPLE_SIGN: SignFields = {
   mcNumber: "1051891",
   fleetNumber: "",
   logoDataUrl: "",
-  ...applyPreset("gold-navy"),
+  ...applyPreset("white-black"),
+  templateId: "clean-white",
 };
 
 export const SAMPLE_PRINT_ID = "sample";

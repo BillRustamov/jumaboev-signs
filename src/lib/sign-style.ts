@@ -25,13 +25,19 @@ export type SignStyle = {
   templateId: TemplateId;
 };
 
-function tone(face: string, ink: string, accent: string): SignPalette {
+function tone(
+  face: string,
+  ink: string,
+  accent: string,
+  plate = face,
+  plateText = ink,
+): SignPalette {
   return {
     face,
     name: ink,
     legal: ink,
-    plate: face,
-    plateText: ink,
+    plate,
+    plateText,
     outerBorder: accent,
     innerBorder: ink,
     rule: accent,
@@ -48,47 +54,89 @@ export const STYLE_PRESETS: {
   colors: SignPalette;
 }[] = [
   {
-    id: "gold-navy",
-    label: "Navy gold",
-    hint: "20 × 12 in · gold on navy",
+    id: "white-black",
+    label: "White",
+    hint: "White vinyl · black lettering",
     nameFont: "condensed",
     showChevrons: false,
-    colors: tone("#071a33", "#d4af37", "#d4af37"),
+    colors: tone("#ffffff", "#111111", "#111111", "#111111", "#ffffff"),
+  },
+  {
+    id: "white-navy",
+    label: "White navy",
+    hint: "White vinyl · navy type",
+    nameFont: "condensed",
+    showChevrons: false,
+    colors: tone("#ffffff", "#0b1f3a", "#0b1f3a", "#0b1f3a", "#ffffff"),
+  },
+  {
+    id: "white-red",
+    label: "White red",
+    hint: "White vinyl · red type",
+    nameFont: "condensed",
+    showChevrons: false,
+    colors: tone("#ffffff", "#b01020", "#b01020", "#b01020", "#ffffff"),
+  },
+  {
+    id: "white-gold",
+    label: "White gold",
+    hint: "White vinyl · black type · gold rules",
+    nameFont: "condensed",
+    showChevrons: false,
+    colors: tone("#ffffff", "#141414", "#c9a227", "#0b1b33", "#ffffff"),
+  },
+  {
+    id: "cut-black",
+    label: "Cut black",
+    hint: "Black lettering · no vinyl plaque",
+    nameFont: "condensed",
+    showChevrons: false,
+    colors: tone("#ffffff", "#111111", "#111111", "#111111", "#ffffff"),
+  },
+  {
+    id: "gold-navy",
+    label: "Navy gold",
+    hint: "Printed plaque · gold on navy",
+    nameFont: "condensed",
+    showChevrons: false,
+    colors: tone("#071a33", "#d4af37", "#d4af37", "#04101f", "#ffffff"),
   },
   {
     id: "black",
-    label: "Black",
-    hint: "20 × 12 in · white on black",
+    label: "Black plaque",
+    hint: "Printed plaque · white on black",
     nameFont: "condensed",
     showChevrons: false,
-    colors: tone("#111111", "#ffffff", "#ffffff"),
+    colors: tone("#111111", "#ffffff", "#ffffff", "#000000", "#ffffff"),
   },
   {
     id: "red-line",
-    label: "Red",
-    hint: "20 × 12 in · white on red",
+    label: "Red plaque",
+    hint: "Printed plaque · white on red",
     nameFont: "condensed",
     showChevrons: false,
-    colors: tone("#c8102e", "#ffffff", "#ffffff"),
+    colors: tone("#c8102e", "#ffffff", "#ffffff", "#8e0b1f", "#ffffff"),
   },
   {
     id: "asphalt",
-    label: "Asphalt",
-    hint: "20 × 12 in · charcoal with orange",
+    label: "Charcoal",
+    hint: "Printed plaque · charcoal with orange",
     nameFont: "condensed",
     showChevrons: true,
-    colors: tone("#2c3036", "#ffffff", "#f15a24"),
+    colors: tone("#2c3036", "#ffffff", "#f15a24", "#1c1f24", "#ffffff"),
   },
 ];
 
 const PRESET_ALIAS: Record<string, string> = {
   highway: "black",
   elbrus: "gold-navy",
-  suggested: "gold-navy",
+  suggested: "white-black",
+  "navy-gold": "gold-navy",
+  "white": "white-black",
 };
 
 export function defaultStyle(): SignStyle {
-  return applyPreset("gold-navy");
+  return applyPreset("white-black");
 }
 
 export function applyPreset(id: string): SignStyle {
@@ -102,7 +150,7 @@ export function applyPreset(id: string): SignStyle {
     paletteId: preset.id,
     colors: { ...preset.colors },
     logoSize: DEFAULT_LOGO_SIZE,
-    templateId: "premium-plaque",
+    templateId: "clean-white",
   };
 }
 
@@ -129,6 +177,9 @@ export function contrastWarnings(colors: SignPalette): string[] {
   }
   if (contrastRatio(colors.legal, colors.face) < 3) {
     notes.push("USDOT and MC vs background is low contrast for 50-foot daylight reading.");
+  }
+  if (contrastRatio(colors.plateText, colors.plate) < 3) {
+    notes.push("ID band lettering vs the band is low contrast for 50-foot daylight reading.");
   }
   return notes;
 }

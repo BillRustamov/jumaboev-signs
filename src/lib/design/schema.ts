@@ -7,11 +7,13 @@ export const CANVAS_HEIGHT_IN = 12;
 export type SignFontId = "condensed" | "sans" | "serif";
 
 export type TemplateId =
-  | "premium-plaque"
-  | "classic"
+  | "clean-white"
   | "logo-spotlight"
   | "side-by-side"
-  | "minimal";
+  | "direct-truck"
+  | "classic-plaque";
+
+export type ProductionMode = "printed-plaque" | "transparent" | "cut-lettering";
 
 export type TextAlign = "left" | "center" | "right";
 
@@ -55,6 +57,12 @@ export type RuleElement = BaseElement & {
   color: string;
 };
 
+export type BandElement = BaseElement & {
+  type: "band";
+  fill: string;
+  radiusIn: number;
+};
+
 export type ChevronElement = BaseElement & {
   type: "chevron";
   color: string;
@@ -65,6 +73,7 @@ export type DesignElement =
   | TextElement
   | LogoElement
   | RuleElement
+  | BandElement
   | ChevronElement;
 
 export type DesignDocument = {
@@ -72,6 +81,7 @@ export type DesignDocument = {
   widthIn: typeof CANVAS_WIDTH_IN;
   heightIn: typeof CANVAS_HEIGHT_IN;
   templateId: TemplateId;
+  production: ProductionMode;
   background: {
     fill: string;
     radiusIn: number;
@@ -86,33 +96,47 @@ export const TEMPLATES: {
   id: TemplateId;
   label: string;
   hint: string;
+  production: ProductionMode;
 }[] = [
   {
-    id: "premium-plaque",
-    label: "Premium plaque",
-    hint: "Filled board · logo, name, city, USDOT, MC",
-  },
-  {
-    id: "classic",
-    label: "Classic professional",
-    hint: "Large name, centered identification",
+    id: "clean-white",
+    label: "Clean white",
+    hint: "White vinyl · large name · readable USDOT",
+    production: "printed-plaque",
   },
   {
     id: "logo-spotlight",
     label: "Logo spotlight",
-    hint: "Large mark above the lettering",
+    hint: "Large mark on top, lettering below",
+    production: "printed-plaque",
   },
   {
     id: "side-by-side",
     label: "Side by side",
-    hint: "Logo left · required text right",
+    hint: "Logo left · name and IDs right",
+    production: "printed-plaque",
   },
   {
-    id: "minimal",
-    label: "Minimal",
-    hint: "High-contrast type, little decoration",
+    id: "direct-truck",
+    label: "Direct lettering",
+    hint: "Dark type on the truck — no filled plaque",
+    production: "cut-lettering",
+  },
+  {
+    id: "classic-plaque",
+    label: "Classic plaque",
+    hint: "Solid board with large ID bands",
+    production: "printed-plaque",
   },
 ];
+
+const TEMPLATE_ALIAS: Record<string, TemplateId> = {
+  "premium-plaque": "classic-plaque",
+  classic: "clean-white",
+  minimal: "direct-truck",
+  suggested: "clean-white",
+  plaque: "classic-plaque",
+};
 
 export function isTemplateId(value: unknown): value is TemplateId {
   return TEMPLATES.some((item) => item.id === value);
@@ -128,4 +152,12 @@ export function classifyLogo(width: number, height: number): LogoShape {
   if (ratio >= 1.45) return "wide";
   if (ratio <= 0.72) return "tall";
   return "square";
+}
+
+export function aliasTemplate(value: unknown): TemplateId | null {
+  if (isTemplateId(value)) return value;
+  if (typeof value === "string" && TEMPLATE_ALIAS[value]) {
+    return TEMPLATE_ALIAS[value];
+  }
+  return null;
 }

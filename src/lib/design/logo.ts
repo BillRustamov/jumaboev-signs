@@ -1,55 +1,69 @@
 import { clampLogoSize, type LogoSize } from "@/lib/logo-size";
+import type { LogoShape } from "@/lib/design/schema";
 
 /** Maps the 1–5 control onto a multiplier of the template’s suggested logo box. */
 const SCALE: Record<LogoSize, number> = {
-  1: 0.55,
-  2: 0.78,
+  1: 0.62,
+  2: 0.82,
   3: 1,
-  4: 1.32,
-  5: 1.68,
+  4: 1.22,
+  5: 1.48,
 };
 
 export function logoScaleFromSize(size: unknown): number {
   return SCALE[clampLogoSize(size)];
 }
 
+function aspectFor(shape: LogoShape, ratio?: number): number {
+  if (typeof ratio === "number" && ratio > 0.05 && Number.isFinite(ratio)) {
+    return ratio;
+  }
+  if (shape === "wide") return 2.5;
+  if (shape === "tall") return 0.52;
+  if (shape === "unknown") return 1.15;
+  return 1;
+}
+
+function fitAspect(
+  maxW: number,
+  maxH: number,
+  aspect: number,
+): { widthIn: number; heightIn: number } {
+  let widthIn = maxW;
+  let heightIn = maxW / aspect;
+  if (heightIn > maxH) {
+    heightIn = maxH;
+    widthIn = maxH * aspect;
+  }
+  return { widthIn, heightIn };
+}
+
 export function suggestedLogoBox(
   canvasW: number,
   canvasH: number,
-  shape: "wide" | "square" | "tall" | "unknown",
+  shape: LogoShape,
   scale: number,
   mode: "spotlight" | "balanced" | "side" | "small",
+  ratio?: number,
 ): { widthIn: number; heightIn: number } {
-  const clamped = Math.min(2.1, Math.max(0.4, scale));
+  const clamped = Math.min(1.55, Math.max(0.5, scale));
+  const aspect = aspectFor(shape, ratio);
+  let maxW: number;
+  let maxH: number;
   if (mode === "side") {
-    const heightIn = Math.min(canvasH * 0.78, 9.4) * Math.min(clamped, 1.2);
-    const widthIn =
-      shape === "wide"
-        ? Math.min(8.4, canvasW * 0.42)
-        : shape === "tall"
-          ? heightIn * 0.62
-          : heightIn * 0.92;
-    return { widthIn, heightIn };
+    maxW = canvasW * 0.46;
+    maxH = canvasH * 0.84;
+  } else if (mode === "spotlight") {
+    maxW = canvasW * 0.84;
+    maxH = canvasH * 0.56;
+  } else if (mode === "small") {
+    maxW = canvasW * 0.44;
+    maxH = canvasH * 0.26;
+  } else {
+    maxW = canvasW * 0.62;
+    maxH = canvasH * 0.32;
   }
-  if (mode === "spotlight") {
-    const widthIn = Math.min(canvasW * 0.78, 15.2) * Math.min(clamped, 1.35);
-    const heightIn =
-      shape === "wide"
-        ? Math.min(canvasH * 0.38, widthIn / 2.1)
-        : shape === "tall"
-          ? Math.min(canvasH * 0.52, 6.2) * clamped
-          : Math.min(canvasH * 0.46, 5.6) * clamped;
-    return { widthIn, heightIn };
-  }
-  if (mode === "small") {
-    const widthIn = (shape === "wide" ? 4.4 : 3.1) * clamped;
-    const heightIn = (shape === "wide" ? 1.35 : 2.2) * clamped;
-    return { widthIn, heightIn };
-  }
-  const widthIn = (shape === "wide" ? 7.6 : shape === "tall" ? 3.4 : 5.4) * clamped;
-  const heightIn = (shape === "wide" ? 2.1 : shape === "tall" ? 3.8 : 2.4) * clamped;
-  return {
-    widthIn: Math.min(widthIn, canvasW * 0.72),
-    heightIn: Math.min(heightIn, canvasH * 0.42),
-  };
+  maxW = Math.min(canvasW - 0.9, maxW * clamped);
+  maxH = Math.min(canvasH - 0.9, maxH * clamped);
+  return fitAspect(Math.max(1.2, maxW), Math.max(1.1, maxH), aspect);
 }
