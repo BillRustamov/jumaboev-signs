@@ -186,4 +186,8 @@ body.bot-preview {
   body:has([data-mobile-designer]) footer {
     display: none;
   }
+  body:has([data-mobile-designer]) nextjs-portal,
+  body:has([data-mobile-designer]) [data-next-badge-root] {
+    display: none !important;
+  }
 }

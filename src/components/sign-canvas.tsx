@@ -55,7 +55,7 @@ export function SignCanvas({
       width="100%"
       height="100%"
       preserveAspectRatio="xMidYMid meet"
-      className={cn("block select-none", className)}
+      className={cn("block size-full select-none", className)}
       role="img"
       aria-label={title ?? "Truck door decal"}
     >

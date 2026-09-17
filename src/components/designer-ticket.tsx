@@ -26,6 +26,7 @@ import {
 } from "@/lib/sign-style";
 import { TEMPLATES, type SignFontId, type TemplateId } from "@/lib/design";
 import { formatPlace, parsePlace } from "@/lib/design/migrate";
+import { cn } from "@/lib/utils";
 
 export type TicketApi = {
   fields: SignFields;
@@ -207,8 +208,11 @@ export function ColorFields({
             <Button
               key={preset.id}
               type="button"
-              variant={selected ? "default" : "outline"}
-              className="h-auto flex-col items-stretch gap-2 p-2 text-left"
+              variant="outline"
+              className={cn(
+                "h-auto w-full flex-col items-stretch gap-2 p-2 text-left whitespace-normal",
+                selected && "border-[var(--navy)] ring-2 ring-[var(--navy)]",
+              )}
               onClick={() => {
                 setFields((current) => ({
                   ...current,
@@ -223,10 +227,12 @@ export function ColorFields({
                 setColorPicked(true);
               }}
             >
-              <TruckSign
-                fields={preview}
-                className="pointer-events-none w-full shadow-none"
-              />
+              <div className="w-full min-w-0">
+                <TruckSign
+                  fields={preview}
+                  className="pointer-events-none w-full shadow-none"
+                />
+              </div>
               <span className="flex gap-1 px-1" aria-hidden>
                 {[
                   preset.colors.face,
@@ -313,8 +319,11 @@ export function LayoutFields({
               <Button
                 key={template.id}
                 type="button"
-                variant={selected ? "default" : "outline"}
-                className="h-auto flex-col items-stretch gap-1.5 p-1.5 text-left"
+                variant="outline"
+                className={cn(
+                  "h-auto w-full flex-col items-stretch gap-1.5 p-1.5 text-left whitespace-normal",
+                  selected && "border-[var(--navy)] ring-2 ring-[var(--navy)]",
+                )}
                 onClick={() => {
                   update("templateId", template.id);
                   markLayoutReady();
