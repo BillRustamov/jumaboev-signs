@@ -529,15 +529,30 @@ async function runTelegram(token: string) {
     return created;
   }
 
+  async function sendLanguagePicker(ctx: Context): Promise<void> {
+    const markup = languageKeyboard().keyboard;
+    try {
+      await ctx.reply(COPY.en.chooseLanguage, {
+        reply_markup: markup,
+      });
+      return;
+    } catch (error) {
+      console.error("Could not send /start language reply.", error);
+    }
+    const chatId = ctx.chat?.id;
+    if (!chatId) return;
+    await ctx.api.sendMessage(chatId, COPY.en.chooseLanguage, {
+      reply_markup: markup,
+    });
+  }
+
   bot.command("start", async (ctx) => {
     const chatId = ctx.chat.id;
+    console.log(`/start from chat ${chatId}`);
     const draft = newDraft();
     draft.telegramChatId = chatId;
+    await sendLanguagePicker(ctx);
     remember(chatId, draft);
-    await ctx.reply(COPY.en.chooseLanguage, {
-      parse_mode: "HTML",
-      reply_markup: languageKeyboard().keyboard,
-    });
   });
 
   bot.command("help", async (ctx) => {
@@ -644,8 +659,10 @@ async function runTelegram(token: string) {
   });
 
   bot.on("message:text", async (ctx) => {
+    const text = ctx.message.text ?? "";
+    if (text.startsWith("/")) return;
     const draft = draftFor(ctx.chat.id);
-    const next = await handleText(draft, ctx.message.text, {
+    const next = await handleText(draft, text, {
       send: async (text, extra) => {
         await ctx.reply(text, extra ? { parse_mode: "HTML", reply_markup: extra.keyboard } : { parse_mode: "HTML" });
       },
@@ -669,7 +686,14 @@ async function runTelegram(token: string) {
     }
   }
   console.log("Jumaboev Signs Telegram bot is polling.");
-  await bot.start();
+  await bot.api.deleteWebhook({ drop_pending_updates: false });
+  await bot.start({
+    drop_pending_updates: false,
+    allowed_updates: ["message", "callback_query"],
+    onStart: (me) => {
+      console.log(`Polling @${me.username} (${me.id})`);
+    },
+  });
 }
 
 async function readLines(): Promise<AsyncIterator<string>> {
