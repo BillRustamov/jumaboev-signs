@@ -1,3 +1,5 @@
+import { BOT_PREVIEW_SIZE_LINE } from "../src/lib/bot-preview";
+
 export const LANGS = ["en", "uz", "tg", "ru", "kk", "ky", "uk"] as const;
 
 export type Lang = (typeof LANGS)[number];
@@ -69,7 +71,7 @@ export const COPY: Record<Lang, Copy> = {
     numbersOnly: "Digits only, please.",
     confirmTitle: "Review this pair",
     confirmBody:
-      "Size: 20 × 12 in each cab side (left + right)\nShop user: {username}\nDoor name: {company}\nCity, State: {legal}\nUSDOT: {dot}\nMC: {mc}\nLogo: {logo}\nColors: {style}",
+      `${BOT_PREVIEW_SIZE_LINE}\nShop user: {username}\nDoor name: {company}\nCity, State: {legal}\nUSDOT: {dot}\nMC: {mc}\nLogo: {logo}\nColors: {style}`,
     yes: "✅ Confirm order",
     no: "↺ Start over",
     placed:

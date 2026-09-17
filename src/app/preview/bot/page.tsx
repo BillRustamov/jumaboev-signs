@@ -1,5 +1,6 @@
 import { WhiteSemiTruck } from "@/components/white-semi-truck";
 import { HideShopChrome } from "@/components/hide-shop-chrome";
+import { BotPreviewFrame } from "@/components/bot-preview-frame";
 import type { SignFields } from "@/lib/order";
 import { applyPreset } from "@/lib/sign-style";
 import { DRIVER_SAMPLES } from "@/lib/samples";
@@ -41,14 +42,16 @@ export default async function BotPreviewPage({
   const fields = (draftId && getPreviewDraft(draftId)) || fieldsFromQuery(q);
 
   return (
-    <main className="min-h-screen bg-[#eceff2] p-0">
+    <BotPreviewFrame>
       <HideShopChrome />
       <WhiteSemiTruck
         fields={fields}
         interactive={false}
         showChrome={false}
-        className="rounded-none ring-0"
+        defaultView="truck"
+        className="h-full w-full rounded-none ring-0"
+        fillFrame
       />
-    </main>
+    </BotPreviewFrame>
   );
 }

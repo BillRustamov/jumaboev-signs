@@ -171,12 +171,24 @@
 body.bot-preview header,
 body.bot-preview footer,
 body.bot-preview nextjs-portal,
-body.bot-preview [data-next-badge-root] {
+body.bot-preview [data-next-badge-root],
+body:has([data-bot-preview-frame]) header,
+body:has([data-bot-preview-frame]) footer,
+body:has([data-bot-preview-frame]) nextjs-portal,
+body:has([data-bot-preview-frame]) [data-next-badge-root] {
   display: none !important;
 }
 
+html:has([data-bot-preview-frame]),
+body:has([data-bot-preview-frame]),
 body.bot-preview {
-  background: #eceff2;
+  height: 100%;
+  overflow: hidden;
+  background: #cfd5dc;
+}
+
+body:has([data-bot-preview-frame]) {
+  display: block;
 }
 
 @media (max-width: 1023px) {

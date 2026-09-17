@@ -46,6 +46,7 @@ export function TruckMockup({
   nudge = IDENTITY_NUDGE,
   onConfigChange,
   calibrate = false,
+  fill = false,
 }: {
   fields: SignFields;
   config: TruckMockupConfig;
@@ -56,6 +57,7 @@ export function TruckMockup({
   nudge?: PlacementNudge;
   onConfigChange?: (next: TruckMockupConfig) => void;
   calibrate?: boolean;
+  fill?: boolean;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const [contained, setContained] = useState<ContainedImage>(() =>
@@ -116,10 +118,17 @@ export function TruckMockup({
   return (
     <div
       ref={stageRef}
-      className="relative overflow-hidden bg-[#cfd5dc]"
-      style={{
-        aspectRatio: `${config.imageWidthPx} / ${config.imageHeightPx}`,
-      }}
+      className={cn(
+        "relative overflow-hidden bg-[#cfd5dc]",
+        fill && "h-full w-full",
+      )}
+      style={
+        fill
+          ? undefined
+          : {
+              aspectRatio: `${config.imageWidthPx} / ${config.imageHeightPx}`,
+            }
+      }
       data-truck-mockup={config.id}
       data-truck-side={side}
     >

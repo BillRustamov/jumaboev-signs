@@ -6,6 +6,7 @@ import { InputFile } from "grammy";
 import type { Context } from "grammy";
 import type { SignFields } from "../src/lib/order";
 import { applyPreset, STYLE_PRESETS } from "../src/lib/sign-style";
+import { BOT_PREVIEW_VIEWPORT } from "../src/lib/bot-preview";
 
 function shopUrl() {
   return (process.env.APP_URL ?? "http://127.0.0.1:43147").replace(/\/$/, "");
@@ -69,12 +70,20 @@ async function captureTruck(fields: SignFields): Promise<Buffer | null> {
   const chrome = await getBrowser();
   const page = await chrome.newPage();
   try {
-    await page.setViewport({ width: 1340, height: 828, deviceScaleFactor: 1 });
+    await page.setViewport({
+      width: BOT_PREVIEW_VIEWPORT.width,
+      height: BOT_PREVIEW_VIEWPORT.height,
+      deviceScaleFactor: 1,
+    });
     await page.goto(`${shopUrl()}/preview/bot?draft=${id}`, {
       waitUntil: "networkidle0",
       timeout: 20000,
     });
-    const buf = await page.screenshot({ type: "png" });
+    await page.waitForSelector("[data-bot-preview-stage]");
+    await page.waitForSelector("[data-truck-door-sign]");
+    const stage = await page.$("[data-bot-preview-stage]");
+    if (!stage) return null;
+    const buf = await stage.screenshot({ type: "png" });
     return Buffer.from(buf);
   } finally {
     await page.close().catch(() => undefined);

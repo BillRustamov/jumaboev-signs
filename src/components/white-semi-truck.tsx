@@ -29,6 +29,7 @@ export function WhiteSemiTruck({
   defaultView = "truck",
   calibrate = false,
   truckId,
+  fillFrame = false,
 }: {
   fields: SignFields;
   className?: string;
@@ -37,6 +38,7 @@ export function WhiteSemiTruck({
   defaultView?: "sign" | "truck";
   calibrate?: boolean;
   truckId?: string;
+  fillFrame?: boolean;
 }) {
   const [view, setView] = useState<"sign" | "truck">(defaultView);
   const [side, setSide] = useState<"driver" | "other">("driver");
@@ -111,6 +113,7 @@ export function WhiteSemiTruck({
           nudge={nudge}
           onConfigChange={setConfig}
           calibrate={showCalibrate}
+          fill={fillFrame}
         />
       )}
 
