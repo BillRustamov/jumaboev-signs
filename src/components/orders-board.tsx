@@ -19,6 +19,8 @@ import { useUsername } from "@/lib/client-session";
 import { formatUsd, isPriced } from "@/lib/money";
 import { isPrintOnly } from "@/lib/order";
 import { payT } from "@/lib/order-copy";
+import { uiT } from "@/lib/shop-copy";
+import { localizeNote } from "@/lib/shop-labels";
 import { useShopOrders } from "@/lib/use-shop-orders";
 import { useShopLang } from "@/lib/shop-lang";
 
@@ -40,10 +42,10 @@ export function OrdersBoard() {
     <div className="space-y-4">
       <div className="mb-4 max-w-2xl">
         <p className="text-xs font-semibold tracking-[0.14em] text-[var(--gold)] uppercase">
-          Queue
+          {uiT(lang, "queueKicker")}
         </p>
         <h1 className="font-heading mt-1 text-3xl font-semibold tracking-tight text-[var(--navy)]">
-          Shop orders
+          {uiT(lang, "shopOrdersTitle")}
         </h1>
         <p className="mt-2 text-muted-foreground">{payT(lang, "ordersSiteLead")}</p>
       </div>
@@ -51,8 +53,8 @@ export function OrdersBoard() {
       {error ? (
         <Alert variant="destructive">
           <AlertCircle />
-          <AlertTitle>Showing saved copies on this device</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
+          <AlertTitle>{uiT(lang, "showingSaved")}</AlertTitle>
+          <AlertDescription>{localizeNote(lang, error)}</AlertDescription>
         </Alert>
       ) : null}
 
@@ -61,20 +63,20 @@ export function OrdersBoard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Inbox className="size-4" />
-              No door orders yet
+              {uiT(lang, "noDoorOrders")}
             </CardTitle>
             <CardDescription>
               {username
-                ? `Nothing on file for ${username}. Print a file you already have, or create a new design.`
-                : "Print a file you already have, or create a new design. Confirmed tickets land here."}
+                ? uiT(lang, "noOrdersForUser", { user: username })
+                : uiT(lang, "noOrdersAnon")}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             <Button asChild>
-              <Link href="/print">Print a file</Link>
+              <Link href="/print">{uiT(lang, "printDesk")}</Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="/order">Create a design</Link>
+              <Link href="/order">{uiT(lang, "keepDesigning")}</Link>
             </Button>
           </CardContent>
         </Card>
@@ -87,8 +89,8 @@ export function OrdersBoard() {
                   <div>
                     <CardTitle>{order.id}</CardTitle>
                     <CardDescription>
-                      @{order.username} · {order.source}
-                      {order.service === "PRINT_ONLY" ? " · print-existing" : ""}
+                      @{order.username} · {order.source === "telegram" ? uiT(lang, "sourceTelegram") : uiT(lang, "sourceWeb")}
+                      {order.service === "PRINT_ONLY" ? ` · ${uiT(lang, "printExistingTag")}` : ""}
                       {order.language ? ` · ${order.language}` : ""}
                     </CardDescription>
                   </div>
@@ -111,7 +113,7 @@ export function OrdersBoard() {
                 </p>
                 {isPrintOnly(order) ? null : (
                   <Button className="w-full" variant="outline" asChild>
-                    <Link href={`/admin/print/${order.id}`}>Print sheet</Link>
+                    <Link href={`/admin/print/${order.id}`}>{uiT(lang, "printSheet")}</Link>
                   </Button>
                 )}
               </CardContent>

@@ -1,6 +1,7 @@
 import type { Viewport } from "next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Libre_Baskerville, Oswald } from "next/font/google";
+import { ShopLangHtml } from "@/components/localized";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${signSerif.variable} ${signCondensed.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
+        <ShopLangHtml />
         <SiteHeader />
         <div className="flex min-h-0 flex-1 flex-col print:block">{children}</div>
         <SiteFooter />

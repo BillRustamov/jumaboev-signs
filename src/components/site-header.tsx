@@ -5,6 +5,7 @@ import { CartButton } from "@/components/cart-button";
 import { ShopLangSwitch } from "@/components/shop-lang-switch";
 import { Button } from "@/components/ui/button";
 import { shopT } from "@/lib/shop-entry";
+import { uiT } from "@/lib/shop-copy";
 import { useShopLang } from "@/lib/shop-lang";
 
 export function SiteHeader() {
@@ -19,7 +20,7 @@ export function SiteHeader() {
             Jumaboev Signs
           </p>
           <p className="hidden truncate text-[11px] text-muted-foreground sm:block">
-            USDOT door vinyl · 20 × 12 in each side
+            {uiT(lang, "headerTagline")}
           </p>
         </Link>
         <nav className="flex items-center gap-1">
@@ -33,7 +34,7 @@ export function SiteHeader() {
             <Link href="/orders">{shopT(lang, "myOrders")}</Link>
           </Button>
           <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
-            <Link href="/admin">Admin</Link>
+            <Link href="/admin">{uiT(lang, "adminNav")}</Link>
           </Button>
           <ShopLangSwitch compact />
           <CartButton />

@@ -13,6 +13,9 @@ import {
   isRasterDataUrl,
 } from "@/lib/artwork";
 import type { SignFields } from "@/lib/order";
+import { uiT } from "@/lib/shop-copy";
+import { artworkFitHint, artworkFitLabel } from "@/lib/shop-labels";
+import { useShopLang } from "@/lib/shop-lang";
 import { cn } from "@/lib/utils";
 
 export function ArtworkControls({
@@ -22,6 +25,7 @@ export function ArtworkControls({
   fields: SignFields;
   onChange: (patch: Partial<SignFields>) => void;
 }) {
+  const lang = useShopLang();
   if (!fields.logoDataUrl) return null;
   const raster = isRasterDataUrl(fields.originalArtworkUrl || fields.logoDataUrl);
   const existing = fields.artworkRole === "existing-sign";
@@ -30,7 +34,7 @@ export function ArtworkControls({
   return (
     <div className="space-y-3 rounded-lg border bg-muted/30 p-3">
       <div className="space-y-2">
-        <Label>How should this file print?</Label>
+        <Label>{uiT(lang, "howFilePrints")}</Label>
         <div className="grid grid-cols-2 gap-1.5">
           <Button
             type="button"
@@ -39,7 +43,7 @@ export function ArtworkControls({
             variant={fields.artworkRole !== "existing-sign" ? "default" : "outline"}
             onClick={() => onChange({ artworkRole: "logo" })}
           >
-            Company logo
+            {uiT(lang, "companyLogo")}
           </Button>
           <Button
             type="button"
@@ -48,7 +52,7 @@ export function ArtworkControls({
             variant={existing ? "default" : "outline"}
             onClick={() => onChange({ artworkRole: "existing-sign" })}
           >
-            Existing door sign
+            {uiT(lang, "existingDoorSign")}
           </Button>
         </div>
       </div>
@@ -56,21 +60,17 @@ export function ArtworkControls({
       {raster ? (
         <Alert>
           <AlertCircle />
-          <AlertTitle>Flattened artwork is not live type</AlertTitle>
-          <AlertDescription>
-            JPG and PNG lettering cannot be edited as vinyl type. Put the MCS-150
-            name and USDOT on the ticket if they are missing from this photo. The
-            original file is kept — fit and crop never overwrite it.
-          </AlertDescription>
+          <AlertTitle>{uiT(lang, "flattenedTitle")}</AlertTitle>
+          <AlertDescription>{uiT(lang, "flattenedBody")}</AlertDescription>
         </Alert>
       ) : (
         <p className="text-xs text-muted-foreground">
-          Original file is stored. Fitting never stretches or overwrites it.
+          {uiT(lang, "originalStored")}
         </p>
       )}
 
       <div className="space-y-2">
-        <Label>Place on the 20 × 12 in board</Label>
+        <Label>{uiT(lang, "placeOnBoard")}</Label>
         <div className="grid grid-cols-2 gap-2">
           {ARTWORK_FITS.map((item) => {
             const preview: SignFields = {
@@ -102,9 +102,11 @@ export function ArtworkControls({
                     className="pointer-events-none w-full shadow-none"
                   />
                 </div>
-                <span className="px-1 text-xs font-medium">{item.label}</span>
+                <span className="px-1 text-xs font-medium">
+                  {artworkFitLabel(lang, item.id)}
+                </span>
                 <span className="px-1 text-[11px] font-normal text-muted-foreground">
-                  {item.hint}
+                  {artworkFitHint(lang, item.id)}
                 </span>
               </Button>
             );
@@ -112,7 +114,7 @@ export function ArtworkControls({
         </div>
         {fields.artworkFit === "cover" ? (
           <p className="text-xs text-muted-foreground">
-            Crop to fill is an explicit choice. Edges of the file will not print.
+            {uiT(lang, "cropFillNote")}
           </p>
         ) : null}
       </div>
@@ -120,7 +122,7 @@ export function ArtworkControls({
       {fields.artworkFit !== "original" ? (
         <div className="space-y-3">
           <div>
-            <Label htmlFor={`${uid}-art-x`}>Nudge horizontally</Label>
+            <Label htmlFor={`${uid}-art-x`}>{uiT(lang, "nudgeH")}</Label>
             <Slider
               id={`${uid}-art-x`}
               min={-1}
@@ -132,7 +134,7 @@ export function ArtworkControls({
             />
           </div>
           <div>
-            <Label htmlFor={`${uid}-art-y`}>Nudge vertically</Label>
+            <Label htmlFor={`${uid}-art-y`}>{uiT(lang, "nudgeV")}</Label>
             <Slider
               id={`${uid}-art-y`}
               min={-1}
@@ -155,17 +157,16 @@ export function ArtworkControls({
               })
             }
           >
-            Reset placement
+            {uiT(lang, "resetPlacement")}
           </Button>
         </div>
       ) : null}
 
       <div className="flex items-center justify-between gap-3">
         <div>
-          <Label htmlFor={`${uid}-logo-is-name`}>Logo is my company name</Label>
+          <Label htmlFor={`${uid}-logo-is-name`}>{uiT(lang, "logoIsName")}</Label>
           <p className="text-xs text-muted-foreground">
-            Keep the registered name readable. Do not print it as a second giant
-            headline.
+            {uiT(lang, "logoIsNameHint")}
           </p>
         </div>
         <Switch

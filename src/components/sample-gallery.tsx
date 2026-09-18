@@ -7,6 +7,9 @@ import {
   DRIVER_SAMPLES,
   type DriverSample,
 } from "@/lib/samples";
+import { uiT } from "@/lib/shop-copy";
+import { sampleHintOf, sampleLabelOf } from "@/lib/shop-labels";
+import { useShopLang } from "@/lib/shop-lang";
 
 const GALLERY: DriverSample[] = [...DRIVER_SAMPLES, BLANK_SAMPLE];
 
@@ -17,19 +20,19 @@ export function SampleGallery({
   activeId: string | null;
   onPick: (sample: DriverSample) => void;
 }) {
+  const lang = useShopLang();
   return (
-    <section aria-label="Door samples">
+    <section aria-label={uiT(lang, "doorSamplesAria")}>
       <div className="mb-3 flex items-end justify-between gap-3">
         <div>
           <h2 className="font-heading text-base font-semibold text-[var(--navy)] sm:text-lg">
-            Tap a sample
+            {uiT(lang, "tapSample")}
           </h2>
           <p className="hidden text-sm text-muted-foreground sm:block">
-            This is the 20 × 12 in look. Your name, city and state, colors,
-            and layout get set on the print ticket before we cut vinyl.
+            {uiT(lang, "tapSampleLead")}
           </p>
           <p className="text-xs text-muted-foreground sm:hidden">
-            Swipe a look. Your numbers go on the ticket.
+            {uiT(lang, "tapSampleLeadMobile")}
           </p>
         </div>
       </div>
@@ -54,15 +57,15 @@ export function SampleGallery({
                 className="shadow-none"
               />
               <p className="mt-2 text-sm font-medium text-[var(--navy)]">
-                {sample.label}
+                {sampleLabelOf(lang, sample)}
                 {selected ? (
                   <span className="ml-1.5 text-[11px] font-normal text-muted-foreground">
-                    in use
+                    {uiT(lang, "inUse")}
                   </span>
                 ) : null}
               </p>
               <p className="text-[11px] leading-snug text-muted-foreground">
-                {sample.hint}
+                {sampleHintOf(lang, sample)}
               </p>
             </button>
           );

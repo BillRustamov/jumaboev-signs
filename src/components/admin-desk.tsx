@@ -20,6 +20,8 @@ import { formatUsd, isPriced } from "@/lib/money";
 import { isPrintOnly } from "@/lib/order";
 import { hydrateOrder } from "@/lib/order-status";
 import { payT } from "@/lib/order-copy";
+import { uiT } from "@/lib/shop-copy";
+import { localizeNote } from "@/lib/shop-labels";
 import { useShopOrders } from "@/lib/use-shop-orders";
 import { useShopLang } from "@/lib/shop-lang";
 
@@ -41,8 +43,8 @@ export function AdminDesk() {
       {error ? (
         <Alert variant="destructive">
           <AlertCircle />
-          <AlertTitle>Showing saved copies on this device</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
+          <AlertTitle>{uiT(lang, "showingSaved")}</AlertTitle>
+          <AlertDescription>{localizeNote(lang, error)}</AlertDescription>
         </Alert>
       ) : null}
 
@@ -50,17 +52,14 @@ export function AdminDesk() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Cutter sheet</CardTitle>
-          <CardDescription>
-            Physical pair is two 20 × 12 in doors, laid out along a 24 in
-            roll. Download places both plaques — left and right — at true size.
-          </CardDescription>
+          <CardTitle>{uiT(lang, "cutterSheet")}</CardTitle>
+          <CardDescription>{uiT(lang, "cutterSheetLead")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Button variant="outline" asChild>
             <Link href="/admin/print/sample">
               <Printer className="size-4" />
-              Open sample print sheet
+              {uiT(lang, "openSampleSheet")}
             </Link>
           </Button>
         </CardContent>
@@ -71,13 +70,9 @@ export function AdminDesk() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Inbox className="size-4" />
-              No tickets to print
+              {uiT(lang, "noTickets")}
             </CardTitle>
-            <CardDescription>
-              When a driver checks out — or the Telegram bot posts a ticket —
-              the pair lands here for a 20 × 12 in left and right print. The
-              sample sheet above is always available.
-            </CardDescription>
+            <CardDescription>{uiT(lang, "noTicketsLead")}</CardDescription>
           </CardHeader>
         </Card>
       ) : (
@@ -89,8 +84,8 @@ export function AdminDesk() {
                   <div>
                     <CardTitle>{order.id}</CardTitle>
                     <CardDescription>
-                      @{order.username} · {order.source}
-                      {order.service === "PRINT_ONLY" ? " · print-existing" : ""}
+                      @{order.username} · {order.source === "telegram" ? uiT(lang, "sourceTelegram") : uiT(lang, "sourceWeb")}
+                      {order.service === "PRINT_ONLY" ? ` · ${uiT(lang, "printExistingTag")}` : ""}
                       {order.language ? ` · ${order.language}` : ""}
                       {order.telegramChatId
                         ? ` · chat ${order.telegramChatId}`
@@ -113,14 +108,13 @@ export function AdminDesk() {
                 )}
                 {isPrintOnly(order) ? (
                   <p className="text-xs text-muted-foreground">
-                    Print the original upload at 20 × 12 in. This is not a
-                    designer plaque — the cutter sheet stays for custom designs.
+                    {uiT(lang, "printOriginalNote")}
                   </p>
                 ) : (
                   <Button className="w-full" asChild>
                     <Link href={`/admin/print/${order.id}`}>
                       <Printer className="size-4" />
-                      Download print sheet
+                      {uiT(lang, "downloadPrintSheet")}
                     </Link>
                   </Button>
                 )}

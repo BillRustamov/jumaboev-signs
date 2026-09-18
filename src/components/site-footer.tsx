@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { shopT } from "@/lib/shop-entry";
+import { uiT } from "@/lib/shop-copy";
 import { useShopLang } from "@/lib/shop-lang";
 import { TELEGRAM_BOT_URL } from "@/lib/telegram";
 
@@ -52,7 +53,7 @@ export function SiteFooter() {
           </p>
           <p className="mt-1">
             <Link className="underline-offset-4 hover:underline" href="/admin">
-              Admin
+              {uiT(lang, "adminNav")}
             </Link>
           </p>
         </div>

@@ -24,8 +24,12 @@ import {
   validateUsername,
   type SignOrder,
 } from "@/lib/order";
+import { uiT } from "@/lib/shop-copy";
+import { localizeNote } from "@/lib/shop-labels";
+import { useShopLang } from "@/lib/shop-lang";
 
 export function CheckoutDesk() {
+  const lang = useShopLang();
   const items = useCart();
   const storedUsername = useUsername();
   const [usernameDraft, setUsernameDraft] = useState<string | null>(null);
@@ -45,11 +49,11 @@ export function CheckoutDesk() {
     event.preventDefault();
     const nameError = validateUsername(username);
     if (nameError) {
-      setUsernameError(nameError);
+      setUsernameError(localizeNote(lang, nameError));
       return;
     }
     if (!ready.length) {
-      setFormError("Your cart has no complete door pair to print.");
+      setFormError(uiT(lang, "cartNoComplete"));
       return;
     }
     setSubmitting(true);
@@ -84,7 +88,7 @@ export function CheckoutDesk() {
     } catch {
       for (const order of created) writeLocalOrder(order);
       setPlaced(created);
-      setFormError("Saved on this device after a network error.");
+      setFormError(uiT(lang, "savedAfterNetwork"));
     } finally {
       setSubmitting(false);
     }
@@ -96,24 +100,26 @@ export function CheckoutDesk() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CheckCircle2 className="size-5 text-[var(--forest)]" />
-            Order received
+            {uiT(lang, "orderReceived")}
           </CardTitle>
           <CardDescription>
-            {placed.map((order) => order.id).join(", ")} · 20 × 12 in
-            each cab side for @{placed[0]?.username}.
+            {uiT(lang, "orderReceivedLead", {
+              ids: placed.map((order) => order.id).join(", "),
+              user: placed[0]?.username ?? "",
+            })}
           </CardDescription>
         </CardHeader>
         <CardFooter className="flex-wrap gap-2">
           <Button asChild>
             <Link href={`/admin/print/${placed[0].id}`}>
-              Download print sheet
+              {uiT(lang, "downloadPrintSheet")}
             </Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/admin">Admin print desk</Link>
+            <Link href="/admin">{uiT(lang, "adminPrintDesk")}</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/orders">View shop orders</Link>
+            <Link href="/orders">{uiT(lang, "viewShopOrders")}</Link>
           </Button>
         </CardFooter>
       </Card>
@@ -124,17 +130,15 @@ export function CheckoutDesk() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Nothing to check out</CardTitle>
-          <CardDescription>
-            Add a door pair from the print desk first.
-          </CardDescription>
+          <CardTitle>{uiT(lang, "nothingCheckout")}</CardTitle>
+          <CardDescription>{uiT(lang, "nothingCheckoutLead")}</CardDescription>
         </CardHeader>
         <CardFooter className="gap-2">
           <Button asChild>
-            <Link href="/order">Print desk</Link>
+            <Link href="/order">{uiT(lang, "printDesk")}</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/cart">Open cart</Link>
+            <Link href="/cart">{uiT(lang, "openCart")}</Link>
           </Button>
         </CardFooter>
       </Card>
@@ -147,11 +151,10 @@ export function CheckoutDesk() {
         <section key={item.id} className="space-y-2">
           <div>
             <h2 className="font-heading text-lg font-semibold text-[var(--navy)]">
-              {item.fields.companyName.trim().toUpperCase() || "Door pair"}
+              {item.fields.companyName.trim().toUpperCase() || uiT(lang, "doorPair")}
             </h2>
             <p className="text-sm text-muted-foreground">
-              Sign close-up is the print. On the door is a preview on the cab
-              — not the cut file.
+              {uiT(lang, "checkoutPreviewNote")}
             </p>
           </div>
           <WhiteSemiTruck fields={item.fields} />
@@ -160,29 +163,27 @@ export function CheckoutDesk() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Send to the shop</CardTitle>
-          <CardDescription>
-            Tag the ticket. Khurshid prints the pair from this checkout.
-          </CardDescription>
+          <CardTitle>{uiT(lang, "sendToShop")}</CardTitle>
+          <CardDescription>{uiT(lang, "sendToShopLead")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={checkout} autoComplete="off">
             {formError ? (
               <Alert variant="destructive">
                 <AlertCircle />
-                <AlertTitle>Could not finish checkout</AlertTitle>
+                <AlertTitle>{uiT(lang, "couldNotCheckout")}</AlertTitle>
                 <AlertDescription>{formError}</AlertDescription>
               </Alert>
             ) : null}
             {usernameError ? (
               <Alert variant="destructive">
                 <AlertCircle />
-                <AlertTitle>Username not accepted</AlertTitle>
+                <AlertTitle>{uiT(lang, "usernameRejected")}</AlertTitle>
                 <AlertDescription>{usernameError}</AlertDescription>
               </Alert>
             ) : null}
             <div className="space-y-2">
-              <Label htmlFor="checkout-username">Shop username</Label>
+              <Label htmlFor="checkout-username">{uiT(lang, "shopUsername")}</Label>
               <Input
                 id="checkout-username"
                 value={username}
@@ -198,10 +199,12 @@ export function CheckoutDesk() {
               {submitting ? (
                 <>
                   <Loader2 className="animate-spin" />
-                  Sending to the shop
+                  {uiT(lang, "sendingToShop")}
                 </>
+              ) : ready.length === 1 ? (
+                uiT(lang, "placeOnePair")
               ) : (
-                `Place ${ready.length} vinyl pair${ready.length === 1 ? "" : "s"}`
+                uiT(lang, "placeManyPairs", { n: String(ready.length) })
               )}
             </Button>
           </form>

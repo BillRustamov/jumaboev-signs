@@ -13,8 +13,11 @@ import {
 } from "@/components/ui/card";
 import { WhiteSemiTruck } from "@/components/white-semi-truck";
 import { removeFromCart, useCart } from "@/lib/cart";
+import { uiT } from "@/lib/shop-copy";
+import { useShopLang } from "@/lib/shop-lang";
 
 export function CartPage() {
+  const lang = useShopLang();
   const items = useCart();
 
   if (items.length === 0) {
@@ -23,19 +26,16 @@ export function CartPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ShoppingCart className="size-4" />
-            Cart is empty
+            {uiT(lang, "cartEmpty")}
           </CardTitle>
-          <CardDescription>
-            Custom designs go in this cart after the designer. Print-existing
-            files skip the cart and go straight to the shop list.
-          </CardDescription>
+          <CardDescription>{uiT(lang, "cartEmptyLead")}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button asChild>
-            <Link href="/order">Create a design</Link>
+            <Link href="/order">{uiT(lang, "keepDesigning")}</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/print">Print a file</Link>
+            <Link href="/print">{uiT(lang, "printDesk")}</Link>
           </Button>
         </CardContent>
       </Card>
@@ -48,10 +48,10 @@ export function CartPage() {
         <Card key={item.id}>
           <CardHeader>
             <CardTitle>
-              {item.fields.companyName.trim().toUpperCase() || "Door pair"}
+              {item.fields.companyName.trim().toUpperCase() || uiT(lang, "doorPair")}
             </CardTitle>
             <CardDescription>
-              Set of two · 20 × 12 in each side
+              {uiT(lang, "setOfTwo")}
               {item.fields.mcNumber
                 ? ` · MC ${item.fields.mcNumber}`
                 : ""}
@@ -61,14 +61,12 @@ export function CartPage() {
           <CardContent className="space-y-3">
             <WhiteSemiTruck fields={item.fields} />
             <p className="text-sm text-muted-foreground">
-              Example cut is 20 × 12 in for each cab side. Use Sign close-up
-              to inspect the art, On the door to see it on the cab. Unit
-              numbers are a separate small print.
+              {uiT(lang, "cartItemNote")}
             </p>
           </CardContent>
           <CardFooter className="justify-between">
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/order">Edit another door</Link>
+              <Link href="/order">{uiT(lang, "editAnother")}</Link>
             </Button>
             <Button
               variant="outline"
@@ -76,17 +74,17 @@ export function CartPage() {
               onClick={() => removeFromCart(item.id)}
             >
               <Trash2 className="size-4" />
-              Remove
+              {uiT(lang, "remove")}
             </Button>
           </CardFooter>
         </Card>
       ))}
       <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
         <Button variant="outline" asChild>
-          <Link href="/order">Keep designing</Link>
+          <Link href="/order">{uiT(lang, "keepDesigning")}</Link>
         </Button>
         <Button asChild>
-          <Link href="/checkout">Checkout on the truck</Link>
+          <Link href="/checkout">{uiT(lang, "checkoutOnTruck")}</Link>
         </Button>
       </div>
     </div>

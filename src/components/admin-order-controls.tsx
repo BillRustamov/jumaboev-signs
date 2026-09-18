@@ -14,6 +14,8 @@ import {
 } from "@/lib/order-status";
 import type { SignOrder } from "@/lib/order";
 import type { ShopLang } from "@/lib/shop-entry";
+import { uiT } from "@/lib/shop-copy";
+import { localizeNote } from "@/lib/shop-labels";
 
 export function AdminOrderControls({
   order,
@@ -49,13 +51,13 @@ export function AdminOrderControls({
         payPath?: string;
       };
       if (!response.ok || !payload.order) {
-        setError(payload.error || "Could not update this ticket.");
+        setError(localizeNote(lang, payload.error || uiT(lang, "couldNotUpdate")));
         return;
       }
       if (payload.payPath) setPayPath(payload.payPath);
       onUpdated(payload.order, payload.payPath);
     } catch {
-      setError("Could not reach the shop list.");
+      setError(uiT(lang, "couldNotReach"));
     } finally {
       setBusy(false);
     }
@@ -114,7 +116,9 @@ export function AdminOrderControls({
             ))}
           </div>
           {readyBlocked && nextStates.includes("READY_FOR_PAYMENT") ? (
-            <p className="text-xs text-muted-foreground">{readyBlocked}</p>
+            <p className="text-xs text-muted-foreground">
+              {localizeNote(lang, readyBlocked)}
+            </p>
           ) : null}
         </div>
       ) : null}

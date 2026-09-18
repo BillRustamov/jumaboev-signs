@@ -15,8 +15,11 @@ import {
   samplePrintOrder,
   type SignOrder,
 } from "@/lib/order";
+import { uiT } from "@/lib/shop-copy";
+import { useShopLang } from "@/lib/shop-lang";
 
 export function AdminPrintDesk() {
+  const lang = useShopLang();
   const params = useParams<{ id: string }>();
   const id = params.id;
   const [order, setOrder] = useState<SignOrder | null>(null);
@@ -42,7 +45,7 @@ export function AdminPrintDesk() {
           return;
         }
         if (!local) {
-          throw new Error("This ticket is not on the shop list.");
+          throw new Error(uiT(lang, "ticketNotOnList"));
         }
         if (!cancelled) setOrder(local);
       } catch (err) {
@@ -51,7 +54,7 @@ export function AdminPrintDesk() {
           setOrder(local);
         } else {
           setError(
-            err instanceof Error ? err.message : "Could not open that ticket.",
+            err instanceof Error ? err.message : uiT(lang, "couldNotOpenTicket"),
           );
         }
       } finally {
@@ -72,7 +75,7 @@ export function AdminPrintDesk() {
     return (
       <p className="flex items-center gap-2 text-sm text-muted-foreground">
         <Loader2 className="size-4 animate-spin" />
-        Opening print sheet
+        {uiT(lang, "openingSheet")}
       </p>
     );
   }
@@ -83,15 +86,14 @@ export function AdminPrintDesk() {
         <Button variant="ghost" size="sm" asChild>
           <Link href="/admin">
             <ArrowLeft className="size-4" />
-            Shop print desk
+            {uiT(lang, "shopPrintDesk")}
           </Link>
         </Button>
         <Alert>
           <AlertCircle />
-          <AlertTitle>Print the original file</AlertTitle>
+          <AlertTitle>{uiT(lang, "printOriginalTitle")}</AlertTitle>
           <AlertDescription>
-            Ticket {order.id} is print-existing. Do not cut a designer plaque.
-            Print the upload at 20 × 12 in, one pair.
+            {uiT(lang, "printOriginalBody", { id: order.id })}
           </AlertDescription>
         </Alert>
         <PrintOrderCard order={order} />
@@ -103,8 +105,8 @@ export function AdminPrintDesk() {
     return (
       <Alert variant="destructive">
         <AlertCircle />
-        <AlertTitle>No ticket to print</AlertTitle>
-        <AlertDescription>{error ?? "Unknown order."}</AlertDescription>
+        <AlertTitle>{uiT(lang, "noTicketPrint")}</AlertTitle>
+        <AlertDescription>{error ?? uiT(lang, "unknownOrder")}</AlertDescription>
       </Alert>
     );
   }
@@ -115,24 +117,22 @@ export function AdminPrintDesk() {
         <Button variant="ghost" size="sm" asChild>
           <Link href="/admin">
             <ArrowLeft className="size-4" />
-            Shop print desk
+            {uiT(lang, "shopPrintDesk")}
           </Link>
         </Button>
         <div className="flex gap-2">
           <Button variant="outline" onClick={downloadSheet}>
             <Printer className="size-4" />
-            Print
+            {uiT(lang, "printSheet")}
           </Button>
           <Button onClick={downloadSheet}>
             <Download className="size-4" />
-            Download print sheet
+            {uiT(lang, "downloadPrintSheet")}
           </Button>
         </div>
       </div>
       <p className="print-hide max-w-2xl text-sm text-muted-foreground">
-        Two 20 × 12 in doors on a 24 in wide roll, one after the other. Artwork
-        is never squashed to 20 × 10. Left and right. In the print dialog use
-        100% scale and turn off “fit to page”.
+        {uiT(lang, "cutterSheetLead")}
       </p>
       <div className="print-hide overflow-auto rounded-xl border bg-neutral-200 p-3">
         <div className="h-[9.2in] sm:h-[10.2in]">

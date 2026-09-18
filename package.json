@@ -10,7 +10,7 @@
     "bot": "tsx bot/index.ts",
     "bot:demo": "tsx bot/index.ts --demo",
     "bot:profile": "tsx bot/index.ts --configure-profile",
-    "test": "tsx --test src/lib/design/design.test.ts src/lib/design/migrate.test.ts src/lib/samples.test.ts src/lib/cab-mockup.test.ts src/lib/truck-mockups.test.ts src/lib/auto-improve.test.ts src/lib/artwork.test.ts src/lib/production.test.ts src/lib/bot-preview.test.ts src/lib/shop-entry.test.ts src/lib/print-file.test.ts src/lib/order-status.test.ts src/lib/order-token.test.ts src/lib/money.test.ts src/lib/shop-db.test.ts src/lib/stripe-config.test.ts src/lib/checkout.test.ts src/lib/stripe-webhook.test.ts src/lib/payment-sync.test.ts"
+    "test": "tsx --test src/lib/design/design.test.ts src/lib/design/migrate.test.ts src/lib/samples.test.ts src/lib/cab-mockup.test.ts src/lib/truck-mockups.test.ts src/lib/auto-improve.test.ts src/lib/artwork.test.ts src/lib/production.test.ts src/lib/bot-preview.test.ts src/lib/shop-entry.test.ts src/lib/shop-copy.test.ts src/lib/print-file.test.ts src/lib/order-status.test.ts src/lib/order-token.test.ts src/lib/money.test.ts src/lib/shop-db.test.ts src/lib/stripe-config.test.ts src/lib/checkout.test.ts src/lib/stripe-webhook.test.ts src/lib/payment-sync.test.ts"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

@@ -50,11 +50,15 @@ import {
   type DriverSample,
 } from "@/lib/samples";
 import { contrastWarnings, type SignPalette } from "@/lib/sign-style";
+import { uiT } from "@/lib/shop-copy";
+import { localizeNotes } from "@/lib/shop-labels";
+import { useShopLang } from "@/lib/shop-lang";
 
 const MAX_LOGO_BYTES = 4 * 1024 * 1024;
 const SAMPLE_QUERY = "sample";
 
 export function OrderStudio() {
+  const lang = useShopLang();
   const searchParams = useSearchParams();
   const start =
     sampleById(searchParams.get(SAMPLE_QUERY)) ?? DRIVER_SAMPLES[0];
@@ -83,12 +87,10 @@ export function OrderStudio() {
   const letteringIssues = useMemo(() => {
     const issues = validateSign(fields);
     if (isDemoLettering(fields)) {
-      return [
-        "This is still a sample door. Put your MCS-150 name, USDOT, and MC before we print.",
-      ];
+      return [uiT(lang, "demoLettering")];
     }
-    return issues;
-  }, [fields]);
+    return localizeNotes(lang, issues);
+  }, [fields, lang]);
   const letteringDone = letteringIssues.length === 0;
   const canPrint = letteringDone && colorPicked && layoutReady;
 
@@ -134,17 +136,17 @@ export function OrderStudio() {
     setLogoError(null);
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      setLogoError("Upload a PNG, JPG, SVG, or WebP logo.");
+      setLogoError(uiT(lang, "logoTypeError"));
       return;
     }
     if (file.size > MAX_LOGO_BYTES) {
-      setLogoError("Logo must be 4 MB or smaller.");
+      setLogoError(uiT(lang, "logoSizeError"));
       return;
     }
     const dataUrl = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(String(reader.result));
-      reader.onerror = () => reject(new Error("Could not read that file."));
+      reader.onerror = () => reject(new Error(uiT(lang, "logoReadError")));
       reader.readAsDataURL(file);
     }).catch((err: Error) => {
       setLogoError(err.message);
@@ -194,7 +196,7 @@ export function OrderStudio() {
   function onPlaceClick(event: React.FormEvent) {
     event.preventDefault();
     if (!letteringDone) {
-      setFormError(letteringIssues[0] ?? "Put your name and USDOT on the door.");
+      setFormError(letteringIssues[0] ?? uiT(lang, "needNameDot"));
       document.getElementById("must-lettering")?.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -202,7 +204,7 @@ export function OrderStudio() {
       return;
     }
     if (!colorPicked) {
-      setFormError("Tap a color set so we know what to print.");
+      setFormError(uiT(lang, "needColors"));
       document.getElementById("must-colors")?.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -210,7 +212,7 @@ export function OrderStudio() {
       return;
     }
     if (!layoutReady) {
-      setFormError("Set logo size if you have a mark, then mark the layout ready.");
+      setFormError(uiT(lang, "needLayout"));
       document.getElementById("must-layout")?.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -223,7 +225,7 @@ export function OrderStudio() {
   function onWizardContinue() {
     if (wizardStep === "lettering") {
       if (!letteringDone) {
-        setFormError(letteringIssues[0] ?? "Put your name and USDOT on the door.");
+        setFormError(letteringIssues[0] ?? uiT(lang, "needNameDot"));
         return;
       }
       setFormError(null);
@@ -237,7 +239,7 @@ export function OrderStudio() {
       return;
     }
     if (!letteringDone) {
-      setFormError(letteringIssues[0] ?? "Put your name and USDOT on the door.");
+      setFormError(letteringIssues[0] ?? uiT(lang, "needNameDot"));
       setWizardStep("lettering");
       return;
     }
@@ -320,32 +322,29 @@ export function OrderStudio() {
           >
             <Card>
               <CardHeader className="border-b">
-                <CardTitle>Print ticket</CardTitle>
-                <CardDescription>
-                  Do these three, then add the pair to your cart. Unit numbers
-                  are a separate small print.
-                </CardDescription>
+                <CardTitle>{uiT(lang, "printTicket")}</CardTitle>
+                <CardDescription>{uiT(lang, "printTicketLead")}</CardDescription>
                 <ol className="mt-3 grid grid-cols-3 gap-2 text-sm">
-                  <CheckItem done={letteringDone} label="1. Lettering" />
-                  <CheckItem done={colorPicked} label="2. Colors" />
-                  <CheckItem done={layoutReady} label="3. Layout" />
+                  <CheckItem done={letteringDone} label={uiT(lang, "stepLettering")} />
+                  <CheckItem done={colorPicked} label={uiT(lang, "stepColors")} />
+                  <CheckItem done={layoutReady} label={uiT(lang, "stepLayout")} />
                 </ol>
               </CardHeader>
               <CardContent className="space-y-8 pt-6">
                 {formError ? (
                   <Alert variant="destructive">
                     <AlertCircle />
-                    <AlertTitle>Could not finish that order</AlertTitle>
+                    <AlertTitle>{uiT(lang, "couldNotFinish")}</AlertTitle>
                     <AlertDescription>{formError}</AlertDescription>
                   </Alert>
                 ) : null}
                 {improveNotes.length ? (
                   <Alert>
                     <Sparkles />
-                    <AlertTitle>Auto Improve</AlertTitle>
+                    <AlertTitle>{uiT(lang, "autoImprove")}</AlertTitle>
                     <AlertDescription>
                       <ul className="list-disc pl-4">
-                        {improveNotes.map((note) => (
+                        {localizeNotes(lang, improveNotes).map((note) => (
                           <li key={note}>{note}</li>
                         ))}
                       </ul>
@@ -357,8 +356,8 @@ export function OrderStudio() {
                   id="must-lettering"
                   step="1"
                   icon={TICKET_ICONS.lettering}
-                  title="Lettering"
-                  hint="Required. Put the name, USDOT, and MC that should actually print — not the sample."
+                  title={uiT(lang, "lettering")}
+                  hint={uiT(lang, "letteringHint")}
                   done={letteringDone}
                 >
                   <LetteringFields {...ticket} />
@@ -368,8 +367,8 @@ export function OrderStudio() {
                   id="must-colors"
                   step="2"
                   icon={TICKET_ICONS.colors}
-                  title="Colors"
-                  hint="Required. Tap a look — each card is that color on the door. The truck below matches the cart."
+                  title={uiT(lang, "colors")}
+                  hint={uiT(lang, "colorsHint")}
                   done={colorPicked}
                 >
                   <ColorFields {...ticket} showTruck />
@@ -379,8 +378,8 @@ export function OrderStudio() {
                   id="must-layout"
                   step="3"
                   icon={TICKET_ICONS.layout}
-                  title="Layout"
-                  hint="Required. Pick a layout, set logo size, and choose a door font. What you see is what prints."
+                  title={uiT(lang, "layout")}
+                  hint={uiT(lang, "layoutHint")}
                   done={layoutReady}
                 >
                   <LayoutFields {...ticket} />
@@ -391,8 +390,8 @@ export function OrderStudio() {
                     onClick={markLayoutReady}
                   >
                     {layoutReady
-                      ? "Layout ready for print"
-                      : "This layout is ready"}
+                      ? uiT(lang, "layoutReadyDone")
+                      : uiT(lang, "layoutReadyBtn")}
                   </Button>
                 </MustSection>
               </CardContent>
@@ -401,24 +400,23 @@ export function OrderStudio() {
                   type="submit"
                   className="h-auto min-h-9 whitespace-normal sm:whitespace-nowrap"
                 >
-                  {canPrint ? "Add pair to cart" : "Finish required steps first"}
+                  {canPrint ? uiT(lang, "addPair") : uiT(lang, "finishSteps")}
                 </Button>
                 <Button type="button" variant="outline" onClick={onAutoImprove}>
                   <Sparkles className="size-4" />
-                  Auto Improve
+                  {uiT(lang, "autoImprove")}
                 </Button>
                 <Button type="button" variant="outline" onClick={onReset}>
                   <RotateCcw className="size-4" />
-                  Reset
+                  {uiT(lang, "reset")}
                 </Button>
                 {!canPrint ? (
                   <p className="text-xs text-muted-foreground">
-                    Vinyl does not go in the cart until lettering, colors, and
-                    layout are set.
+                    {uiT(lang, "cartUntilReady")}
                   </p>
                 ) : (
                   <p className="text-xs text-muted-foreground">
-                    Checkout shows this door on a white semi.
+                    {uiT(lang, "cartShowsTruck")}
                   </p>
                 )}
               </CardFooter>
@@ -432,20 +430,23 @@ export function OrderStudio() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CheckCircle2 className="size-5 text-[var(--forest)]" />
-              Pair in the cart
+              {uiT(lang, "pairInCart")}
             </DialogTitle>
             <DialogDescription>
               {added
-                ? `${added.fields.companyName} · USDOT ${added.fields.dotNumber}. Example cut is 20 × 12 in for each cab side. Checkout shows them on the truck.`
+                ? uiT(lang, "pairInCartLead", {
+                    name: added.fields.companyName,
+                    dot: added.fields.dotNumber,
+                  })
                 : null}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" asChild>
-              <Link href="/cart">View cart</Link>
+              <Link href="/cart">{uiT(lang, "viewCart")}</Link>
             </Button>
             <Button asChild>
-              <Link href="/checkout">Checkout</Link>
+              <Link href="/checkout">{uiT(lang, "checkout")}</Link>
             </Button>
           </DialogFooter>
         </DialogContent>

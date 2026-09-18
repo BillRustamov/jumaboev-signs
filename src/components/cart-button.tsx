@@ -6,8 +6,11 @@ import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TruckSign } from "@/components/truck-sign";
 import { useCart } from "@/lib/cart";
+import { uiT } from "@/lib/shop-copy";
+import { useShopLang } from "@/lib/shop-lang";
 
 export function CartButton() {
+  const lang = useShopLang();
   const items = useCart();
   const count = items.length;
   const [open, setOpen] = useState(false);
@@ -39,11 +42,15 @@ export function CartButton() {
         className="relative px-2.5"
         aria-expanded={open}
         aria-haspopup="dialog"
-        aria-label={count ? `Cart, ${count} items` : "Cart"}
+        aria-label={
+          count
+            ? uiT(lang, "cartCount", { n: String(count) })
+            : uiT(lang, "cartEmptyAria")
+        }
         onClick={() => setOpen((current) => !current)}
       >
         <ShoppingCart className="size-4" />
-        <span className="hidden sm:inline">Cart</span>
+        <span className="hidden sm:inline">{uiT(lang, "cartNav")}</span>
         {count > 0 ? (
           <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--gold)] px-1 text-[10px] font-semibold text-[var(--navy)]">
             {count}
@@ -53,12 +60,12 @@ export function CartButton() {
       {open ? (
         <div
           role="dialog"
-          aria-label="Shopping cart"
+          aria-label={uiT(lang, "shoppingCart")}
           className="absolute right-0 z-50 mt-2 w-[min(22rem,calc(100vw-1.5rem))] rounded-xl border bg-white p-3 shadow-lg max-sm:fixed max-sm:left-3 max-sm:right-3 max-sm:mt-1 max-sm:w-auto"
         >
           {count === 0 ? (
             <p className="px-1 py-2 text-sm text-muted-foreground">
-              Cart is empty. Add a 20 × 12 in pair from the print desk.
+              {uiT(lang, "cartEmptyMini")}
             </p>
           ) : (
             <ul className="max-h-72 space-y-2 overflow-auto">
@@ -74,10 +81,12 @@ export function CartButton() {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-[var(--navy)]">
                       {item.fields.companyName.trim().toUpperCase() ||
-                        "Door pair"}
+                        uiT(lang, "doorPair")}
                     </p>
                     <p className="truncate text-xs text-muted-foreground">
-                      Set of two · USDOT {item.fields.dotNumber || "—"}
+                      {uiT(lang, "setOfTwoUsdot", {
+                        dot: item.fields.dotNumber || "—",
+                      })}
                     </p>
                   </div>
                 </li>
@@ -87,7 +96,7 @@ export function CartButton() {
           <div className="mt-3 flex gap-2">
             <Button variant="outline" size="sm" className="flex-1" asChild>
               <Link href="/cart" onClick={() => setOpen(false)}>
-                Open cart
+                {uiT(lang, "openCart")}
               </Link>
             </Button>
             <Button size="sm" className="flex-1" asChild>
@@ -95,7 +104,7 @@ export function CartButton() {
                 href={count ? "/checkout" : "/order"}
                 onClick={() => setOpen(false)}
               >
-                {count ? "Checkout" : "Print desk"}
+                {count ? uiT(lang, "checkout") : uiT(lang, "printDesk")}
               </Link>
             </Button>
           </div>

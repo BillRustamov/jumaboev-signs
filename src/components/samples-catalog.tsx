@@ -21,16 +21,26 @@ import {
   SAMPLE_CATEGORIES,
   filterCatalog,
   sampleCategory,
-  sampleColorLabel,
-  sampleProductType,
   type CatalogFilter,
   type DriverSample,
   type SampleCategory,
 } from "@/lib/samples";
+import { uiT } from "@/lib/shop-copy";
+import {
+  categoryBlurb,
+  categoryLabel,
+  colorNameOf,
+  filterLabel,
+  productTypeName,
+  sampleHintOf,
+  sampleLabelOf,
+} from "@/lib/shop-labels";
+import { useShopLang } from "@/lib/shop-lang";
 
 type Peek = { sample: DriverSample; mode: "sign" | "truck" } | null;
 
 export function SamplesCatalog() {
+  const lang = useShopLang();
   const [category, setCategory] = useState<SampleCategory | "all">("all");
   const [filter, setFilter] = useState<CatalogFilter>("all");
   const [peek, setPeek] = useState<Peek>(null);
@@ -40,13 +50,11 @@ export function SamplesCatalog() {
     [category, filter],
   );
   const heading =
-    category === "all"
-      ? "All looks"
-      : (SAMPLE_CATEGORIES.find((item) => item.id === category)?.label ?? "Looks");
+    category === "all" ? uiT(lang, "allLooks") : categoryLabel(lang, category);
   const blurb =
     category === "all"
-      ? "Each card is a different 20 × 12 in composition. Color is separate from layout."
-      : SAMPLE_CATEGORIES.find((item) => item.id === category)?.blurb;
+      ? uiT(lang, "allLooksBlurb")
+      : categoryBlurb(lang, category);
 
   return (
     <div>
@@ -56,7 +64,7 @@ export function SamplesCatalog() {
             selected={category === "all"}
             onClick={() => setCategory("all")}
           >
-            All looks
+            {uiT(lang, "allLooks")}
           </CategoryChip>
           {SAMPLE_CATEGORIES.map((item) => (
             <CategoryChip
@@ -64,7 +72,7 @@ export function SamplesCatalog() {
               selected={category === item.id}
               onClick={() => setCategory(item.id)}
             >
-              {item.label}
+              {categoryLabel(lang, item.id)}
             </CategoryChip>
           ))}
         </div>
@@ -72,7 +80,7 @@ export function SamplesCatalog() {
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-          Filter
+          {uiT(lang, "filter")}
         </p>
         {CATALOG_FILTERS.map((item) => (
           <Button
@@ -82,7 +90,7 @@ export function SamplesCatalog() {
             variant={filter === item.id ? "default" : "outline"}
             onClick={() => setFilter(item.id)}
           >
-            {item.label}
+            {filterLabel(lang, item.id)}
           </Button>
         ))}
       </div>
@@ -97,11 +105,10 @@ export function SamplesCatalog() {
       {items.length === 0 ? (
         <div className="rounded-xl border border-dashed bg-white px-6 py-14 text-center">
           <p className="font-heading text-lg font-semibold text-[var(--navy)]">
-            No doors match that filter
+            {uiT(lang, "noDoorsMatch")}
           </p>
           <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
-            Try All, or pick White / Dark / logo on a different category. Every
-            look is still {VINYL.size}.
+            {uiT(lang, "noDoorsMatchLead")}
           </p>
           <Button
             className="mt-5"
@@ -111,7 +118,7 @@ export function SamplesCatalog() {
               setFilter("all");
             }}
           >
-            Clear filters
+            {uiT(lang, "clearFilters")}
           </Button>
         </div>
       ) : (
@@ -120,6 +127,7 @@ export function SamplesCatalog() {
             <SampleCard
               key={sample.id}
               sample={sample}
+              lang={lang}
               onInspect={() => setPeek({ sample, mode: "sign" })}
               onTruck={() => setPeek({ sample, mode: "truck" })}
             />
@@ -127,7 +135,7 @@ export function SamplesCatalog() {
         </div>
       )}
 
-      <InspectDialog peek={peek} onClose={() => setPeek(null)} />
+      <InspectDialog peek={peek} lang={lang} onClose={() => setPeek(null)} />
     </div>
   );
 }
@@ -159,10 +167,12 @@ function CategoryChip({
 
 function SampleCard({
   sample,
+  lang,
   onInspect,
   onTruck,
 }: {
   sample: DriverSample;
+  lang: import("@/lib/shop-entry").ShopLang;
   onInspect: () => void;
   onTruck: () => void;
 }) {
@@ -173,17 +183,16 @@ function SampleCard({
         type="button"
         onClick={onInspect}
         className="relative block w-full bg-neutral-100 p-3 text-left sm:p-4"
-        aria-label={`Inspect ${sample.label}, ${VINYL.size}`}
+        aria-label={`${uiT(lang, "inspectArtwork")}, ${sampleLabelOf(lang, sample)}`}
       >
         {upload ? (
           <div className="flex aspect-[20/12] flex-col items-center justify-center rounded-md border border-dashed border-neutral-300 bg-white">
             <ImagePlus className="size-8 text-[var(--navy)]" />
             <p className="mt-2 text-sm font-medium text-[var(--navy)]">
-              Your logo or door photo
+              {uiT(lang, "yourLogoOrPhoto")}
             </p>
             <p className="mt-1 max-w-[16rem] text-center text-xs text-muted-foreground">
-              Fit entire, crop to fill, add margins, or keep aspect on{" "}
-              {VINYL.size}. We never stretch a file to fill.
+              {uiT(lang, "uploadCardHint")}
             </p>
           </div>
         ) : (
@@ -192,26 +201,30 @@ function SampleCard({
       </button>
       <div className="flex flex-1 flex-col gap-3 px-4 pt-3 pb-4">
         <div className="flex flex-wrap items-center gap-1.5">
-          <Badge variant="secondary">{sampleProductType(sample)}</Badge>
-          <Badge variant="outline">{sampleColorLabel(sample)}</Badge>
+          <Badge variant="secondary">{productTypeName(lang, sample)}</Badge>
+          <Badge variant="outline">{colorNameOf(lang, sample)}</Badge>
           <span className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
             {VINYL.size}
           </span>
         </div>
         <div>
           <h3 className="font-heading text-lg font-semibold text-[var(--navy)]">
-            {sample.label}
+            {sampleLabelOf(lang, sample)}
           </h3>
-          <p className="mt-1 text-sm text-muted-foreground">{sample.hint}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {sampleHintOf(lang, sample)}
+          </p>
         </div>
         <div className="mt-auto flex flex-col gap-2 sm:flex-row">
           <Button asChild className="sm:flex-1">
-            <Link href={`/order?sample=${sample.id}`}>Customize this design</Link>
+            <Link href={`/order?sample=${sample.id}`}>
+              {uiT(lang, "customizeThis")}
+            </Link>
           </Button>
           {upload ? null : (
             <Button type="button" variant="outline" onClick={onTruck}>
               <Truck className="size-4" />
-              On a truck
+              {uiT(lang, "onATruck")}
             </Button>
           )}
         </div>
@@ -222,9 +235,11 @@ function SampleCard({
 
 function InspectDialog({
   peek,
+  lang,
   onClose,
 }: {
   peek: Peek;
+  lang: import("@/lib/shop-entry").ShopLang;
   onClose: () => void;
 }) {
   const sample = peek?.sample;
@@ -238,12 +253,13 @@ function InspectDialog({
         {sample ? (
           <>
             <DialogTitle className="font-heading text-xl text-[var(--navy)]">
-              {sample.label}
+              {sampleLabelOf(lang, sample)}
             </DialogTitle>
             <DialogDescription>
-              {sampleProductType(sample)} · {sampleColorLabel(sample)} ·{" "}
-              {VINYL.size}. Looks only — put your MCS-150 name and numbers on
-              the print ticket.
+              {uiT(lang, "inspectLooksOnly", {
+                type: productTypeName(lang, sample),
+                color: colorNameOf(lang, sample),
+              })}
             </DialogDescription>
             <div className="mt-2">
               {sign ? (
@@ -259,13 +275,11 @@ function InspectDialog({
               )}
             </div>
             <p className="text-xs text-muted-foreground">
-              {sign
-                ? "This is the artwork. Truck placement is a separate preview."
-                : "On-truck placement is a look only. The vinyl we cut is still 20 × 12 in."}
+              {sign ? uiT(lang, "inspectArt") : uiT(lang, "inspectTruck")}
             </p>
             <Button asChild>
               <Link href={`/order?sample=${sample.id}`}>
-                Customize this design
+                {uiT(lang, "customizeThis")}
               </Link>
             </Button>
           </>

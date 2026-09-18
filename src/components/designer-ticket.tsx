@@ -27,6 +27,16 @@ import {
 } from "@/lib/sign-style";
 import { TEMPLATES, type SignFontId, type TemplateId } from "@/lib/design";
 import { formatPlace, parsePlace } from "@/lib/design/migrate";
+import { uiT } from "@/lib/shop-copy";
+import {
+  artworkFitHint,
+  artworkFitLabel,
+  localizeNotes,
+  presetHint,
+  presetName,
+  templateName,
+} from "@/lib/shop-labels";
+import { useShopLang } from "@/lib/shop-lang";
 import { cn } from "@/lib/utils";
 
 export type TicketApi = {
@@ -68,21 +78,22 @@ export function LetteringFields({
   | "onEdit"
   | "idPrefix"
 >) {
+  const lang = useShopLang();
   return (
     <div className="space-y-3">
       <Field
         id={uid(idPrefix, "companyName")}
-        label="MCS-150 name (legal or one trade name)"
+        label={uiT(lang, "mcs150Name")}
         requiredMark
-        hint="Must match the name on the motor carrier identification report."
-        placeholder="Your door name"
+        hint={uiT(lang, "mcs150Hint")}
+        placeholder={uiT(lang, "doorNamePlaceholder")}
         value={fields.companyName}
         onChange={(value) => update("companyName", value)}
       />
       <Field
         id={uid(idPrefix, "legalName")}
-        label="City, State"
-        hint="Optional. Prints under the company name. Not a federal marking field."
+        label={uiT(lang, "cityState")}
+        hint={uiT(lang, "cityStateHint")}
         placeholder="DALLAS, TX"
         value={formatPlace(fields.city, fields.state)}
         onChange={(value) => {
@@ -97,26 +108,26 @@ export function LetteringFields({
       />
       <Field
         id={uid(idPrefix, "dotNumber")}
-        label="USDOT number"
+        label={uiT(lang, "usdotNumber")}
         requiredMark
-        hint="Prints as USDOT plus the digits. Required on both sides."
-        placeholder="Your USDOT"
+        hint={uiT(lang, "usdotHint")}
+        placeholder={uiT(lang, "usdotPlaceholder")}
         inputMode="numeric"
         value={fields.dotNumber}
         onChange={(value) => update("dotNumber", digitsOnly(value, 12))}
       />
       <Field
         id={uid(idPrefix, "mcNumber")}
-        label="MC (FMCSA) number"
+        label={uiT(lang, "mcNumber")}
         requiredMark
-        hint="Prints as MC plus the digits under USDOT. Required on this shop ticket. FMCSA does not require MC on the truck."
-        placeholder="Your MC"
+        hint={uiT(lang, "mcHint")}
+        placeholder={uiT(lang, "mcPlaceholder")}
         inputMode="numeric"
         value={fields.mcNumber}
         onChange={(value) => update("mcNumber", digitsOnly(value, 10))}
       />
       <div className="space-y-2">
-        <Label htmlFor={uid(idPrefix, "logo")}>Logo or existing door sign</Label>
+        <Label htmlFor={uid(idPrefix, "logo")}>{uiT(lang, "logoOrDoor")}</Label>
         <label
           htmlFor={uid(idPrefix, "logo")}
           className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border border-dashed px-3 py-3 text-sm hover:bg-muted/60"
@@ -124,8 +135,8 @@ export function LetteringFields({
           <ImagePlus className="size-4 shrink-0" />
           <span className="text-muted-foreground">
             {fields.logoDataUrl
-              ? "File attached — tap to replace. Original is kept."
-              : "PNG, JPG, SVG, or WebP. Fits 20 × 12 in — never stretched."}
+              ? uiT(lang, "logoAttached")
+              : uiT(lang, "logoEmpty")}
           </span>
         </label>
         <Input
@@ -161,7 +172,7 @@ export function LetteringFields({
               onEdit?.();
             }}
           >
-            Remove file
+            {uiT(lang, "removeFile")}
           </Button>
         ) : null}
       {fields.logoDataUrl ? (
@@ -198,13 +209,15 @@ export function ColorFields({
   | "idPrefix"
   | "showTruck"
 >) {
+  const lang = useShopLang();
+  const contrast = localizeNotes(lang, contrastNotes);
   return (
     <div className="space-y-3">
-      {contrastNotes.length ? (
+      {contrast.length ? (
         <Alert>
           <AlertCircle />
-          <AlertTitle>Check daylight contrast</AlertTitle>
-          <AlertDescription>{contrastNotes[0]}</AlertDescription>
+          <AlertTitle>{uiT(lang, "checkContrast")}</AlertTitle>
+          <AlertDescription>{contrast[0]}</AlertDescription>
         </Alert>
       ) : null}
       <div className="grid grid-cols-2 gap-2">
@@ -263,9 +276,9 @@ export function ColorFields({
                   />
                 ))}
               </span>
-              <span className="px-1">{preset.label}</span>
+              <span className="px-1">{presetName(lang, preset.id)}</span>
               <span className="px-1 text-[11px] font-normal text-muted-foreground">
-                {preset.hint}
+                {presetHint(lang, preset.id)}
               </span>
             </Button>
           );
@@ -273,32 +286,32 @@ export function ColorFields({
       </div>
       {showTruck && colorPicked ? (
         <div className="space-y-2">
-          <p className="text-xs font-medium text-[var(--navy)]">On the cab door</p>
+          <p className="text-xs font-medium text-[var(--navy)]">{uiT(lang, "onCabDoor")}</p>
           <WhiteSemiTruck fields={fields} defaultView="truck" />
         </div>
       ) : null}
-      <p className="text-xs font-medium text-[var(--navy)]">Recut any swatch</p>
+      <p className="text-xs font-medium text-[var(--navy)]">{uiT(lang, "recutSwatch")}</p>
       <ColorField
         id={uid(idPrefix, "color-name")}
-        label="Door name"
+        label={uiT(lang, "colorDoorName")}
         value={fields.colors.name}
         onChange={(value) => updateColor("name", value)}
       />
       <ColorField
         id={uid(idPrefix, "color-legal")}
-        label="USDOT and MC"
+        label={uiT(lang, "colorUsdotMc")}
         value={fields.colors.legal}
         onChange={(value) => updateColor("legal", value)}
       />
       <ColorField
         id={uid(idPrefix, "color-face")}
-        label="Face"
+        label={uiT(lang, "colorFace")}
         value={fields.colors.face}
         onChange={(value) => updateColor("face", value)}
       />
       <ColorField
         id={uid(idPrefix, "color-border")}
-        label="Border"
+        label={uiT(lang, "colorBorder")}
         value={fields.colors.innerBorder}
         onChange={(value) => updateColor("innerBorder", value)}
       />
@@ -316,12 +329,13 @@ export function LayoutFields({
   TicketApi,
   "fields" | "update" | "markLayoutReady" | "layoutReady" | "idPrefix"
 >) {
+  const lang = useShopLang();
   return (
     <div className="space-y-3">
       <div className="space-y-2">
-        <Label>Layout</Label>
+        <Label>{uiT(lang, "layoutLabel")}</Label>
         <p className="text-xs text-muted-foreground">
-          Each card is a different composition, not a recolor.
+          {uiT(lang, "layoutCardsHint")}
         </p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {TEMPLATES.map((template) => {
@@ -351,7 +365,9 @@ export function LayoutFields({
                     className="pointer-events-none w-full shadow-none"
                   />
                 </div>
-                <span className="px-1 text-xs font-medium">{template.label}</span>
+                <span className="px-1 text-xs font-medium">
+                  {templateName(lang, template.id)}
+                </span>
               </Button>
             );
           })}
@@ -367,13 +383,13 @@ export function LayoutFields({
         }}
       />
       <div className="space-y-2">
-        <Label>Door font</Label>
+        <Label>{uiT(lang, "doorFont")}</Label>
         <div className="grid grid-cols-3 gap-1.5">
           {(
             [
-              ["condensed", "Condensed"],
-              ["sans", "Bold sans"],
-              ["serif", "Serif"],
+              ["condensed", uiT(lang, "fontCondensed")],
+              ["sans", uiT(lang, "fontSans")],
+              ["serif", uiT(lang, "fontSerif")],
             ] as const
           ).map(([id, label]) => (
             <Button
@@ -394,9 +410,9 @@ export function LayoutFields({
       </div>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <Label htmlFor={uid(idPrefix, "chevrons")}>Side chevrons</Label>
+          <Label htmlFor={uid(idPrefix, "chevrons")}>{uiT(lang, "sideChevrons")}</Label>
           <p className="text-xs text-muted-foreground">
-            Accent marks on the left and right of the plaque.
+            {uiT(lang, "sideChevronsHint")}
           </p>
         </div>
         <Switch
@@ -410,8 +426,8 @@ export function LayoutFields({
       </div>
       <p className="text-xs text-muted-foreground">
         {layoutReady
-          ? "Layout is marked ready for print."
-          : "Tap a layout or Continue to lock this 20 × 12 in composition."}
+          ? uiT(lang, "layoutMarkedReady")
+          : uiT(lang, "layoutTapToLock")}
       </p>
     </div>
   );
@@ -453,6 +469,7 @@ export function MustSection({
   done: boolean;
   children: React.ReactNode;
 }) {
+  const lang = useShopLang();
   return (
     <section id={id} className="space-y-4 scroll-mt-24">
       <div className="flex items-start justify-between gap-3">
@@ -462,9 +479,9 @@ export function MustSection({
             <h3 className="font-heading flex items-center gap-2 text-base font-semibold text-[var(--navy)]">
               {step}. {title}
               {done ? (
-                <Badge variant="secondary">Done</Badge>
+                <Badge variant="secondary">{uiT(lang, "done")}</Badge>
               ) : (
-                <Badge>Must</Badge>
+                <Badge>{uiT(lang, "must")}</Badge>
               )}
             </h3>
             <p className="mt-1 text-xs text-muted-foreground">{hint}</p>

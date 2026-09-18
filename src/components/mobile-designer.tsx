@@ -17,14 +17,11 @@ import {
   LetteringFields,
   type TicketApi,
 } from "@/components/designer-ticket";
+import { uiT } from "@/lib/shop-copy";
+import { localizeNotes, sampleLabelOf } from "@/lib/shop-labels";
+import { useShopLang } from "@/lib/shop-lang";
 
 export type WizardStep = "lettering" | "colors" | "layout";
-
-const STEPS: { id: WizardStep; n: string; label: string }[] = [
-  { id: "lettering", n: "1", label: "Lettering" },
-  { id: "colors", n: "2", label: "Colors" },
-  { id: "layout", n: "3", label: "Layout" },
-];
 
 const LOOKS: DriverSample[] = [...DRIVER_SAMPLES, BLANK_SAMPLE];
 
@@ -59,14 +56,16 @@ export function MobileDesigner({
   onReset: () => void;
   ticket: TicketApi;
 }) {
+  const lang = useShopLang();
+  const steps: { id: WizardStep; n: string; label: string }[] = [
+    { id: "lettering", n: "1", label: uiT(lang, "lettering") },
+    { id: "colors", n: "2", label: uiT(lang, "colors") },
+    { id: "layout", n: "3", label: uiT(lang, "layout") },
+  ];
   const continueLabel =
-    step === "lettering"
-      ? "Continue"
-      : step === "colors"
-        ? "Continue"
-        : letteringDone && colorPicked
-          ? "Add pair to cart"
-          : "Continue";
+    step === "layout" && letteringDone && colorPicked
+      ? uiT(lang, "addPair")
+      : uiT(lang, "continue");
 
   const doneFor = (id: WizardStep) =>
     id === "lettering" ? letteringDone : id === "colors" ? colorPicked : layoutReady;
@@ -77,11 +76,11 @@ export function MobileDesigner({
       className="fixed inset-x-0 top-[var(--shop-header)] bottom-0 z-20 flex flex-col bg-background lg:hidden"
     >
       <nav
-        aria-label="Print ticket progress"
+        aria-label={uiT(lang, "printTicketProgress")}
         className="shrink-0 border-b bg-background px-3 py-2"
       >
         <ol className="grid grid-cols-3 gap-1">
-          {STEPS.map((item) => {
+          {steps.map((item) => {
             const current = item.id === step;
             const done = doneFor(item.id);
             return (
@@ -118,7 +117,7 @@ export function MobileDesigner({
           style={{ maxWidth: "min(100%, calc(28vh * 20 / 12))" }}
         >
           <p className="mb-1 flex items-center justify-between text-[11px] font-medium tracking-[0.14em] text-neutral-600 uppercase">
-            <span>Live vinyl</span>
+            <span>{uiT(lang, "liveVinyl")}</span>
             <span>20 × 12 in</span>
           </p>
           <TruckSign fields={fields} className="shadow-md" />
@@ -128,17 +127,17 @@ export function MobileDesigner({
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3">
         {formError ? (
           <Alert variant="destructive" className="mb-3">
-            <AlertTitle>Could not continue</AlertTitle>
+            <AlertTitle>{uiT(lang, "couldNotContinue")}</AlertTitle>
             <AlertDescription>{formError}</AlertDescription>
           </Alert>
         ) : null}
         {improveNotes.length ? (
           <Alert className="mb-3">
             <Sparkles />
-            <AlertTitle>Auto Improve</AlertTitle>
+            <AlertTitle>{uiT(lang, "autoImprove")}</AlertTitle>
             <AlertDescription>
               <ul className="list-disc pl-4">
-                {improveNotes.map((note) => (
+                {localizeNotes(lang, improveNotes).map((note) => (
                   <li key={note}>{note}</li>
                 ))}
               </ul>
@@ -149,8 +148,7 @@ export function MobileDesigner({
         {step === "lettering" ? (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Put the name and numbers that should actually print. The 20 × 12
-              in door stays on screen.
+              {uiT(lang, "wizardLetteringLead")}
             </p>
             <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none]">
               <div className="flex gap-2 pb-1">
@@ -173,7 +171,7 @@ export function MobileDesigner({
                         className="pointer-events-none shadow-none"
                       />
                       <p className="mt-1 truncate text-[11px] font-medium text-[var(--navy)]">
-                        {sample.label}
+                        {sampleLabelOf(lang, sample)}
                       </p>
                     </button>
                   );
@@ -187,8 +185,7 @@ export function MobileDesigner({
         {step === "colors" ? (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Tap a set. Continue keeps the colors on the live door — including
-              the white default.
+              {uiT(lang, "wizardColorsLead")}
             </p>
             <ColorFields {...ticket} idPrefix="m" showTruck={false} />
           </div>
@@ -197,8 +194,7 @@ export function MobileDesigner({
         {step === "layout" ? (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Pick a composition. Logo size and font stay on this step so the
-              artwork above does not jump away.
+              {uiT(lang, "wizardLayoutLead")}
             </p>
             <LayoutFields {...ticket} idPrefix="m" />
           </div>
@@ -214,7 +210,7 @@ export function MobileDesigner({
             onClick={onAutoImprove}
           >
             <Sparkles className="size-4" />
-            Auto Improve
+            {uiT(lang, "autoImprove")}
           </Button>
           <Button
             type="button"
@@ -223,7 +219,7 @@ export function MobileDesigner({
             onClick={onReset}
           >
             <RotateCcw className="size-4" />
-            Reset
+            {uiT(lang, "reset")}
           </Button>
         </div>
         <Button type="button" className="h-12 w-full text-base" onClick={onContinue}>

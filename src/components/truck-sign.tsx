@@ -1,8 +1,12 @@
+"use client";
+
 import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 import type { SignFields } from "@/lib/order";
 import { VINYL } from "@/lib/vinyl-spec";
 import { SignCanvas } from "@/components/sign-canvas";
+import { uiT } from "@/lib/shop-copy";
+import { useShopLang } from "@/lib/shop-lang";
 
 export function TruckSign({
   fields,
@@ -34,11 +38,12 @@ export function DimensionedSign({
   fields: SignFields;
   className?: string;
 }) {
+  const lang = useShopLang();
   return (
     <div className={cn("w-full text-[11px] font-medium tracking-[0.16em] text-neutral-700 sm:text-xs", className)}>
       <div className="mb-2 flex items-center gap-2 px-[6%]">
         <span className="h-px flex-1 bg-neutral-800" />
-        <span>20 INCH</span>
+        <span>{uiT(lang, "inch20")}</span>
         <span className="h-px flex-1 bg-neutral-800" />
       </div>
       <div className="flex items-stretch gap-2">
@@ -48,7 +53,7 @@ export function DimensionedSign({
         <div className="flex w-6 flex-col items-center justify-between py-1 text-center sm:w-8">
           <span className="w-px flex-1 bg-neutral-800" />
           <span className="py-2 [writing-mode:vertical-rl] rotate-180">
-            12 INCH
+            {uiT(lang, "inch12")}
           </span>
           <span className="w-px flex-1 bg-neutral-800" />
         </div>
@@ -64,6 +69,7 @@ export function SignPair({
   fields: SignFields;
   className?: string;
 }) {
+  const lang = useShopLang();
   return (
     <div
       className={cn(
@@ -74,13 +80,13 @@ export function SignPair({
     >
       <div>
         <p className="mb-1.5 text-center text-[10px] font-semibold tracking-[0.14em] text-neutral-600 uppercase">
-          Left · {VINYL.size}
+          {uiT(lang, "leftDoor")} · {VINYL.size}
         </p>
         <TruckSign fields={fields} />
       </div>
       <div>
         <p className="mb-1.5 text-center text-[10px] font-semibold tracking-[0.14em] text-neutral-600 uppercase">
-          Right · {VINYL.size}
+          {uiT(lang, "rightDoor")} · {VINYL.size}
         </p>
         <TruckSign fields={fields} />
       </div>
