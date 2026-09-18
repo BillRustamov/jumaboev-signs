@@ -40,7 +40,9 @@ Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0
 - `/api/health` — `{ ok: true }` for the Telegram bot to ping
 - `/api/orders` — GET the shop list, POST a confirmed ticket
 
-Tickets persist in `data/orders.json` so a restart does not wipe the print desk. That file is gitignored. There is no login.
+Tickets persist in SQLite at `data/shop.sqlite`. The first open migrates `data/orders.json` after a dated backup (`data/orders.json.bak-2026-09-18`). New writes also snapshot `data/orders.snapshot.json`. Those files are gitignored. There is no login.
+
+Each ticket has a **production** status and a separate **payment** status. Payment stays `UNPAID` until a real Stripe webhook exists — the admin desk cannot mark a ticket paid. Ready for payment needs an approved price in cents (never a fake $0). The customer pay page is `/orders/[id]/pay?token=…` with a hashed token. Card checkout is not open yet.
 
 ## Telegram bot
 

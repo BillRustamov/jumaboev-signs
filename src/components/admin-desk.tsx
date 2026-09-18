@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, Inbox, Printer } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,12 +13,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AdminOrderControls } from "@/components/admin-order-controls";
+import { OrderStatusBadges } from "@/components/order-status-badges";
 import { PrintOrderCard } from "@/components/print-order-card";
 import { SignPreview } from "@/components/sign-preview";
 import { readLocalOrders } from "@/lib/client-session";
+import { formatUsd, isPriced } from "@/lib/money";
 import { isPrintOnly, type SignOrder } from "@/lib/order";
+import { hydrateOrder } from "@/lib/order-status";
+import { useShopLang } from "@/lib/shop-lang";
 
 export function AdminDesk() {
+  const lang = useShopLang();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [orders, setOrders] = useState<SignOrder[]>([]);
@@ -33,10 +38,10 @@ export function AdminDesk() {
         if (!response.ok) throw new Error("Shop list unavailable.");
         const payload = (await response.json()) as { orders: SignOrder[] };
         if (cancelled) return;
-        setOrders(mergeOrders(payload.orders, local));
+        setOrders(mergeOrders(payload.orders, local).map(hydrateOrder));
       } catch (err) {
         if (cancelled) return;
-        setOrders(local);
+        setOrders(local.map(hydrateOrder));
         setError(err instanceof Error ? err.message : "Could not reach the shop list.");
       } finally {
         if (!cancelled) setLoading(false);
@@ -116,10 +121,15 @@ export function AdminDesk() {
                         : ""}
                     </CardDescription>
                   </div>
-                  <Badge variant="secondary">{order.status}</Badge>
+                  <OrderStatusBadges order={order} lang={lang} />
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
+                {isPriced(order.amountMinor) ? (
+                  <p className="text-sm font-medium text-[var(--navy)]">
+                    {formatUsd(order.amountMinor)}
+                  </p>
+                ) : null}
                 {isPrintOnly(order) ? (
                   <PrintOrderCard order={order} />
                 ) : (
@@ -138,6 +148,17 @@ export function AdminDesk() {
                     </Link>
                   </Button>
                 )}
+                <AdminOrderControls
+                  order={order}
+                  lang={lang}
+                  onUpdated={(updated) => {
+                    setOrders((current) =>
+                      current.map((item) =>
+                        item.id === updated.id ? hydrateOrder(updated) : item,
+                      ),
+                    );
+                  }}
+                />
               </CardContent>
             </Card>
           ))}

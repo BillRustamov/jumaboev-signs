@@ -37,6 +37,9 @@ yarn-error.log*
 
 # shop tickets (local file store)
 /data/orders.json
+/data/orders.json.bak*
+/data/orders.snapshot.json
+/data/shop.sqlite
 /data/preview-drafts.json
 /data/bot-sessions.json
 

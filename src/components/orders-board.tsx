@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, Inbox } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,15 +13,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { OrderStatusBadges } from "@/components/order-status-badges";
 import { PrintOrderCard } from "@/components/print-order-card";
 import { SignPreview } from "@/components/sign-preview";
 import {
   readLocalOrders,
   useUsername,
 } from "@/lib/client-session";
+import { formatUsd, isPriced } from "@/lib/money";
 import { isPrintOnly, type SignOrder } from "@/lib/order";
+import { hydrateOrder } from "@/lib/order-status";
+import { useShopLang } from "@/lib/shop-lang";
 
 export function OrdersBoard() {
+  const lang = useShopLang();
   const username = useUsername();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,10 +44,10 @@ export function OrdersBoard() {
         }
         const payload = (await response.json()) as { orders: SignOrder[] };
         if (cancelled) return;
-        setOrders(mergeOrders(payload.orders, local));
+        setOrders(mergeOrders(payload.orders, local).map(hydrateOrder));
       } catch (err) {
         if (cancelled) return;
-        setOrders(local);
+        setOrders(local.map(hydrateOrder));
         setError(
           err instanceof Error
             ? err.message
@@ -115,10 +119,15 @@ export function OrdersBoard() {
                       {order.language ? ` · ${order.language}` : ""}
                     </CardDescription>
                   </div>
-                  <Badge variant="secondary">{order.status}</Badge>
+                  <OrderStatusBadges order={order} lang={lang} />
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
+                {isPriced(order.amountMinor) ? (
+                  <p className="text-sm font-medium text-[var(--navy)]">
+                    {formatUsd(order.amountMinor)}
+                  </p>
+                ) : null}
                 {isPrintOnly(order) ? (
                   <PrintOrderCard order={order} />
                 ) : (

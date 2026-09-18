@@ -17,8 +17,8 @@ export default function OrdersPage() {
         </h1>
         <p className="mt-2 text-muted-foreground">
           Tickets from print-existing uploads, the designer checkout, and
-          Telegram. Custom designs still go through the cart and a white-cab
-          preview.
+          Telegram. Each ticket has a production status and a payment status.
+          Card pay is not open yet.
         </p>
       </div>
       <OrdersBoard />

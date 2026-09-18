@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 import {
   createOrderId,
   normalizeSign,
@@ -15,6 +16,7 @@ import {
   isPrintFile,
   printFileFromDataUrl,
 } from "@/lib/print-file";
+import { stampNewOrder } from "@/lib/order-status";
 import { listOrders, saveOrder } from "@/lib/store";
 import { notifyShop } from "@/lib/telegram";
 
@@ -97,7 +99,7 @@ export async function POST(request: Request) {
         : undefined,
   };
 
-  const saved = saveOrder(order);
+  const saved = saveOrder(stampNewOrder(order));
   void notifyShop(saved);
   return NextResponse.json(saved);
 }

@@ -23,11 +23,55 @@ export function shopTicketText(order: SignOrder): string {
     );
   }
   lines.push("Size: 20 × 12 in · quantity: 1 pair (2 decals)");
+  lines.push(
+    `Production: ${order.productionStatus ?? "RECEIVED"} · Payment: ${order.paymentStatus ?? "UNPAID"}`,
+  );
   lines.push("Example cut is 20 × 12 in for each side of the cab.");
   if (order.telegramChatId) {
     lines.push(`Telegram chat ${order.telegramChatId}`);
   }
   return lines.join("\n");
+}
+
+export function shopPayMessage(order: SignOrder, payUrl: string): string {
+  return [
+    `Ticket ${order.id} is ready for payment.`,
+    `20 × 12 in · 1 pair`,
+    order.amountMinor
+      ? `Amount: ${(order.amountMinor / 100).toFixed(2)} USD`
+      : "Amount: set by the shop",
+    `Open this link to review the ticket. Card checkout is not open yet — the ticket stays unpaid.`,
+    payUrl,
+  ].join("\n");
+}
+
+export async function notifyCustomerPay(
+  order: SignOrder,
+  payPath: string,
+): Promise<void> {
+  const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
+  const chatId = order.telegramChatId;
+  if (!token || !chatId) return;
+  const base = (process.env.APP_URL ?? "http://127.0.0.1:43147").replace(/\/$/, "");
+  const payUrl = `${base}${payPath}`;
+  try {
+    const response = await fetch(
+      `https://api.telegram.org/bot${token}/sendMessage`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: shopPayMessage(order, payUrl),
+        }),
+      },
+    );
+    if (!response.ok) {
+      console.error("Customer pay notify failed.", response.status, await response.text());
+    }
+  } catch (error) {
+    console.error("Could not notify customer Telegram.", error);
+  }
 }
 
 /** Ping Telegram Bot API. Missing credentials are a no-op, not an error. */

@@ -16,8 +16,10 @@ export default function AdminPage() {
           Print sheets
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Each download is a matched pair of 20 × 12 in doors on a 24 in
-          wide roll. Artwork is never resized to 20 × 10.
+          Production and payment are separate. Set an approved price before
+          Ready for payment. Card checkout is not open yet — tickets stay
+          unpaid. Custom designs still download a 20 × 12 in pair on a 24 in
+          roll.
         </p>
       </div>
       <AdminDesk />

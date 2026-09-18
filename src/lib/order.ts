@@ -18,6 +18,7 @@ import {
   type ArtworkFit,
   type ArtworkRole,
 } from "@/lib/artwork";
+import type { PaymentStatus, ProductionStatus } from "@/lib/order-status";
 
 export type OrderSource = "web" | "telegram";
 
@@ -60,9 +61,20 @@ export type SignOrder = SignFields & {
   telegramChatId?: number;
   telegramUserId?: number;
   createdAt: string;
-  status: "received";
+  updatedAt?: string;
+  /** Legacy alias. Prefer productionStatus. */
+  status: "received" | ProductionStatus;
   /** Existing tickets without this field are custom designs. */
   service?: ShopService;
+  productionStatus?: ProductionStatus;
+  paymentStatus?: PaymentStatus;
+  quantity?: number;
+  widthIn?: number;
+  heightIn?: number;
+  /** Shop price in USD cents. Null means not priced — never a fake $0. */
+  amountMinor?: number | null;
+  currency?: string;
+  accessTokenHash?: string;
   printExact?: boolean;
   printNotes?: string;
   originalFileName?: string;
@@ -92,7 +104,16 @@ export function samplePrintOrder(): SignOrder {
     username: "shop",
     source: "web",
     createdAt: "2026-01-01T00:00:00.000Z",
+    updatedAt: "2026-01-01T00:00:00.000Z",
     status: "received",
+    service: "CUSTOM_DESIGN",
+    productionStatus: "RECEIVED",
+    paymentStatus: "UNPAID",
+    quantity: 1,
+    widthIn: 20,
+    heightIn: 12,
+    amountMinor: null,
+    currency: "usd",
   };
 }
 

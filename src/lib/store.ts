@@ -1,74 +1,95 @@
-import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
-import path from "node:path";
 import type { SignOrder } from "@/lib/order";
+import { accessTokenMatches, createAccessToken } from "@/lib/order-token";
+import { hydrateOrder } from "@/lib/order-status";
+import {
+  appendLedger,
+  rowToOrder,
+  shopDb,
+  snapshotOrders,
+  writeOrderRow,
+} from "@/lib/shop-db";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const DATA_FILE = path.join(DATA_DIR, "orders.json");
-
-type GlobalOrders = typeof globalThis & {
-  __jumaboevOrders?: Map<string, SignOrder>;
-  __jumaboevWriteQueue?: Promise<void>;
-};
-
-function hydrate(): Map<string, SignOrder> {
-  const map = new Map<string, SignOrder>();
-  try {
-    const raw = JSON.parse(readFileSync(DATA_FILE, "utf8")) as SignOrder[];
-    if (Array.isArray(raw)) {
-      for (const order of raw) {
-        if (order?.id) map.set(order.id, order);
-      }
-    }
-  } catch {
-    /* first run or empty file */
-  }
-  return map;
-}
-
-function ordersMap(): Map<string, SignOrder> {
-  const g = globalThis as GlobalOrders;
-  if (!g.__jumaboevOrders) {
-    g.__jumaboevOrders = hydrate();
-  }
-  return g.__jumaboevOrders;
-}
-
-function persist(): void {
-  const g = globalThis as GlobalOrders;
-  const run = async () => {
-    mkdirSync(DATA_DIR, { recursive: true });
-    const tmp = path.join(DATA_DIR, `.orders.${process.pid}.tmp`);
-    writeFileSync(
-      tmp,
-      JSON.stringify(Array.from(ordersMap().values()), null, 2),
-    );
-    renameSync(tmp, DATA_FILE);
-  };
-  g.__jumaboevWriteQueue = (g.__jumaboevWriteQueue ?? Promise.resolve())
-    .then(run)
-    .catch((error) => {
-      console.error("Could not persist shop orders.", error);
-    });
+export function publicOrder(order: SignOrder): SignOrder {
+  const copy = hydrateOrder(order);
+  delete copy.accessTokenHash;
+  return copy;
 }
 
 export function saveOrder(order: SignOrder): SignOrder {
-  const existing = ordersMap().get(order.id);
-  if (existing) return existing;
-  ordersMap().set(order.id, order);
-  persist();
-  return order;
+  const db = shopDb();
+  const existing = db
+    .prepare("SELECT json FROM orders WHERE id = ?")
+    .get(order.id) as { json: string } | undefined;
+  if (existing) return publicOrder(rowToOrder(existing));
+
+  const hydrated = hydrateOrder(order);
+  writeOrderRow(db, hydrated);
+  appendLedger(
+    db,
+    hydrated.id,
+    "created",
+    `${hydrated.service} ${hydrated.productionStatus}`,
+  );
+  snapshotOrders(listOrders());
+  return publicOrder(hydrated);
+}
+
+export function updateOrder(order: SignOrder): SignOrder {
+  const db = shopDb();
+  const existing = db
+    .prepare("SELECT json FROM orders WHERE id = ?")
+    .get(order.id) as { json: string } | undefined;
+  if (!existing) {
+    throw new Error("Order not on this server.");
+  }
+  const next = hydrateOrder({
+    ...order,
+    updatedAt: new Date().toISOString(),
+  });
+  writeOrderRow(db, next);
+  snapshotOrders(listOrders());
+  return publicOrder(next);
 }
 
 export function getOrder(id: string): SignOrder | undefined {
-  return ordersMap().get(id);
+  const row = shopDb()
+    .prepare("SELECT json FROM orders WHERE id = ?")
+    .get(id) as { json: string } | undefined;
+  return row ? hydrateOrder(rowToOrder(row)) : undefined;
+}
+
+export function getPublicOrder(id: string): SignOrder | undefined {
+  const order = getOrder(id);
+  return order ? publicOrder(order) : undefined;
+}
+
+export function getOrderIfToken(id: string, token: string): SignOrder | undefined {
+  const order = getOrder(id);
+  if (!order || !accessTokenMatches(token, order.accessTokenHash)) return undefined;
+  return publicOrder(order);
 }
 
 export function listOrders(username?: string): SignOrder[] {
-  const all = Array.from(ordersMap().values()).sort((a, b) =>
-    b.createdAt.localeCompare(a.createdAt),
-  );
+  const rows = shopDb()
+    .prepare("SELECT json FROM orders ORDER BY created_at DESC")
+    .all() as Array<{ json: string }>;
+  const all = rows.map((row) => publicOrder(rowToOrder(row)));
   if (!username) return all;
   return all.filter(
     (order) => order.username.toLowerCase() === username.toLowerCase(),
   );
+}
+
+export function recordLedger(orderId: string, kind: string, detail: string): void {
+  appendLedger(shopDb(), orderId, kind, detail);
+}
+
+export function attachAccessToken(id: string): { order: SignOrder; token: string } {
+  const current = getOrder(id);
+  if (!current) throw new Error("Order not on this server.");
+  const minted = createAccessToken();
+  current.accessTokenHash = minted.hash;
+  const next = updateOrder(current);
+  appendLedger(shopDb(), id, "pay_link", "minted hashed access token");
+  return { order: next, token: minted.token };
 }
