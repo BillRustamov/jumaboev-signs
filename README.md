@@ -26,6 +26,8 @@ npm run dev
 
 Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0:43147`.
 
+Live shop: [https://www.usprint.app](https://www.usprint.app) (Cloudflare Worker + OpenNext). Apex `usprint.app` redirects to `www`. Tickets on the live origin persist in Cloudflare D1 (`jumaboev-shop`). Local `npm run dev` still uses `data/shop.sqlite`.
+
 - `/` — two-service shop menu (print existing vs create new), samples, FMCSA table
 - `/print` — print-existing upload (file first, then username and exact/notes)
 - `/contact` — how to reach Khurshid
@@ -63,7 +65,7 @@ To talk to real Telegram:
 
 ```bash
 TELEGRAM_BOT_TOKEN=your-bot-token
-APP_URL=http://127.0.0.1:43147
+APP_URL=https://www.usprint.app
 TELEGRAM_SHOP_CHAT_ID=           # optional: shop ping for every ticket
 STRIPE_SECRET_KEY=              # optional test key only; unset keeps checkout closed
 STRIPE_WEBHOOK_SECRET=          # required to mark tickets paid
@@ -82,6 +84,18 @@ Admin download: two **20 × 12 in** doors laid out along a **24 in** roll (about
 
 `npm run test` checks the shared design engine (logo scale, fonts, chevrons, templates, city/state migration). `npm run bot:profile` is the only command that calls Telegram setMyName / setMyDescription — not on every bot start.
 
+## Cloudflare
+
+The shop deploys as a Worker (`jumaboev-signs`) on `www.usprint.app`.
+
+```bash
+npm install
+npx wrangler d1 migrations apply jumaboev-shop --remote
+npm run deploy
+```
+
+Set `TELEGRAM_BOT_TOKEN` (and optional `TELEGRAM_SHOP_CHAT_ID`) with `npx wrangler secret put`. Do not put live Stripe keys. Zone SSL should be Full (strict) with Always Use HTTPS. Telegram `APP_URL` must be `https://www.usprint.app` so Mini App and pay links leave localhost. The bot itself still polls (`npm run bot`); it does not run on the Worker.
+
 ## Stack
 
-Next.js (App Router), TypeScript, Tailwind CSS, and shadcn/ui. The bot is [grammY](https://grammy.dev/) via `tsx`.
+Next.js (App Router), TypeScript, Tailwind CSS, and shadcn/ui. The bot is [grammY](https://grammy.dev/) via `tsx`. Live hosting is Cloudflare Workers via `@opennextjs/cloudflare`.

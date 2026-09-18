@@ -51,7 +51,7 @@ async function startCheckout(request: Request, id: string): Promise<Response> {
     /* token may be on the query string */
   }
 
-  const order = getOrderIfTokenInternal(id, token);
+  const order = await getOrderIfTokenInternal(id, token);
   if (!order) {
     return NextResponse.json({ error: "This pay link is not valid." }, { status: 404 });
   }
@@ -97,8 +97,8 @@ async function startCheckout(request: Request, id: string): Promise<Response> {
       );
     }
     const pending = applyCheckoutStarted(order, session.id);
-    const saved = updateOrder(pending);
-    recordLedger(
+    const saved = await updateOrder(pending);
+    await recordLedger(
       id,
       "checkout",
       `session ${session.id} for ${order.amountMinor} usd cents`,

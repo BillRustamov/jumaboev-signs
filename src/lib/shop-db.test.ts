@@ -9,7 +9,7 @@ import { resetShopDbForTests } from "./shop-db";
 import { markEventProcessed, eventWasProcessed } from "./shop-db";
 import { getOrder, listOrders, listOrdersByTelegramChat, saveOrder } from "./store";
 
-test("sqlite store migrates a JSON backup and keeps new tickets", () => {
+test("sqlite store migrates a JSON backup and keeps new tickets", async () => {
   const dir = mkdtempSync(path.join(tmpdir(), "jumaboev-db-"));
   const jsonPath = path.join(dir, "orders.json");
   writeFileSync(
@@ -33,12 +33,12 @@ test("sqlite store migrates a JSON backup and keeps new tickets", () => {
   process.env.SHOP_SNAPSHOT_PATH = path.join(dir, "snap.json");
   resetShopDbForTests();
 
-  const imported = getOrder("JS-OLD1");
+  const imported = await getOrder("JS-OLD1");
   assert.ok(imported);
   assert.equal(imported?.productionStatus, "RECEIVED");
   assert.equal(imported?.paymentStatus, "UNPAID");
 
-  const created = saveOrder(
+  const created = await saveOrder(
     stampNewOrder({
       ...emptySign(),
       id: "JS-NEW1",
@@ -56,11 +56,20 @@ test("sqlite store migrates a JSON backup and keeps new tickets", () => {
   assert.equal(created.productionStatus, "NEEDS_REVIEW");
   assert.equal(created.paymentStatus, "UNPAID");
   assert.equal(created.accessTokenHash, undefined);
-  assert.ok(listOrders().some((order) => order.id === "JS-NEW1"));
-  assert.equal(listOrdersByTelegramChat(9001).map((order) => order.id).join(), "JS-NEW1");
-  assert.equal(listOrdersByTelegramChat(1).length, 0);
-  assert.equal(markEventProcessed("evt_1", "checkout.session.completed", "JS-NEW1"), true);
-  assert.equal(eventWasProcessed("evt_1"), true);
-  assert.equal(markEventProcessed("evt_1", "checkout.session.completed", "JS-NEW1"), false);
+  assert.ok((await listOrders()).some((order) => order.id === "JS-NEW1"));
+  assert.equal(
+    (await listOrdersByTelegramChat(9001)).map((order) => order.id).join(),
+    "JS-NEW1",
+  );
+  assert.equal((await listOrdersByTelegramChat(1)).length, 0);
+  assert.equal(
+    await markEventProcessed("evt_1", "checkout.session.completed", "JS-NEW1"),
+    true,
+  );
+  assert.equal(await eventWasProcessed("evt_1"), true);
+  assert.equal(
+    await markEventProcessed("evt_1", "checkout.session.completed", "JS-NEW1"),
+    false,
+  );
   resetShopDbForTests();
 });

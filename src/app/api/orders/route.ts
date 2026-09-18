@@ -25,10 +25,10 @@ export async function GET(request: Request) {
   const chatRaw = searchParams.get("telegramChatId");
   if (chatRaw) {
     const chatId = Number(chatRaw);
-    return NextResponse.json({ orders: listOrdersByTelegramChat(chatId) });
+    return NextResponse.json({ orders: await listOrdersByTelegramChat(chatId) });
   }
   const username = searchParams.get("username") ?? undefined;
-  return NextResponse.json({ orders: listOrders(username) });
+  return NextResponse.json({ orders: await listOrders(username) });
 }
 
 export async function POST(request: Request) {
@@ -104,7 +104,7 @@ export async function POST(request: Request) {
         : undefined,
   };
 
-  const saved = saveOrder(stampNewOrder(order));
+  const saved = await saveOrder(stampNewOrder(order));
   void notifyShop(saved);
   return NextResponse.json(saved);
 }

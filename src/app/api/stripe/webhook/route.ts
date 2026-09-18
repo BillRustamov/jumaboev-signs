@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
-  if (stripeEventSeen(event.id)) {
+  if (await stripeEventSeen(event.id)) {
     return NextResponse.json({ ok: true, duplicate: true });
   }
 
@@ -52,38 +52,38 @@ export async function POST(request: Request) {
   const obj = like.data.object;
   const orderId =
     orderIdFromEvent(like) ??
-    findOrderByCheckoutSession(sessionIdOf(obj) ?? "")?.id ??
-    findOrderByPaymentIntent(paymentIntentIdOf(obj) ?? "")?.id;
-  const order = orderId ? getOrder(orderId) : undefined;
+    (await findOrderByCheckoutSession(sessionIdOf(obj) ?? ""))?.id ??
+    (await findOrderByPaymentIntent(paymentIntentIdOf(obj) ?? ""))?.id;
+  const order = orderId ? await getOrder(orderId) : undefined;
   const decision = decideWebhook(like, order);
 
   if (decision.action === "reject") {
     if (orderId) {
-      recordLedger(orderId, "webhook_rejected", `${event.type}: ${decision.detail}`);
+      await recordLedger(orderId, "webhook_rejected", `${event.type}: ${decision.detail}`);
     }
-    rememberStripeEvent(event.id, event.type, orderId ?? null);
+    await rememberStripeEvent(event.id, event.type, orderId ?? null);
     return NextResponse.json({ ok: true, rejected: decision.detail });
   }
 
   if (decision.action === "ignore") {
-    rememberStripeEvent(event.id, event.type, orderId ?? null);
+    await rememberStripeEvent(event.id, event.type, orderId ?? null);
     return NextResponse.json({ ok: true, ignored: decision.detail });
   }
 
   if (!order) {
-    rememberStripeEvent(event.id, event.type, orderId ?? null);
+    await rememberStripeEvent(event.id, event.type, orderId ?? null);
     return NextResponse.json({ ok: true, ignored: "No order for this event." });
   }
 
   try {
     const next = applyWebhookDecision(order, decision);
-    updateOrder(next);
-    recordLedger(
+    await updateOrder(next);
+    await recordLedger(
       order.id,
       paymentOf(next) === "PAID" ? "paid" : `payment_${decision.action}`,
       `${event.type} ${event.id}`,
     );
-    rememberStripeEvent(event.id, event.type, order.id);
+    await rememberStripeEvent(event.id, event.type, order.id);
     if (paymentOf(next) !== paymentOf(order)) {
       void notifyPaymentChange(next);
     }
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Could not apply webhook.";
-    recordLedger(order.id, "webhook_rejected", message);
+    await recordLedger(order.id, "webhook_rejected", message);
     return NextResponse.json({ error: message }, { status: 409 });
   }
 }

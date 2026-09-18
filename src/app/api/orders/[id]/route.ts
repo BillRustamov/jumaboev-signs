@@ -34,7 +34,7 @@ export async function GET(
     if (!rateLimit(clientKey(request, "pay-get"), 30, 60_000)) {
       return NextResponse.json({ error: "Too many lookups." }, { status: 429 });
     }
-    const order = getOrderIfToken(id, token);
+    const order = await getOrderIfToken(id, token);
     if (!order) {
       return NextResponse.json({ error: "This pay link is not valid." }, { status: 404 });
     }
@@ -43,7 +43,7 @@ export async function GET(
       checkout: describeCheckout(order),
     });
   }
-  const order = getPublicOrder(id);
+  const order = await getPublicOrder(id);
   if (!order) {
     return NextResponse.json({ error: "Order not on this server." }, { status: 404 });
   }
@@ -58,7 +58,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Too many updates." }, { status: 429 });
   }
   const { id } = await context.params;
-  const current = getOrder(id);
+  const current = await getOrder(id);
   if (!current) {
     return NextResponse.json({ error: "Order not on this server." }, { status: 404 });
   }
@@ -103,7 +103,7 @@ export async function PATCH(
     }
     next.amountMinor = minor;
     next.currency = "usd";
-    recordLedger(id, "price", `${minor} usd cents`);
+    await recordLedger(id, "price", `${minor} usd cents`);
   }
 
   const wantsReady = input.productionStatus === "READY_FOR_PAYMENT";
@@ -121,13 +121,13 @@ export async function PATCH(
     next.productionStatus = input.productionStatus;
     next.status =
       input.productionStatus === "RECEIVED" ? "received" : input.productionStatus;
-    recordLedger(id, "production", `${from} -> ${input.productionStatus}`);
+    await recordLedger(id, "production", `${from} -> ${input.productionStatus}`);
   }
 
-  next = updateOrder(next);
+  next = await updateOrder(next);
 
   if (mintLink) {
-    const minted = attachAccessToken(id);
+    const minted = await attachAccessToken(id);
     next = minted.order;
     const payPath = `/orders/${id}/pay?token=${encodeURIComponent(minted.token)}`;
     if (wantsReady) void notifyCustomerPay(next, payPath);

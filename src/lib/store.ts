@@ -17,30 +17,30 @@ export function publicOrder(order: SignOrder): SignOrder {
   return copy;
 }
 
-export function saveOrder(order: SignOrder): SignOrder {
-  const db = shopDb();
-  const existing = db
+export async function saveOrder(order: SignOrder): Promise<SignOrder> {
+  const db = await shopDb();
+  const existing = (await db
     .prepare("SELECT json FROM orders WHERE id = ?")
-    .get(order.id) as { json: string } | undefined;
+    .get(order.id)) as { json: string } | undefined;
   if (existing) return publicOrder(rowToOrder(existing));
 
   const hydrated = hydrateOrder(order);
-  writeOrderRow(db, hydrated);
-  appendLedger(
+  await writeOrderRow(db, hydrated);
+  await appendLedger(
     db,
     hydrated.id,
     "created",
     `${hydrated.service} ${hydrated.productionStatus}`,
   );
-  snapshotOrders(listOrders());
+  snapshotOrders(await listOrders());
   return publicOrder(hydrated);
 }
 
-export function updateOrder(order: SignOrder): SignOrder {
-  const db = shopDb();
-  const existing = db
+export async function updateOrder(order: SignOrder): Promise<SignOrder> {
+  const db = await shopDb();
+  const existing = (await db
     .prepare("SELECT json FROM orders WHERE id = ?")
-    .get(order.id) as { json: string } | undefined;
+    .get(order.id)) as { json: string } | undefined;
   if (!existing) {
     throw new Error("Order not on this server.");
   }
@@ -48,33 +48,36 @@ export function updateOrder(order: SignOrder): SignOrder {
     ...order,
     updatedAt: new Date().toISOString(),
   });
-  writeOrderRow(db, next);
-  snapshotOrders(listOrders());
+  await writeOrderRow(db, next);
+  snapshotOrders(await listOrders());
   return publicOrder(next);
 }
 
-export function getOrder(id: string): SignOrder | undefined {
-  const row = shopDb()
+export async function getOrder(id: string): Promise<SignOrder | undefined> {
+  const row = (await (await shopDb())
     .prepare("SELECT json FROM orders WHERE id = ?")
-    .get(id) as { json: string } | undefined;
+    .get(id)) as { json: string } | undefined;
   return row ? hydrateOrder(rowToOrder(row)) : undefined;
 }
 
-export function getPublicOrder(id: string): SignOrder | undefined {
-  const order = getOrder(id);
+export async function getPublicOrder(id: string): Promise<SignOrder | undefined> {
+  const order = await getOrder(id);
   return order ? publicOrder(order) : undefined;
 }
 
-export function getOrderIfToken(id: string, token: string): SignOrder | undefined {
-  const order = getOrder(id);
+export async function getOrderIfToken(
+  id: string,
+  token: string,
+): Promise<SignOrder | undefined> {
+  const order = await getOrder(id);
   if (!order || !accessTokenMatches(token, order.accessTokenHash)) return undefined;
   return publicOrder(order);
 }
 
-export function listOrders(username?: string): SignOrder[] {
-  const rows = shopDb()
+export async function listOrders(username?: string): Promise<SignOrder[]> {
+  const rows = (await (await shopDb())
     .prepare("SELECT json FROM orders ORDER BY created_at DESC")
-    .all() as Array<{ json: string }>;
+    .all()) as Array<{ json: string }>;
   const all = rows.map((row) => publicOrder(rowToOrder(row)));
   if (!username) return all;
   return all.filter(
@@ -82,29 +85,37 @@ export function listOrders(username?: string): SignOrder[] {
   );
 }
 
-export function listOrdersByTelegramChat(chatId: number): SignOrder[] {
+export async function listOrdersByTelegramChat(
+  chatId: number,
+): Promise<SignOrder[]> {
   if (!Number.isFinite(chatId) || chatId === 0) return [];
-  return listOrders().filter((order) => order.telegramChatId === chatId);
+  return (await listOrders()).filter((order) => order.telegramChatId === chatId);
 }
 
-export function recordLedger(orderId: string, kind: string, detail: string): void {
-  appendLedger(shopDb(), orderId, kind, detail);
+export async function recordLedger(
+  orderId: string,
+  kind: string,
+  detail: string,
+): Promise<void> {
+  await appendLedger(await shopDb(), orderId, kind, detail);
 }
 
-export function getOrderIfTokenInternal(
+export async function getOrderIfTokenInternal(
   id: string,
   token: string,
-): SignOrder | undefined {
-  const order = getOrder(id);
+): Promise<SignOrder | undefined> {
+  const order = await getOrder(id);
   if (!order || !accessTokenMatches(token, order.accessTokenHash)) return undefined;
   return order;
 }
 
-export function findOrderByCheckoutSession(sessionId: string): SignOrder | undefined {
+export async function findOrderByCheckoutSession(
+  sessionId: string,
+): Promise<SignOrder | undefined> {
   if (!sessionId) return undefined;
-  const rows = shopDb()
+  const rows = (await (await shopDb())
     .prepare("SELECT json FROM orders")
-    .all() as Array<{ json: string }>;
+    .all()) as Array<{ json: string }>;
   for (const row of rows) {
     const order = rowToOrder(row);
     if (order.stripeCheckoutSessionId === sessionId) return order;
@@ -112,11 +123,13 @@ export function findOrderByCheckoutSession(sessionId: string): SignOrder | undef
   return undefined;
 }
 
-export function findOrderByPaymentIntent(intentId: string): SignOrder | undefined {
+export async function findOrderByPaymentIntent(
+  intentId: string,
+): Promise<SignOrder | undefined> {
   if (!intentId) return undefined;
-  const rows = shopDb()
+  const rows = (await (await shopDb())
     .prepare("SELECT json FROM orders")
-    .all() as Array<{ json: string }>;
+    .all()) as Array<{ json: string }>;
   for (const row of rows) {
     const order = rowToOrder(row);
     if (order.stripePaymentIntentId === intentId) return order;
@@ -124,24 +137,26 @@ export function findOrderByPaymentIntent(intentId: string): SignOrder | undefine
   return undefined;
 }
 
-export function rememberStripeEvent(
+export async function rememberStripeEvent(
   id: string,
   kind: string,
   orderId: string | null,
-): boolean {
+): Promise<boolean> {
   return markEventProcessed(id, kind, orderId);
 }
 
-export function stripeEventSeen(id: string): boolean {
+export async function stripeEventSeen(id: string): Promise<boolean> {
   return eventWasProcessed(id);
 }
 
-export function attachAccessToken(id: string): { order: SignOrder; token: string } {
-  const current = getOrder(id);
+export async function attachAccessToken(
+  id: string,
+): Promise<{ order: SignOrder; token: string }> {
+  const current = await getOrder(id);
   if (!current) throw new Error("Order not on this server.");
   const minted = createAccessToken();
   current.accessTokenHash = minted.hash;
-  const next = updateOrder(current);
-  appendLedger(shopDb(), id, "pay_link", "minted hashed access token");
+  const next = await updateOrder(current);
+  await appendLedger(await shopDb(), id, "pay_link", "minted hashed access token");
   return { order: next, token: minted.token };
 }

@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "jumaboev-signs",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-18",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    "APP_URL": "https://www.usprint.app"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "jumaboev-shop",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "./migrations"
+    }
+  ],
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "jumaboev-signs"
+    }
+  ],
+  "routes": [
+    { "pattern": "www.usprint.app", "custom_domain": true },
+    { "pattern": "usprint.app", "custom_domain": true }
+  ]
+}
