@@ -22,7 +22,7 @@ import {
 } from "@/lib/design/migrate";
 import { fitFontSize, fitToBox, wrapText } from "@/lib/design/typography";
 import { TEMPLATE_LAYOUT, normalizeShares } from "@/lib/design/layout";
-import type { SignPalette } from "@/lib/sign-style";
+import { defaultStyle, type SignPalette } from "@/lib/sign-style";
 import {
   artworkPlacement,
   existingSignSlot,
@@ -45,7 +45,7 @@ export type LayoutInput = {
   templateId?: unknown;
   showChevrons?: boolean;
   showMc?: boolean;
-  colors: SignPalette;
+  colors?: SignPalette;
   artworkRole?: unknown;
   artworkFit?: unknown;
   artworkOffsetX?: number;
@@ -114,7 +114,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       ? "unknown"
       : "wide";
   const warnings: string[] = [];
-  const ink = input.colors;
+  const ink = input.colors ?? defaultStyle().colors;
   const cutLettering = templateId === "direct-truck";
 
   const artworkRole = resolveArtworkRole(input.artworkRole);
