@@ -17,6 +17,36 @@ This repo is the web shop plus a Telegram bot. Instagram is out of scope for thi
 - Open the cart, click a sign to preview, then checkout to see the vinyl on a white sleeper before sending it to the shop.
 - Use the same two services in Telegram. The Start **button** opens the shop menu — customers do not type commands. English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, and Ukrainian.
 
+## On your Mac
+
+This repo is the shop. Cursor Cloud is only one running copy. To run it on your Mac:
+
+1. Install **Node.js 20** or newer (https://nodejs.org).
+2. Clone and start:
+
+```bash
+git clone https://github.com/BillRustamov/jumaboev-signs.git
+cd jumaboev-signs
+git checkout cursor/cloudflare-live-73ac
+npm install
+cp .env.example .env
+```
+
+3. In `.env` set `APP_URL=http://127.0.0.1:43147`. Paste `TELEGRAM_BOT_TOKEN` if you want `@usprinter_bot` on this Mac. Leave Stripe keys empty unless you have test keys.
+4. Two terminals:
+
+```bash
+npm run dev
+```
+
+```bash
+npm run bot
+```
+
+5. Open [http://127.0.0.1:43147](http://127.0.0.1:43147). Print desk is `/admin` — **Print** uses this Mac’s printer/cutter dialog.
+
+Tickets stay in `data/shop.sqlite` on this Mac (that folder is gitignored). Only one computer should poll Telegram at a time.
+
 ## Web app
 
 ```bash
