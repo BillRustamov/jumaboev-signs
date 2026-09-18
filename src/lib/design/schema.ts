@@ -32,7 +32,7 @@ type BaseElement = {
 
 export type TextElement = BaseElement & {
   type: "text";
-  role: "company" | "place" | "usdot" | "mc" | "ghost-logo";
+  role: "company" | "place" | "llc" | "usdot" | "mc" | "id-label" | "ghost-logo";
   text: string;
   font: SignFontId;
   fontSizeIn: number;
@@ -108,7 +108,7 @@ export const TEMPLATES: {
   {
     id: "clean-white",
     label: "Clean white",
-    hint: "White vinyl · large name · readable USDOT",
+    hint: "White vinyl · name and USDOT fill the panel",
     production: "printed-plaque",
   },
   {
@@ -132,7 +132,7 @@ export const TEMPLATES: {
   {
     id: "classic-plaque",
     label: "Classic plaque",
-    hint: "Solid board with large ID bands",
+    hint: "Full-panel board · huge USDOT and MC bars",
     production: "printed-plaque",
   },
 ];

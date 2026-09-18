@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { compileDesign, templatesDiffer } from "./compile";
+import { contentOccupancy } from "./layout";
 import { logoScaleFromSize } from "./logo";
 import { CANVAS_HEIGHT_IN, CANVAS_WIDTH_IN } from "./schema";
 import { resolveTemplate } from "./migrate";
@@ -275,4 +276,54 @@ test("crop to fill is explicit and keeps native aspect of the bitmap", () => {
   assert.ok(Math.abs(iw / ih - 4 / 3) < 0.02);
   assert.ok(logo.widthIn >= 18);
   assert.ok(logo.heightIn >= 10);
+});
+
+test("no-logo layouts fill the 20x12 panel instead of a timid centered block", () => {
+  for (const id of ["clean-white", "classic-plaque", "direct-truck"] as const) {
+    const doc = base({ templateId: id, logoDataUrl: "", companyName: "RIDGE" });
+    const occ = contentOccupancy(doc.elements);
+    assert.ok(occ >= 0.78, `${id} occupancy ${occ}`);
+    assert.ok(companySize(doc) >= 2.3, `${id} name ${companySize(doc)}`);
+    assert.ok(lineSize(doc, "usdot") >= 1.7, `${id} usdot ${lineSize(doc, "usdot")}`);
+    assert.ok(bottom(doc) > 10.4, `${id} bottom ${bottom(doc)}`);
+  }
+});
+
+test("MC omitted gives the DOT row the lower share", () => {
+  const doc = base({
+    logoDataUrl: "",
+    showMc: false,
+    companyName: "RIDGE",
+    templateId: "clean-white",
+  });
+  assert.equal(
+    doc.elements.some((el) => el.type === "text" && el.role === "mc"),
+    false,
+  );
+  assert.ok(lineSize(doc, "usdot") >= 2.0, `usdot ${lineSize(doc, "usdot")}`);
+  assert.ok(contentOccupancy(doc.elements) >= 0.76);
+});
+
+test("LLC line prints under the name without shrinking DOT off the board", () => {
+  const doc = base({
+    logoDataUrl: "",
+    legalName: "RIDGE HAULING LLC",
+    companyName: "RIDGE",
+    templateId: "clean-white",
+  });
+  const llc = doc.elements.find((el) => el.type === "text" && el.role === "llc");
+  assert.ok(llc && llc.type === "text");
+  assert.equal(llc.text, "RIDGE HAULING LLC");
+  assert.ok(lineSize(doc, "usdot") >= 1.5);
+  assert.ok(bottom(doc) <= 11.95);
+});
+
+test("classic plaque ID bands span nearly the full width", () => {
+  const doc = base({ templateId: "classic-plaque", logoDataUrl: "" });
+  const bands = doc.elements.filter((el) => el.type === "band");
+  assert.equal(bands.length, 2);
+  for (const band of bands) {
+    assert.ok(band.widthIn >= 18.8, `band width ${band.widthIn}`);
+  }
+  assert.ok(doc.elements.some((el) => el.type === "text" && el.role === "id-label"));
 });
