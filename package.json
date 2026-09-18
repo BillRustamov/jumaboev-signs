@@ -11,7 +11,7 @@
     "bot:demo": "tsx bot/index.ts --demo",
     "bot:profile": "tsx bot/index.ts --configure-profile",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "deploy": "opennextjs-cloudflare build && node scripts/sanitize-open-next-env.mjs && wrangler deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "test": "tsx --test src/lib/design/design.test.ts src/lib/design/migrate.test.ts src/lib/samples.test.ts src/lib/cab-mockup.test.ts src/lib/truck-mockups.test.ts src/lib/auto-improve.test.ts src/lib/artwork.test.ts src/lib/production.test.ts src/lib/bot-preview.test.ts src/lib/shop-entry.test.ts src/lib/shop-copy.test.ts src/lib/print-file.test.ts src/lib/order-status.test.ts src/lib/order-token.test.ts src/lib/money.test.ts src/lib/shop-db.test.ts src/lib/stripe-config.test.ts src/lib/checkout.test.ts src/lib/stripe-webhook.test.ts src/lib/payment-sync.test.ts"
   },

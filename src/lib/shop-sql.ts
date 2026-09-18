@@ -53,7 +53,7 @@ export async function localSqlite(file: string): Promise<ShopSql> {
   const { DatabaseSync } = await import("node:sqlite");
   const { mkdirSync } = await import("node:fs");
   const path = await import("node:path");
-  mkdirSync(path.dirname(file), { recursive: true });
+  mkdirSync(/* turbopackIgnore: true */ path.dirname(file), { recursive: true });
   const db = new DatabaseSync(file);
   return {
     kind: "sqlite",

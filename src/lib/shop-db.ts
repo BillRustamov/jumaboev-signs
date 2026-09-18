@@ -111,13 +111,13 @@ async function metaSet(db: ShopSql, key: string, value: string): Promise<void> {
 
 async function migrateJsonIfNeeded(db: ShopSql): Promise<void> {
   if ((await metaGet(db, "migrated_from_json")) === "1") return;
-  if (db.kind === "d1" || !existsSync(jsonFile())) {
+  if (db.kind === "d1" || !existsSync(/* turbopackIgnore: true */ jsonFile())) {
     await metaSet(db, "migrated_from_json", "1");
     return;
   }
   let raw: unknown;
   try {
-    raw = JSON.parse(readFileSync(jsonFile(), "utf8"));
+    raw = JSON.parse(readFileSync(/* turbopackIgnore: true */ jsonFile(), "utf8"));
   } catch (error) {
     console.error("Could not read orders.json for SQLite migrate.", error);
     return;
@@ -236,8 +236,11 @@ export async function appendLedger(
 
 export function snapshotOrders(orders: SignOrder[]): void {
   try {
-    mkdirSync(DATA_DIR, { recursive: true });
-    writeFileSync(snapshotFile(), JSON.stringify(orders, null, 2));
+    mkdirSync(/* turbopackIgnore: true */ DATA_DIR, { recursive: true });
+    writeFileSync(
+      /* turbopackIgnore: true */ snapshotFile(),
+      JSON.stringify(orders, null, 2),
+    );
   } catch (error) {
     if (process.env.SHOP_SNAPSHOT_PATH) {
       console.error("Could not write orders snapshot.", error);

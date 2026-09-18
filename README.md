@@ -26,7 +26,7 @@ npm run dev
 
 Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0:43147`.
 
-Live shop: [https://www.usprint.app](https://www.usprint.app) (Cloudflare Worker + OpenNext). Apex `usprint.app` redirects to `www`. Tickets on the live origin persist in Cloudflare D1 (`jumaboev-shop`). Local `npm run dev` still uses `data/shop.sqlite`.
+Intended live shop: [https://www.usprint.app](https://www.usprint.app) and [https://usprint.app](https://usprint.app) (Cloudflare Worker `jumaboev-signs` + OpenNext). Apex can serve the same shop or 301 to `www`. Tickets on the live origin persist in Cloudflare D1 (`jumaboev-shop`). Local `npm run dev` still uses `data/shop.sqlite`.
 
 - `/` — two-service shop menu (print existing vs create new), samples, FMCSA table
 - `/print` — print-existing upload (file first, then username and exact/notes)

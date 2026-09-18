@@ -14,7 +14,9 @@ type GlobalDrafts = typeof globalThis & {
 function hydrate(): Map<string, SignFields> {
   const map = new Map<string, SignFields>();
   try {
-    const raw = JSON.parse(readFileSync(DATA_FILE, "utf8")) as DraftMap;
+    const raw = JSON.parse(
+      readFileSync(/* turbopackIgnore: true */ DATA_FILE, "utf8"),
+    ) as DraftMap;
     for (const [id, fields] of Object.entries(raw)) {
       if (id && fields) map.set(id, fields);
     }
@@ -32,9 +34,9 @@ function drafts(): Map<string, SignFields> {
 
 function persist(): void {
   try {
-    mkdirSync(DATA_DIR, { recursive: true });
+    mkdirSync(/* turbopackIgnore: true */ DATA_DIR, { recursive: true });
     writeFileSync(
-      DATA_FILE,
+      /* turbopackIgnore: true */ DATA_FILE,
       JSON.stringify(Object.fromEntries(drafts()), null, 2),
     );
   } catch (error) {
