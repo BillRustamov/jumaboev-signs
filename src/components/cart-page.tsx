@@ -26,16 +26,16 @@ export function CartPage() {
             Cart is empty
           </CardTitle>
           <CardDescription>
-            Add a 20 × 12 in door pair from the print desk. The cart
-            shows your vinyl on a white cab, same as checkout.
+            Custom designs go in this cart after the designer. Print-existing
+            files skip the cart and go straight to the shop list.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           <Button asChild>
-            <Link href="/order">Open the print desk</Link>
+            <Link href="/order">Create a design</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/samples">Browse samples</Link>
+            <Link href="/print">Print a file</Link>
           </Button>
         </CardContent>
       </Card>

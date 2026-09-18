@@ -14,12 +14,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PrintOrderCard } from "@/components/print-order-card";
 import { SignPreview } from "@/components/sign-preview";
 import {
   readLocalOrders,
   useUsername,
 } from "@/lib/client-session";
-import type { SignOrder } from "@/lib/order";
+import { isPrintOnly, type SignOrder } from "@/lib/order";
 
 export function OrdersBoard() {
   const username = useUsername();
@@ -87,13 +88,16 @@ export function OrdersBoard() {
             </CardTitle>
             <CardDescription>
               {username
-                ? `Nothing on file for ${username}. Add a 20 × 12 in pair to the cart and check out.`
-                : "Design a door, add it to the cart, and check out. The ticket lands here."}
+                ? `Nothing on file for ${username}. Print a file you already have, or create a new design.`
+                : "Print a file you already have, or create a new design. Confirmed tickets land here."}
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex flex-wrap gap-2">
             <Button asChild>
-              <Link href="/order">Print desk</Link>
+              <Link href="/print">Print a file</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/order">Create a design</Link>
             </Button>
           </CardContent>
         </Card>
@@ -107,6 +111,7 @@ export function OrdersBoard() {
                     <CardTitle>{order.id}</CardTitle>
                     <CardDescription>
                       @{order.username} · {order.source}
+                      {order.service === "PRINT_ONLY" ? " · print-existing" : ""}
                       {order.language ? ` · ${order.language}` : ""}
                     </CardDescription>
                   </div>
@@ -114,15 +119,21 @@ export function OrdersBoard() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                <SignPreview fields={order} />
+                {isPrintOnly(order) ? (
+                  <PrintOrderCard order={order} />
+                ) : (
+                  <SignPreview fields={order} />
+                )}
                 <p className="text-xs text-muted-foreground">
                   {new Date(order.createdAt).toLocaleString()}
                 </p>
-                <Button className="w-full" variant="outline" asChild>
-                  <Link href={`/admin/print/${order.id}`}>
-                    Print sheet
-                  </Link>
-                </Button>
+                {isPrintOnly(order) ? null : (
+                  <Button className="w-full" variant="outline" asChild>
+                    <Link href={`/admin/print/${order.id}`}>
+                      Print sheet
+                    </Link>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           ))}

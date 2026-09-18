@@ -1,8 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import { CartButton } from "@/components/cart-button";
+import { ShopLangSwitch } from "@/components/shop-lang-switch";
 import { Button } from "@/components/ui/button";
+import { shopT } from "@/lib/shop-entry";
+import { useShopLang } from "@/lib/shop-lang";
 
 export function SiteHeader() {
+  const lang = useShopLang();
+
   return (
     <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur print:hidden">
       <div className="h-0.5 bg-[var(--gold)]" />
@@ -17,17 +24,21 @@ export function SiteHeader() {
         </Link>
         <nav className="flex items-center gap-1">
           <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
-            <Link href="/samples">Samples</Link>
+            <Link href="/samples">{shopT(lang, "samplesNav")}</Link>
+          </Button>
+          <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
+            <Link href="/print">{shopT(lang, "printNav")}</Link>
           </Button>
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/orders">Orders</Link>
+            <Link href="/orders">{shopT(lang, "myOrders")}</Link>
           </Button>
-          <Button variant="ghost" size="sm" asChild>
+          <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
             <Link href="/admin">Admin</Link>
           </Button>
+          <ShopLangSwitch compact />
           <CartButton />
           <Button size="sm" asChild>
-            <Link href="/order">Print desk</Link>
+            <Link href="/order">{shopT(lang, "createNav")}</Link>
           </Button>
         </nav>
       </div>

@@ -8,8 +8,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { PrintSheet } from "@/components/print-sheet";
 import { readLocalOrders } from "@/lib/client-session";
+import { PrintOrderCard } from "@/components/print-order-card";
 import {
   SAMPLE_PRINT_ID,
+  isPrintOnly,
   samplePrintOrder,
   type SignOrder,
 } from "@/lib/order";
@@ -72,6 +74,28 @@ export function AdminPrintDesk() {
         <Loader2 className="size-4 animate-spin" />
         Opening print sheet
       </p>
+    );
+  }
+
+  if (order && isPrintOnly(order)) {
+    return (
+      <div className="space-y-4">
+        <Button variant="ghost" size="sm" asChild>
+          <Link href="/admin">
+            <ArrowLeft className="size-4" />
+            Shop print desk
+          </Link>
+        </Button>
+        <Alert>
+          <AlertCircle />
+          <AlertTitle>Print the original file</AlertTitle>
+          <AlertDescription>
+            Ticket {order.id} is print-existing. Do not cut a designer plaque.
+            Print the upload at 20 × 12 in, one pair.
+          </AlertDescription>
+        </Alert>
+        <PrintOrderCard order={order} />
+      </div>
     );
   }
 

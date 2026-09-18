@@ -5,7 +5,6 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { Bot, InlineKeyboard, type Context } from "grammy";
 import {
-  COPY,
   LANG_LABELS,
   LANGS,
   isLang,
@@ -17,15 +16,28 @@ import {
   createOrderId,
   emptySign,
   validateUsername,
+  type ShopService,
   type SignFields,
   type SignOrder,
 } from "../src/lib/order";
+import {
+  PRINT_FILE_MAX_BYTES,
+  canPreviewAsImage,
+  isPrintFile,
+  resolvePrintMime,
+  telegramPrintUsername,
+} from "../src/lib/print-file";
+import { shopT } from "../src/lib/shop-entry";
 import { STYLE_PRESETS, applyPreset } from "../src/lib/sign-style";
 import { screenshotTruck, styledFields, telegramSendPhoto } from "./previews";
 import { formatPlace, parsePlace } from "../src/lib/design/migrate";
 
 type Step =
+  | "menu"
   | "lang"
+  | "print_file"
+  | "print_notes"
+  | "print_confirm"
   | "username"
   | "company"
   | "legal"
@@ -41,6 +53,11 @@ type Draft = {
   fields: SignFields;
   username: string;
   telegramChatId?: number;
+  service?: ShopService;
+  printFileName?: string;
+  printMime?: string;
+  printExact?: boolean;
+  printNotes?: string;
 };
 
 function loadDotEnv() {
@@ -112,13 +129,62 @@ function confirmKeyboard(lang: Lang) {
   );
 }
 
+function serviceKeyboard(lang: Lang) {
+  return keyboardFrom(
+    [
+      { id: "service:print", label: shopT(lang, "printExisting") },
+      { id: "service:design", label: shopT(lang, "createDesign") },
+      { id: "service:orders", label: shopT(lang, "myOrders") },
+      { id: "service:contact", label: shopT(lang, "contactShop") },
+      { id: "service:lang", label: shopT(lang, "language") },
+    ],
+    1,
+  );
+}
+
+function printModeKeyboard(lang: Lang) {
+  return keyboardFrom(
+    [
+      { id: "print:exact", label: shopT(lang, "printOnlyExact") },
+      { id: "print:notes", label: shopT(lang, "printOnlyNotes") },
+      { id: "service:menu", label: shopT(lang, "backToMenu") },
+    ],
+    1,
+  );
+}
+
+function menuKeyboard(lang: Lang) {
+  return keyboardFrom(
+    [{ id: "service:menu", label: shopT(lang, "backToMenu") }],
+    1,
+  );
+}
+
+function welcomeText(lang: Lang): string {
+  return `${shopT(lang, "howCanWeHelp")}\n\n${shopT(lang, "lead")}`;
+}
+
 function newDraft(): Draft {
   return {
     lang: "en",
-    step: "lang",
+    step: "menu",
     fields: emptySign(),
     username: "",
+    service: undefined,
   };
+}
+
+function resetToMenu(draft: Draft): Draft {
+  const next = newDraft();
+  next.lang = draft.lang;
+  next.telegramChatId = draft.telegramChatId;
+  return next;
+}
+
+async function presentMenu(draft: Draft, chat: Chat): Promise<Draft> {
+  const next = resetToMenu(draft);
+  await chat.send(welcomeText(next.lang), serviceKeyboard(next.lang));
+  return next;
 }
 
 function escapeHtml(value: string): string {
@@ -160,15 +226,23 @@ async function pingShop(): Promise<boolean> {
 async function postOrder(
   draft: Draft,
 ): Promise<{ order: SignOrder; shopOk: boolean }> {
+  const printOnly = draft.service === "PRINT_ONLY";
   const order: SignOrder = {
     ...draft.fields,
     id: createOrderId(),
-    username: draft.username,
+    username: printOnly
+      ? telegramPrintUsername(draft.telegramChatId ?? 0)
+      : draft.username,
     source: "telegram",
     language: draft.lang,
     telegramChatId: draft.telegramChatId,
     createdAt: new Date().toISOString(),
     status: "received",
+    service: printOnly ? "PRINT_ONLY" : "CUSTOM_DESIGN",
+    printExact: printOnly ? draft.printExact !== false : undefined,
+    printNotes: printOnly ? draft.printNotes : undefined,
+    originalFileName: printOnly ? draft.printFileName : undefined,
+    originalMime: printOnly ? draft.printMime : undefined,
   };
   for (let attempt = 0; attempt < 4; attempt++) {
     try {
@@ -249,6 +323,24 @@ async function presentConfirm(draft: Draft, chat: Chat): Promise<void> {
   await chat.send(summary(draft), confirmKeyboard(draft.lang));
 }
 
+async function presentPrintConfirm(draft: Draft, chat: Chat): Promise<Draft> {
+  draft.step = "print_confirm";
+  const mode =
+    draft.printExact === false
+      ? shopT(draft.lang, "printNotesMode", {
+          notes: draft.printNotes || "—",
+        })
+      : shopT(draft.lang, "printExactMode");
+  await chat.send(
+    shopT(draft.lang, "printOnlyConfirm", {
+      file: draft.printFileName || "file",
+      mode,
+    }),
+    confirmKeyboard(draft.lang),
+  );
+  return draft;
+}
+
 async function handleText(
   draft: Draft,
   text: string,
@@ -256,19 +348,40 @@ async function handleText(
 ): Promise<Draft> {
   const trimmed = text.trim();
   if (trimmed === "/start") {
-    const next = newDraft();
-    await chat.send(COPY.en.chooseLanguage, languageKeyboard());
-    return next;
+    return presentMenu(draft, chat);
   }
   if (trimmed === "/help") {
-    await chat.send(t(draft.lang, "help"));
+    await chat.send(shopT(draft.lang, "helpMenu"), menuKeyboard(draft.lang));
     return draft;
   }
 
   switch (draft.step) {
-    case "lang": {
-      await chat.send(COPY.en.chooseLanguage, languageKeyboard());
+    case "menu": {
+      await chat.send(welcomeText(draft.lang), serviceKeyboard(draft.lang));
       return draft;
+    }
+    case "lang": {
+      await chat.send(shopT(draft.lang, "chooseLanguage"), languageKeyboard());
+      return draft;
+    }
+    case "print_file": {
+      await chat.send(shopT(draft.lang, "printOnlyAsk"));
+      return draft;
+    }
+    case "print_notes": {
+      if (!trimmed) {
+        await chat.send(
+          shopT(draft.lang, "printOnlyGot"),
+          printModeKeyboard(draft.lang),
+        );
+        return draft;
+      }
+      draft.printExact = false;
+      draft.printNotes = trimmed;
+      return presentPrintConfirm(draft, chat);
+    }
+    case "print_confirm": {
+      return presentPrintConfirm(draft, chat);
     }
     case "username": {
       const error = validateUsername(trimmed);
@@ -369,8 +482,52 @@ async function handleCallback(
     const code = data.slice(5);
     if (!isLang(code)) return draft;
     draft.lang = code;
+    await chat.send(shopT(draft.lang, "languageSet"));
+    return presentMenu(draft, chat);
+  }
+  if (data === "service:menu") {
+    return presentMenu(draft, chat);
+  }
+  if (data === "service:lang") {
+    draft.step = "lang";
+    await chat.send(shopT(draft.lang, "chooseLanguage"), languageKeyboard());
+    return draft;
+  }
+  if (data === "service:orders") {
+    await chat.send(shopT(draft.lang, "ordersBody"), menuKeyboard(draft.lang));
+    return draft;
+  }
+  if (data === "service:contact") {
+    await chat.send(shopT(draft.lang, "contactBody"), menuKeyboard(draft.lang));
+    return draft;
+  }
+  if (data === "service:print") {
+    draft.service = "PRINT_ONLY";
+    draft.step = "print_file";
+    draft.fields = emptySign();
+    draft.printFileName = undefined;
+    draft.printMime = undefined;
+    draft.printNotes = undefined;
+    draft.printExact = true;
+    await chat.send(shopT(draft.lang, "printOnlyAsk"), menuKeyboard(draft.lang));
+    return draft;
+  }
+  if (data === "service:design") {
+    draft.service = "CUSTOM_DESIGN";
     draft.step = "username";
-    await chat.send(`${t(draft.lang, "languageSet")}\n\n${t(draft.lang, "askUsername")}`);
+    draft.fields = emptySign();
+    await chat.send(t(draft.lang, "askUsername"));
+    return draft;
+  }
+  if (data === "print:exact") {
+    draft.printExact = true;
+    draft.printNotes = undefined;
+    return presentPrintConfirm(draft, chat);
+  }
+  if (data === "print:notes") {
+    draft.step = "print_notes";
+    draft.printExact = false;
+    await chat.send(shopT(draft.lang, "printOnlyNotes"));
     return draft;
   }
   if (data === "skip" && draft.step === "legal") {
@@ -396,25 +553,23 @@ async function handleCallback(
     return draft;
   }
   if (data === "restart") {
-    const lang = draft.lang;
-    const next = newDraft();
-    next.lang = lang;
-    next.telegramChatId = draft.telegramChatId;
-    next.step = "username";
-    await chat.send(`${t(lang, "cancelled")}\n\n${t(lang, "askUsername")}`);
-    return next;
+    await chat.send(t(draft.lang, "cancelled"));
+    return presentMenu(draft, chat);
   }
-  if (data === "confirm" && draft.step === "confirm") {
+  if (
+    data === "confirm" &&
+    (draft.step === "confirm" || draft.step === "print_confirm")
+  ) {
     const { order, shopOk } = await postOrder(draft);
-    await chat.send(t(draft.lang, "placed", { id: order.id }));
+    if (draft.step === "print_confirm") {
+      await chat.send(shopT(draft.lang, "printOnlyPlaced", { id: order.id }));
+    } else {
+      await chat.send(t(draft.lang, "placed", { id: order.id }));
+    }
     await chat.send(
       shopOk ? t(draft.lang, "shopPosted") : t(draft.lang, "shopUnreachable"),
     );
-    const next = newDraft();
-    next.lang = draft.lang;
-    next.telegramChatId = draft.telegramChatId;
-    next.step = "username";
-    return next;
+    return presentMenu(draft, chat);
   }
   return draft;
 }
@@ -431,16 +586,22 @@ async function telegramFileToDataUrl(
   const buf = Buffer.from(await response.arrayBuffer());
   const headerType = response.headers.get("content-type") || "";
   const fromPath = file.file_path.toLowerCase();
-  const mime = headerType.startsWith("image/")
-    ? headerType
-    : fromPath.endsWith(".png")
-      ? "image/png"
-      : fromPath.endsWith(".webp")
-        ? "image/webp"
-        : fromPath.endsWith(".gif")
-          ? "image/gif"
-          : "image/jpeg";
-  return `data:${mime};base64,${buf.toString("base64")}`;
+  const resolved =
+    resolvePrintMime(headerType.split(";")[0], fromPath) ??
+    (headerType.startsWith("image/")
+      ? headerType.split(";")[0]
+      : fromPath.endsWith(".png")
+        ? "image/png"
+        : fromPath.endsWith(".webp")
+          ? "image/webp"
+          : fromPath.endsWith(".gif")
+            ? "image/gif"
+            : fromPath.endsWith(".pdf")
+              ? "application/pdf"
+              : fromPath.endsWith(".svg")
+                ? "image/svg+xml"
+                : "image/jpeg");
+  return `data:${resolved};base64,${buf.toString("base64")}`;
 }
 
 const IMAGE_MIMES = new Set([
@@ -466,10 +627,10 @@ async function configureBot(bot: Bot) {
     "USDOT truck door vinyl · 20 × 12 in each cab side. Order a matched pair.",
   );
   await bot.api.setMyDescription(
-    "Jumaboev Signs prints vinyl USDOT truck doors. Example cut is 20 × 12 in for each cab side — filled plaque with logo, company name, city and state, USDOT, and MC. Left and right match. Company name and USDOT required by FMCSA; MC required on this shop ticket. Logo optional. Unit numbers are a separate small print. Send /start to order.",
+    "Jumaboev Signs prints vinyl USDOT truck doors. Example cut is 20 × 12 in for each cab side. Tap Start for the shop menu: print a file you already have, or create a new design. Company name and USDOT required by FMCSA on custom designs; MC required on that shop ticket. Logo optional. Unit numbers are a separate small print.",
   );
   await bot.api.setMyCommands([
-    { command: "start", description: "Start a new door vinyl order" },
+    { command: "start", description: "Open the shop menu" },
     { command: "help", description: "How Jumaboev Signs works" },
   ]);
 }
@@ -487,11 +648,13 @@ function loadSessions(): Map<number, Draft> {
     for (const [key, draft] of Object.entries(raw)) {
       const id = Number(key);
       if (!Number.isFinite(id) || !draft || typeof draft !== "object") continue;
-      map.set(id, {
+      const merged: Draft = {
         ...newDraft(),
         ...draft,
         fields: { ...emptySign(), ...draft.fields },
-      });
+      };
+      if (merged.step === "lang" && !merged.service) merged.step = "menu";
+      map.set(id, merged);
     }
     return map;
   } catch {
@@ -544,54 +707,54 @@ async function runTelegram(token: string) {
     return created;
   }
 
-  async function sendLanguagePicker(ctx: Context): Promise<void> {
-    const markup = languageKeyboard().keyboard;
+  async function sendWelcomeMenu(ctx: Context, lang: Lang): Promise<void> {
+    const markup = serviceKeyboard(lang).keyboard;
+    const text = welcomeText(lang);
     const chatId = ctx.chat?.id;
     const started = Date.now();
-    // sendMessage, not ctx.reply — no reply-to hop, same keyboard.
     const send = async () => {
       if (!chatId) {
-        await ctx.reply(COPY.en.chooseLanguage, { reply_markup: markup });
+        await ctx.reply(text, { reply_markup: markup });
         return;
       }
-      const sent = await ctx.api.sendMessage(chatId, COPY.en.chooseLanguage, {
+      const sent = await ctx.api.sendMessage(chatId, text, {
         reply_markup: markup,
       });
       console.log(
-        `language picker ${sent.message_id} to ${chatId} in ${Date.now() - started}ms`,
+        `shop menu ${sent.message_id} to ${chatId} in ${Date.now() - started}ms`,
       );
     };
     try {
       await withTimeout(send(), 4_000, "sendMessage /start");
       return;
     } catch (error) {
-      console.error("Could not send /start language reply.", error);
+      console.error("Could not send /start shop menu.", error);
     }
     if (!chatId) return;
     await withTimeout(
-      ctx.api.sendMessage(chatId, COPY.en.chooseLanguage, {
-        reply_markup: markup,
-      }),
+      ctx.api.sendMessage(chatId, text, { reply_markup: markup }),
       4_000,
       "sendMessage /start retry",
     );
-    console.log(
-      `language picker retry to ${chatId} in ${Date.now() - started}ms`,
-    );
+    console.log(`shop menu retry to ${chatId} in ${Date.now() - started}ms`);
   }
 
   bot.command("start", async (ctx) => {
     const chatId = ctx.chat.id;
     console.log(`/start from chat ${chatId}`);
+    const existing = sessions.get(chatId);
     const draft = newDraft();
     draft.telegramChatId = chatId;
-    await sendLanguagePicker(ctx);
+    if (existing?.lang) draft.lang = existing.lang;
+    await sendWelcomeMenu(ctx, draft.lang);
     remember(chatId, draft);
   });
 
   bot.command("help", async (ctx) => {
     const draft = draftFor(ctx.chat.id);
-    await ctx.reply(t(draft.lang, "help"), { parse_mode: "HTML" });
+    await ctx.reply(shopT(draft.lang, "helpMenu"), {
+      reply_markup: menuKeyboard(draft.lang).keyboard,
+    });
   });
 
   bot.on("callback_query:data", async (ctx) => {
@@ -658,13 +821,67 @@ async function runTelegram(token: string) {
     remember(chatId, draft);
   }
 
+  async function ingestPrintFile(
+    ctx: Context,
+    draft: Draft,
+    fileId: string,
+    fileName: string,
+    mimeHint: string | undefined,
+    fileSize: number | undefined,
+  ): Promise<void> {
+    if (fileSize && fileSize > PRINT_FILE_MAX_BYTES) {
+      await ctx.reply(shopT(draft.lang, "printOnlyBad"));
+      return;
+    }
+    try {
+      const dataUrl = await telegramFileToDataUrl(ctx, fileId, token);
+      const parsedMime =
+        resolvePrintMime(mimeHint, fileName) ??
+        resolvePrintMime(dataUrl.split(";")[0]?.replace("data:", ""), fileName);
+      if (!dataUrl || !parsedMime || !isPrintFile(parsedMime, fileName)) {
+        await ctx.reply(shopT(draft.lang, "printOnlyBad"));
+        return;
+      }
+      if (!canPreviewAsImage(parsedMime)) {
+        // Keep the original bytes. Never send SVG/PDF back as a live preview.
+      }
+      draft.fields.originalArtworkUrl = dataUrl;
+      draft.printFileName = fileName || `file.${parsedMime.split("/")[1]}`;
+      draft.printMime = parsedMime;
+      draft.step = "print_notes";
+      const chatId = ctx.chat?.id;
+      if (chatId) remember(chatId, draft);
+      await ctx.reply(shopT(draft.lang, "printOnlyGot"), {
+        reply_markup: printModeKeyboard(draft.lang).keyboard,
+      });
+    } catch (error) {
+      console.error("Could not download print file.", error);
+      await ctx.reply(shopT(draft.lang, "printOnlyBad"));
+    }
+  }
+
   bot.on("message:photo", async (ctx) => {
     const draft = draftFor(ctx.chat.id);
+    const photo = ctx.message.photo.at(-1);
+    if (draft.step === "print_file") {
+      if (!photo) {
+        await ctx.reply(shopT(draft.lang, "printOnlyBad"));
+        return;
+      }
+      await ingestPrintFile(
+        ctx,
+        draft,
+        photo.file_id,
+        "door.png",
+        "image/jpeg",
+        photo.file_size,
+      );
+      return;
+    }
     if (draft.step !== "logo") {
       await ctx.reply(t(draft.lang, "logoWrongStep"), { parse_mode: "HTML" });
       return;
     }
-    const photo = ctx.message.photo.at(-1);
     if (!photo) {
       await ctx.reply(t(draft.lang, "badLogo"), {
         parse_mode: "HTML",
@@ -677,11 +894,29 @@ async function runTelegram(token: string) {
 
   bot.on("message:document", async (ctx) => {
     const draft = draftFor(ctx.chat.id);
+    const document = ctx.message.document;
+    if (draft.step === "print_file") {
+      if (
+        !isPrintFile(document.mime_type, document.file_name) ||
+        (document.file_size && document.file_size > PRINT_FILE_MAX_BYTES)
+      ) {
+        await ctx.reply(shopT(draft.lang, "printOnlyBad"));
+        return;
+      }
+      await ingestPrintFile(
+        ctx,
+        draft,
+        document.file_id,
+        document.file_name || "upload",
+        document.mime_type,
+        document.file_size,
+      );
+      return;
+    }
     if (draft.step !== "logo") {
       await ctx.reply(t(draft.lang, "logoWrongStep"), { parse_mode: "HTML" });
       return;
     }
-    const document = ctx.message.document;
     if (!isImageDocument(document.mime_type, document.file_name)) {
       await ctx.reply(t(draft.lang, "badLogo"), {
         parse_mode: "HTML",
@@ -857,7 +1092,7 @@ async function main() {
   await playTurns(
     demo
       ? [
-          "1",
+          "2",
           "elbrus_dispatch",
           "ELBRUS",
           "DALLAS, TX",

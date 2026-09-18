@@ -21,6 +21,16 @@ import {
 
 export type OrderSource = "web" | "telegram";
 
+export type ShopService = "PRINT_ONLY" | "CUSTOM_DESIGN";
+
+export function resolveService(value: unknown): ShopService {
+  return value === "PRINT_ONLY" ? "PRINT_ONLY" : "CUSTOM_DESIGN";
+}
+
+export function isPrintOnly(order: { service?: ShopService }): boolean {
+  return order.service === "PRINT_ONLY";
+}
+
 export type SignFields = {
   companyName: string;
   /** Registered legal name. Never store city/state here. */
@@ -51,6 +61,12 @@ export type SignOrder = SignFields & {
   telegramUserId?: number;
   createdAt: string;
   status: "received";
+  /** Existing tickets without this field are custom designs. */
+  service?: ShopService;
+  printExact?: boolean;
+  printNotes?: string;
+  originalFileName?: string;
+  originalMime?: string;
 };
 
 export const SAMPLE_SIGN: SignFields = {

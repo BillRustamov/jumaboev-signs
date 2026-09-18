@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { MessageCircle, Printer, Smartphone } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { HomeEntry } from "@/components/home-entry";
+import { HomeSampleGrid } from "@/components/home-sample-grid";
+import { VinylSpecPanel } from "@/components/vinyl-spec-panel";
+import { WhiteSemiTruck } from "@/components/white-semi-truck";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,9 +14,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { HomeSampleGrid } from "@/components/home-sample-grid";
-import { VinylSpecPanel } from "@/components/vinyl-spec-panel";
-import { WhiteSemiTruck } from "@/components/white-semi-truck";
 import { SUGGESTED_LAYOUT } from "@/lib/samples";
 import { TELEGRAM_BOT_URL } from "@/lib/telegram";
 import { VINYL } from "@/lib/vinyl-spec";
@@ -22,29 +22,8 @@ export default function HomePage() {
   return (
     <main>
       <section className="border-b bg-[color-mix(in_oklch,var(--navy),white_94%)]">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.9fr)] lg:py-14">
-          <div>
-            <Badge variant="secondary">Set of two · {VINYL.size} each side</Badge>
-            <h1 className="font-heading mt-4 text-3xl font-semibold tracking-tight text-[var(--navy)] sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
-              Tap a shop door. Put your USDOT on it.
-            </h1>
-            <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
-              Jumaboev Signs prints a matched pair — recommended {VINYL.size}{" "}
-              for each side of the cab. Company name and USDOT are required by{" "}
-              {VINYL.cfr}. This shop also prints MC on the plaque and requires
-              it on the ticket. Logo size is yours to set. Unit numbers are a
-              separate small print. Letters still have to read from{" "}
-              {VINYL.readabilityFt} feet in daylight.
-            </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" asChild>
-                <Link href="/order">Open the print desk</Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/samples">Browse samples</Link>
-              </Button>
-            </div>
-          </div>
+        <div className="mx-auto grid max-w-6xl items-start gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.9fr)] lg:py-14">
+          <HomeEntry />
           <div className="mx-auto w-full max-w-xl">
             <WhiteSemiTruck fields={SUGGESTED_LAYOUT.fields} />
             <p className="mt-3 text-center text-xs text-muted-foreground">
@@ -63,12 +42,12 @@ export default function HomePage() {
             For drivers
           </p>
           <h2 className="font-heading mt-2 text-2xl font-semibold text-[var(--navy)]">
-            Pick a sample, then swap in your numbers
+            Creating a new design? Start from a sample
           </h2>
           <p className="mt-2 text-muted-foreground">
             Each card is a 20 × 12 in color on a white sleeper — same truck
-            the cart uses. Navy gold is the example: logo, company name, city
-            and state, USDOT, then MC. Tap one to open the designer.
+            the cart uses. Tap one to open the designer. If you already have
+            artwork, use I already have a design instead.
           </p>
         </div>
         <HomeSampleGrid />
@@ -123,32 +102,31 @@ export default function HomePage() {
       <section className="mx-auto grid max-w-6xl gap-6 px-4 py-12 sm:px-6 md:grid-cols-3">
         <Step
           icon={<Printer className="size-4" />}
-          title="1. Tap a sample"
-          body="Open a shop door that is close to yours. Swap the name, USDOT, and MC. Set logo size on the vinyl."
+          title="1. Pick a service"
+          body="Print a file you already have, or create a new USDOT door in the designer. You tap — you do not type commands."
         />
         <Step
           icon={<Smartphone className="size-4" />}
-          title="2. Add to cart"
-          body="The pair goes in your cart. Checkout shows it on a white semi before you send it to the shop."
+          title="2. Confirm the pair"
+          body="Print-existing sends the original file at 20 × 12 in. New designs go through the cart and a white-cab preview."
         />
         <Step
           icon={<MessageCircle className="size-4" />}
           title="3. Print with Khurshid"
-          body="The shop prints from that ticket. Questions, address, and payment stay on Telegram."
+          body="Tickets land on the print desk. Questions stay on Telegram or the contact page — the Start button opens the same menu."
         />
       </section>
 
       <section id="telegram" className="border-t bg-[var(--navy)] text-white">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
           <h2 className="font-heading text-2xl font-semibold">
-            Telegram is the main counter
+            Telegram is the same counter
           </h2>
           <p className="mt-3 max-w-2xl text-white/80">
-            The bot asks for language first, then the same print fields as this
-            site. Color picks send photos of this 20 × 12 in plaque on a white
-            cab.
-            It runs in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, and
-            Ukrainian. Confirmed tickets land on the shop print desk.
+            Open the shop bot and tap Start. The first screen is How can we
+            help you today? — print an existing file, create a new design, my
+            orders, contact, or language. You do not type commands. English,
+            Uzbek, Tajik, Russian, Kazakh, Kyrgyz, and Ukrainian.
           </p>
           <div className="mt-6">
             <Button

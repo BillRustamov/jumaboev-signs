@@ -16,8 +16,9 @@ export default function OrdersPage() {
           Shop orders
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Tickets sent from checkout and Telegram. Design a door, add it to the
-          cart, then check it on a white semi before it lands here.
+          Tickets from print-existing uploads, the designer checkout, and
+          Telegram. Custom designs still go through the cart and a white-cab
+          preview.
         </p>
       </div>
       <OrdersBoard />

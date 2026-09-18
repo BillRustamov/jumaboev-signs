@@ -4,16 +4,18 @@ Khurshid Jumaboev’s shop slice: vinyl USDOT truck door decals that follow FMCS
 
 FMCSA requires company name and USDOT on both sides of the power unit, readable from 50 feet, in strong contrast. There is no fixed federal letter height. **MC is not required on the truck**; this shop still prints MC on the plaque and requires it on the ticket. Logo is optional. **Unit numbers are a separate small print** and do not go on this vinyl.
 
-Drivers start from a visual sample, fill the print ticket, add the pair to the cart, then check the vinyl on a white Volvo sleeper at checkout. Click any door sign to preview it larger.
+The first screen asks **How can we help you today?** — print a file you already have, or create a new USDOT door. Custom designs still start from a sample, fill the ticket, add the pair to the cart, then check the vinyl on a white sleeper. Print-existing uploads skip the designer.
 
-This repo is the web designer plus a Telegram bot. Instagram is out of scope for this slice. Telegram is the main customer channel.
+This repo is the web shop plus a Telegram bot. Instagram is out of scope for this slice. Telegram is the main customer channel. Mini App needs HTTPS; this environment stays bot + website.
 
 ## What you can do
 
-- Browse samples, open the print desk, and keep a live door on screen on a phone.
+- Pick a service on the homepage: **I already have a design** (`/print`) or **Create a new design** (`/order`).
+- Upload PDF, SVG, PNG, JPEG, or WebP for print-existing. The shop keeps the original and does not run it. Default is 20 × 12 in, one pair.
+- Browse samples, open the designer, and keep a live door on screen on a phone.
 - Fill required lettering, colors, and layout. Click the live door to preview. Add the pair to the cart.
 - Open the cart, click a sign to preview, then checkout to see the vinyl on a white sleeper before sending it to the shop.
-- Run the same questions in Telegram in English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, or Ukrainian. Color picks send photos of the filled plaque on a white cab. Confirmed tickets POST to the shop list.
+- Use the same two services in Telegram. The Start **button** opens the shop menu — customers do not type commands. English, Uzbek, Tajik, Russian, Kazakh, Kyrgyz, and Ukrainian.
 
 ## Web app
 
@@ -24,8 +26,10 @@ npm run dev
 
 Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0:43147`.
 
-- `/` — shop landing, 20 × 12 in sizes, and FMCSA table
-- `/samples` — sign-first gallery with categories and filters; Customize this design opens the print desk
+- `/` — two-service shop menu (print existing vs create new), samples, FMCSA table
+- `/print` — print-existing upload (file first, then username and exact/notes)
+- `/contact` — how to reach Khurshid
+- `/samples` — sign-first gallery with categories and filters; Customize this design opens the designer
 - `/order` — live designer (`/order?sample=clean-white` loads the default plaque)
 - `/preview/signs` — five template compositions at print proportion (visual QA)
 - `/preview/truck` — cab-door mockup with a calibrated door zone (`?calibrate=1` in development)
@@ -44,7 +48,7 @@ Tickets persist in `data/orders.json` so a restart does not wipe the print desk.
 npm run bot
 ```
 
-If `TELEGRAM_BOT_TOKEN` is **unset**, the command starts a **mock chat in the terminal**. Pick a language with `1`, `2`, … then answer like a driver. Type `Skip` on optional fields (city and state, logo) instead of tapping the button. MC is required. `/start` resets, `/quit` exits. `npm run bot:demo` walks a sample order without typing and POSTs it to `/api/orders` when the site is up.
+If `TELEGRAM_BOT_TOKEN` is **unset**, the command starts a **mock chat in the terminal**. The first screen is the shop menu. Type `2` for Create a new design, then answer like a driver. Type `Skip` on optional fields (city and state, logo) instead of tapping the button. MC is required on custom designs. `/start` (internal) resets to the menu, `/quit` exits. `npm run bot:demo` walks a sample custom-design order without typing and POSTs it to `/api/orders` when the site is up.
 
 To talk to real Telegram:
 

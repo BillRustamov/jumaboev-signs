@@ -14,9 +14,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PrintOrderCard } from "@/components/print-order-card";
 import { SignPreview } from "@/components/sign-preview";
 import { readLocalOrders } from "@/lib/client-session";
-import type { SignOrder } from "@/lib/order";
+import { isPrintOnly, type SignOrder } from "@/lib/order";
 
 export function AdminDesk() {
   const [loading, setLoading] = useState(true);
@@ -108,6 +109,7 @@ export function AdminDesk() {
                     <CardTitle>{order.id}</CardTitle>
                     <CardDescription>
                       @{order.username} · {order.source}
+                      {order.service === "PRINT_ONLY" ? " · print-existing" : ""}
                       {order.language ? ` · ${order.language}` : ""}
                       {order.telegramChatId
                         ? ` · chat ${order.telegramChatId}`
@@ -118,13 +120,24 @@ export function AdminDesk() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                <SignPreview fields={order} />
-                <Button className="w-full" asChild>
-                  <Link href={`/admin/print/${order.id}`}>
-                    <Printer className="size-4" />
-                    Download print sheet
-                  </Link>
-                </Button>
+                {isPrintOnly(order) ? (
+                  <PrintOrderCard order={order} />
+                ) : (
+                  <SignPreview fields={order} />
+                )}
+                {isPrintOnly(order) ? (
+                  <p className="text-xs text-muted-foreground">
+                    Print the original upload at 20 × 12 in. This is not a
+                    designer plaque — the cutter sheet stays for custom designs.
+                  </p>
+                ) : (
+                  <Button className="w-full" asChild>
+                    <Link href={`/admin/print/${order.id}`}>
+                      <Printer className="size-4" />
+                      Download print sheet
+                    </Link>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           ))}

@@ -5,12 +5,24 @@ export const TELEGRAM_BOT_USERNAME = "usprinter_bot";
 export const TELEGRAM_BOT_URL = `https://t.me/${TELEGRAM_BOT_USERNAME}`;
 
 export function shopTicketText(order: SignOrder): string {
+  const service = order.service === "PRINT_ONLY" ? "PRINT_ONLY" : "CUSTOM_DESIGN";
   const lines = [
-    `New ${order.source} ticket ${order.id}`,
+    `New ${order.source} ${service} ticket ${order.id}`,
     `@${order.username}`,
-    `${order.companyName} · USDOT ${order.dotNumber} · MC ${order.mcNumber}`,
-    `Size: 20 × 12 in · quantity: 1 pair (2 decals)`,
   ];
+  if (service === "PRINT_ONLY") {
+    lines.push(
+      `File: ${order.originalFileName || "upload"}`,
+      order.printExact === false && order.printNotes
+        ? `Change note: ${order.printNotes}`
+        : "Print exactly as sent",
+    );
+  } else {
+    lines.push(
+      `${order.companyName} · USDOT ${order.dotNumber} · MC ${order.mcNumber}`,
+    );
+  }
+  lines.push("Size: 20 × 12 in · quantity: 1 pair (2 decals)");
   lines.push("Example cut is 20 × 12 in for each side of the cab.");
   if (order.telegramChatId) {
     lines.push(`Telegram chat ${order.telegramChatId}`);

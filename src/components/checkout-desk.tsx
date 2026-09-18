@@ -66,6 +66,7 @@ export function CheckoutDesk() {
           source: "web",
           createdAt: new Date().toISOString(),
           status: "received",
+          service: "CUSTOM_DESIGN",
         };
         const response = await fetch("/api/orders", {
           method: "POST",

@@ -62,7 +62,7 @@ export const COPY: Record<Lang, Copy> = {
     badLogo:
       "That file is not an image I can print. Send a PNG, JPEG, or WebP, or tap Skip.",
     logoWrongStep:
-      "Attach the logo when I ask for it. Send /start, then send the PNG at the logo step.",
+      "Attach the logo when I ask for it. Tap Create a new design, then send the PNG at the logo step.",
     askStyle:
       "Tap a look. Photos above are that color on a white cab — same mockup as the cart.",
     askStylePhotos:
@@ -77,14 +77,14 @@ export const COPY: Record<Lang, Copy> = {
     placed:
       "Order {id} received. Khurshid will print two vinyl doors, 20 × 12 in for each cab side.",
     shopPosted: "The ticket is on the shop print desk.",
-    cancelled: "Cleared. Send /start to design again.",
-    help: "Jumaboev Signs prints USDOT door vinyl, 20 × 12 in each cab side — logo, company name, city and state, USDOT, then MC.\n\nSend /start to order. Pick a language, then your door name, city and state, USDOT, MC, optional logo, and a color set. Confirm to send the ticket to the shop.",
+    cancelled: "Cleared. The shop menu is back.",
+    help: "Jumaboev Signs prints USDOT door vinyl, 20 × 12 in each cab side — logo, company name, city and state, USDOT, then MC.\n\nTap I already have a design to send a file, or Create a new design to build one here. Use My orders or Contact the shop anytime. The Start button opens this menu — you do not type commands.",
     shopUnreachable:
-      "Telegram kept the ticket, but the website list was unreachable. Keep the shop site running, then send /start and confirm again.",
+      "Telegram kept the ticket, but the website list was unreachable. Keep the shop site running, then confirm again from the shop menu.",
   },
   uz: {
     chooseLanguage:
-      "Jumaboev Signs\nUSDOT kabina vinili\n\nHar bir juftlik kabinaning har tomoni uchun 20 × 12 dyuym. Chap va o‘ng mos. /start dan keyin tilni tanlang.",
+      "Jumaboev Signs\nUSDOT kabina vinili\n\nHar bir juftlik kabinaning har tomoni uchun 20 × 12 dyuym. Chap va o‘ng mos. Tilni tanlang.",
     languageSet:
       "O‘zbekcha tanlandi. Jumaboev Signs har bir kabina tomoni uchun 20 × 12 dyuym vinil DOT eshik chop etadi.",
     askUsername: "Do‘kon foydalanuvchi nomini yozing (3–24 harf, raqam yoki _).",
@@ -97,7 +97,7 @@ export const COPY: Record<Lang, Copy> = {
     askLogo: "Logo rasmini yoki PNG faylni yuboring, yoki O‘tkazish ni bosing.",
     gotLogo: "Logo qabul qilindi. Oq kabinada to‘rtta ko‘rinish tayyorlanmoqda.",
     badLogo: "Bu rasm emas. PNG, JPEG yoki WebP yuboring, yoki O‘tkazish ni bosing.",
-    logoWrongStep: "Logo so‘ralganda yuboring. /start yuboring, keyin PNG ni logo qadamida yuboring.",
+    logoWrongStep: "Logo so‘ralganda yuboring. Yangi dizayn ni bosing, keyin PNG ni logo qadamida yuboring.",
     askStyle: "Rangni tanlang. Yuqoridagi suratlar — o‘sha rang oq kabinada, savatchadagi kabi.",
     askStylePhotos:
       "To‘rtta rang oq kabinada. Savatchadagi yuk mashinasi. Suratdan keyin nomini bosing.",
@@ -111,8 +111,8 @@ export const COPY: Record<Lang, Copy> = {
     placed:
       "{id} qabul qilindi. Khurshid har tomon uchun 20 × 12 vinil eshik chop etadi.",
     shopPosted: "Chipta do‘kon chop etish stolida.",
-    cancelled: "Tozalandi. Qayta boshlash uchun /start yuboring.",
-    help: "Jumaboev Signs dan DOT eshik vinili uchun /start yuboring.",
+    cancelled: "Tozalandi. Do‘kon menyusi qaytdi.",
+    help: "Tayyor dizayn yoki Yangi dizayn ni bosing. Buyruq yozmang.",
     shopUnreachable:
       "Telegramda saqlandi, lekin sayt ro‘yxatiga yetib bo‘lmadi. Saytni ishga tushirib, qayta tasdiqlang.",
   },
@@ -131,7 +131,7 @@ export const COPY: Record<Lang, Copy> = {
     askLogo: "Акси лого ё файли PNG-ро фиристед, ё Нодида гирифтанро пахш кунед.",
     gotLogo: "Лого қабул шуд. Чор намуд дар кабинаи сафед тайёр мешавад.",
     badLogo: "Ин тасвир нест. PNG, JPEG ё WebP фиристед, ё Нодида гирифтанро пахш кунед.",
-    logoWrongStep: "Логоро вақте ки мепурсам фиристед. /start фиристед, баъд PNG-ро дар қадами лого фиристед.",
+    logoWrongStep: "Логоро вақте ки мепурсам фиристед. Тарҳи навро пахш кунед, баъд PNG-ро дар қадами лого фиристед.",
     askStyle: "Рангро интихоб кунед. Аксҳои боло ҳамон ранг дар кабинаи сафед аст.",
     askStylePhotos:
       "Чор намуд дар кабинаи сафед — мисли сабад. Пас аз акс номро пахш кунед.",
@@ -145,8 +145,8 @@ export const COPY: Record<Lang, Copy> = {
     placed:
       "Фармоиши {id} қабул шуд. Хуршид ду дарҳои винилӣ, 20 × 12 барои ҳар тараф, чоп мекунад.",
     shopPosted: "Чипта дар мизи чопи дӯкон аст.",
-    cancelled: "Пок шуд. Барои аз нав /start фиристед.",
-    help: "Барои фармоиши винили дар /start фиристед.",
+    cancelled: "Пок шуд. Менюи дӯкон баргашт.",
+    help: "Тарҳи тайёр ё Тарҳи навро пахш кунед. Фармон нанависед.",
     shopUnreachable:
       "Дар Telegram монд, аммо рӯйхати сайт дастнорас буд. Сайтро кушоед ва дубора тасдиқ кунед.",
   },
@@ -165,7 +165,7 @@ export const COPY: Record<Lang, Copy> = {
     askLogo: "Пришлите фото логотипа или PNG-файл, или нажмите Пропустить.",
     gotLogo: "Логотип получен. Готовлю четыре вида на белой кабине.",
     badLogo: "Это не картинка. Пришлите PNG, JPEG или WebP, или нажмите Пропустить.",
-    logoWrongStep: "Пришлите логотип, когда я его попрошу. Отправьте /start, затем PNG на шаге логотипа.",
+    logoWrongStep: "Пришлите логотип, когда я его попрошу. Нажмите Создать новый макет, затем PNG на шаге логотипа.",
     askStyle: "Выберите цвет. Фото выше — этот набор на белой кабине, как в корзине.",
     askStylePhotos:
       "Четыре вида на белой кабине — тот же грузовик, что в корзине. После фото нажмите название.",
@@ -179,8 +179,8 @@ export const COPY: Record<Lang, Copy> = {
     placed:
       "Заказ {id} принят. Хуршид напечатает две виниловые двери, 20 × 12 на каждую сторону кабины.",
     shopPosted: "Заявка на печатном столе мастерской.",
-    cancelled: "Сброшено. Отправьте /start, чтобы начать снова.",
-    help: "Отправьте /start, чтобы заказать DOT-виниль у Jumaboev Signs.",
+    cancelled: "Сброшено. Меню магазина снова на экране.",
+    help: "Нажмите У меня уже есть макет или Создать новый макет. Команды вводить не нужно.",
     shopUnreachable:
       "Заявка осталась в Telegram, список на сайте недоступен. Запустите сайт и подтвердите снова.",
   },
@@ -199,7 +199,7 @@ export const COPY: Record<Lang, Copy> = {
     askLogo: "Логотип суретін немесе PNG файлды жіберіңіз, немесе Өткізуді басыңыз.",
     gotLogo: "Логотип қабылданды. Ақ кабинадағы төрт көрініс дайындалуда.",
     badLogo: "Бұл сурет емес. PNG, JPEG немесе WebP жіберіңіз, немесе Өткізуді басыңыз.",
-    logoWrongStep: "Логотипті сұрағанда жіберіңіз. /start жіберіңіз, содан кейін PNG-ны логотип қадамында жіберіңіз.",
+    logoWrongStep: "Логотипті сұрағанда жіберіңіз. Жаңа макет-ті басыңыз, содан кейін PNG-ны логотип қадамында жіберіңіз.",
     askStyle: "Түсті таңдаңыз. Жоғарыдағы сурет — сол түс ақ кабинада, себеттегідей.",
     askStylePhotos:
       "Ақ кабинадағы төрт түс — себеттегі жүк көлігі. Суреттен кейін атауын басыңыз.",
@@ -213,8 +213,8 @@ export const COPY: Record<Lang, Copy> = {
     placed:
       "{id} қабылданды. Хуршид екі винил есік басады, әр кабина жағына 20 × 12.",
     shopPosted: "Билет дүкеннің басып шығару үстелінде.",
-    cancelled: "Тазартылды. Қайта бастау үшін /start жіберіңіз.",
-    help: "DOT есік винилі үшін /start жіберіңіз.",
+    cancelled: "Тазартылды. Дүкен мәзірі қайта ашылды.",
+    help: "Дайын макет немесе Жаңа макет-ті басыңыз. Команда жазбаңыз.",
     shopUnreachable:
       "Telegram-да сақталды, сайт тізімі қолжетімсіз. Сайтты іске қосып, қайта растаңыз.",
   },
@@ -233,7 +233,7 @@ export const COPY: Record<Lang, Copy> = {
     askLogo: "Логотип сүрөтүн же PNG файлды жибериңиз, же Өткөрүүнү басыңыз.",
     gotLogo: "Логотип кабыл алынды. Ак кабинадагы төрт көрүнүш даярдалууда.",
     badLogo: "Бул сүрөт эмес. PNG, JPEG же WebP жибериңиз, же Өткөрүүнү басыңыз.",
-    logoWrongStep: "Логотипти сураганда жибериңиз. /start жибериңиз, андан кийин PNG'ни логотип кадамында жибериңиз.",
+    logoWrongStep: "Логотипти сураганда жибериңиз. Жаңы макетти басыңыз, андан кийин PNG'ни логотип кадамында жибериңиз.",
     askStyle: "Түстү тандаңыз. Жогорку сүрөт — ошол түс ак кабинада, себеттегидей.",
     askStylePhotos:
       "Ак кабинадагы төрт көрүнүш — себеттеги жүк ташуучу. Сүрөттөн кийин атын басыңыз.",
@@ -247,8 +247,8 @@ export const COPY: Record<Lang, Copy> = {
     placed:
       "{id} кабыл алынды. Хуршид эки винил эшик басат, ар кабина тарабына 20 × 12.",
     shopPosted: "Билет дүкөндүн басып чыгаруу столунда.",
-    cancelled: "Тазаланды. Кайра баштоо үчүн /start жибериңиз.",
-    help: "DOT эшик винили үчүн /start жибериңиз.",
+    cancelled: "Тазаланды. Дүкөн менюсу кайра ачылды.",
+    help: "Даяр макет же Жаңы макетти басыңыз. Буйрук жазбаңыз.",
     shopUnreachable:
       "Telegramда сакталды, сайттын тизмеси жеткиликсиз. Сайтты иштетип, кайра ырастаңыз.",
   },
@@ -268,7 +268,7 @@ export const COPY: Record<Lang, Copy> = {
     gotLogo: "Логотип отримано. Готую чотири вигляди на білій кабіні.",
     badLogo: "Це не зображення. Надішліть PNG, JPEG або WebP, або натисніть Пропустити.",
     logoWrongStep:
-      "Надішліть логотип, коли я його попрошу. Надішліть /start, потім PNG на кроці логотипа.",
+      "Надішліть логотип, коли я його попрошу. Натисніть Створити новий макет, потім PNG на кроці логотипа.",
     askStyle: "Оберіть колір. Фото вище — цей набір на білій кабіні, як у кошику.",
     askStylePhotos:
       "Чотири вигляди на білій кабіні — та сама вантажівка, що в кошику. Після фото натисніть назву.",
@@ -282,8 +282,8 @@ export const COPY: Record<Lang, Copy> = {
     placed:
       "Замовлення {id} прийнято. Хуршид надрукує дві вінілові двері, 20 × 12 на кожен бік кабіни.",
     shopPosted: "Заявку додано на друкарський стіл майстерні.",
-    cancelled: "Скинуто. Надішліть /start, щоб почати знову.",
-    help: "Надішліть /start, щоб замовити DOT-вініл у Jumaboev Signs.",
+    cancelled: "Скинуто. Меню майстерні знову на екрані.",
+    help: "Натисніть У мене вже є макет або Створити новий макет. Команди вводити не потрібно.",
     shopUnreachable:
       "Заявку збережено в Telegram, список на сайті недоступний. Запустіть сайт і підтвердіть знову.",
   },
