@@ -520,6 +520,21 @@ async function runTelegram(token: string) {
     persistSessions(sessions);
   }
 
+  // /start must not wait behind cab screenshots (25s) or style photos (50s).
+  // grammY's built-in runner handles one update at a time; detach the heavy
+  // paths so the next getUpdates can run while Chrome works.
+  bot.use(async (ctx, next) => {
+    const text = ctx.message?.text?.trim() ?? "";
+    const isStart = /^\/start(?:@\w+)?(?:\s|$)/i.test(text);
+    if (isStart) {
+      await next();
+      return;
+    }
+    void next().catch((error) => {
+      console.error("Background Telegram update failed.", error);
+    });
+  });
+
   function draftFor(id: number): Draft {
     const existing = sessions.get(id);
     if (existing) return existing;
@@ -531,26 +546,37 @@ async function runTelegram(token: string) {
 
   async function sendLanguagePicker(ctx: Context): Promise<void> {
     const markup = languageKeyboard().keyboard;
-    try {
-      await withTimeout(
-        ctx.reply(COPY.en.chooseLanguage, {
-          reply_markup: markup,
-        }),
-        12_000,
-        "ctx.reply /start",
+    const chatId = ctx.chat?.id;
+    const started = Date.now();
+    // sendMessage, not ctx.reply — no reply-to hop, same keyboard.
+    const send = async () => {
+      if (!chatId) {
+        await ctx.reply(COPY.en.chooseLanguage, { reply_markup: markup });
+        return;
+      }
+      const sent = await ctx.api.sendMessage(chatId, COPY.en.chooseLanguage, {
+        reply_markup: markup,
+      });
+      console.log(
+        `language picker ${sent.message_id} to ${chatId} in ${Date.now() - started}ms`,
       );
+    };
+    try {
+      await withTimeout(send(), 4_000, "sendMessage /start");
       return;
     } catch (error) {
       console.error("Could not send /start language reply.", error);
     }
-    const chatId = ctx.chat?.id;
     if (!chatId) return;
     await withTimeout(
       ctx.api.sendMessage(chatId, COPY.en.chooseLanguage, {
         reply_markup: markup,
       }),
-      12_000,
-      "sendMessage /start",
+      4_000,
+      "sendMessage /start retry",
+    );
+    console.log(
+      `language picker retry to ${chatId} in ${Date.now() - started}ms`,
     );
   }
 
@@ -700,6 +726,10 @@ async function runTelegram(token: string) {
       await bot.start({
         drop_pending_updates: false,
         allowed_updates: ["message", "callback_query"],
+        // Default is 30s. A half-dead long-poll then delays /start by up to
+        // that full timeout. 2s is enough for Telegram to return immediately
+        // when an update arrives, and recovers a stale socket in ~2s.
+        timeout: 2,
         onStart: (me) => {
           console.log(`Polling @${me.username} (${me.id})`);
         },
