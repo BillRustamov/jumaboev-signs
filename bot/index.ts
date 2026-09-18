@@ -532,18 +532,26 @@ async function runTelegram(token: string) {
   async function sendLanguagePicker(ctx: Context): Promise<void> {
     const markup = languageKeyboard().keyboard;
     try {
-      await ctx.reply(COPY.en.chooseLanguage, {
-        reply_markup: markup,
-      });
+      await withTimeout(
+        ctx.reply(COPY.en.chooseLanguage, {
+          reply_markup: markup,
+        }),
+        12_000,
+        "ctx.reply /start",
+      );
       return;
     } catch (error) {
       console.error("Could not send /start language reply.", error);
     }
     const chatId = ctx.chat?.id;
     if (!chatId) return;
-    await ctx.api.sendMessage(chatId, COPY.en.chooseLanguage, {
-      reply_markup: markup,
-    });
+    await withTimeout(
+      ctx.api.sendMessage(chatId, COPY.en.chooseLanguage, {
+        reply_markup: markup,
+      }),
+      12_000,
+      "sendMessage /start",
+    );
   }
 
   bot.command("start", async (ctx) => {
@@ -686,14 +694,47 @@ async function runTelegram(token: string) {
     }
   }
   console.log("Jumaboev Signs Telegram bot is polling.");
-  await bot.api.deleteWebhook({ drop_pending_updates: false });
-  await bot.start({
-    drop_pending_updates: false,
-    allowed_updates: ["message", "callback_query"],
-    onStart: (me) => {
-      console.log(`Polling @${me.username} (${me.id})`);
-    },
-  });
+  for (;;) {
+    try {
+      await bot.api.deleteWebhook({ drop_pending_updates: false });
+      await bot.start({
+        drop_pending_updates: false,
+        allowed_updates: ["message", "callback_query"],
+        onStart: (me) => {
+          console.log(`Polling @${me.username} (${me.id})`);
+        },
+      });
+      console.error("Telegram poller stopped; restarting.");
+    } catch (error) {
+      console.error("Telegram poller crashed; restarting.", error);
+    }
+    await delay(2500);
+  }
+}
+
+function delay(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms));
+}
+
+async function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number,
+  label: string,
+): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timer = setTimeout(
+          () => reject(new Error(`${label} timed out after ${ms}ms`)),
+          ms,
+        );
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
 
 async function readLines(): Promise<AsyncIterator<string>> {
