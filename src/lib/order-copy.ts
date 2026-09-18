@@ -172,7 +172,12 @@ export type PayCopyKey =
   | "readyPay"
   | "payLink"
   | "copyLink"
-  | "moveStatus";
+  | "moveStatus"
+  | "syncUnpaid"
+  | "syncEmpty"
+  | "syncPayHint"
+  | "ordersSiteLead"
+  | "adminSiteLead";
 
 const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
   en: {
@@ -215,6 +220,16 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payLink: "Customer pay link",
     copyLink: "Copy pay link",
     moveStatus: "Move production",
+    syncUnpaid:
+      "This ticket is unpaid. Paid is set only after Stripe confirms — never guessed.",
+    syncEmpty:
+      "No tickets from this Telegram chat yet. Print a file or create a design. Payment stays unpaid until Stripe confirms.",
+    syncPayHint:
+      "Ready for payment. Open the pay link from this chat — this list does not mark the ticket paid.",
+    ordersSiteLead:
+      "Tickets from print-existing, the designer, and Telegram. Production and payment come from the shop store. Paid only after Stripe confirms.",
+    adminSiteLead:
+      "Production and payment are separate. Set an approved price before Ready for payment. Paid is never set by hand. Custom designs still download a 20 × 12 in pair on a 24 in roll.",
   },
   uz: {
     payTitle: "{id} chiptasi uchun to‘lov",
@@ -256,6 +271,16 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payLink: "Mijoz to‘lov havolasi",
     copyLink: "Havolani nusxalash",
     moveStatus: "Holatni o‘zgartirish",
+    syncUnpaid:
+      "Chipta to‘lanmagan. To‘langan deb faqat Stripe tasdiqlagach yoziladi — taxmin qilinmaydi.",
+    syncEmpty:
+      "Bu Telegram chatdan hali chipta yo‘q. Fayl yuboring yoki dizayn yarating. Stripe tasdiqlamaguncha to‘lanmagan qoladi.",
+    syncPayHint:
+      "To‘lovga tayyor. Shu chatdagi to‘lov havolasini oching — ro‘yxat chiptani to‘langan qilmaydi.",
+    ordersSiteLead:
+      "Chop, dizayner va Telegram chiptalari. Holat do‘kon omboridan. To‘langan faqat Stripe tasdiqlagach.",
+    adminSiteLead:
+      "Ishlab chiqarish va to‘lov alohida. Avval narx, keyin to‘lovga tayyor. To‘langanni qo‘lda qo‘ymang.",
   },
   tg: {
     payTitle: "Пардохт барои чиптаи {id}",
@@ -297,6 +322,16 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payLink: "Пайванди пардохти муштарӣ",
     copyLink: "Нусха",
     moveStatus: "Ҳолатро иваз кун",
+    syncUnpaid:
+      "Чипта пардохт нашудааст. Пардохтшуда танҳо пас аз тасдиқи Stripe — тахмин нест.",
+    syncEmpty:
+      "Аз ин чати Telegram ҳанӯз чипта нест. Файл фиристед ё тарҳ созед. То тасдиқи Stripe пардохтнашуда мемонад.",
+    syncPayHint:
+      "Барои пардохт омода. Пайванди пардохтро аз ҳамин чат кушоед — рӯйхат чиптаро пардохтшуда намекунад.",
+    ordersSiteLead:
+      "Чиптаҳои чоп, тарроҳ ва Telegram. Ҳолат аз анбори дӯкон. Пардохтшуда танҳо пас аз Stripe.",
+    adminSiteLead:
+      "Истеҳсол ва пардохт ҷудо. Аввал нарх, баъд барои пардохт омода. Пардохтшударо дастӣ нагузоред.",
   },
   ru: {
     payTitle: "Оплата заявки {id}",
@@ -338,6 +373,16 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payLink: "Ссылка для клиента",
     copyLink: "Копировать ссылку",
     moveStatus: "Сменить статус",
+    syncUnpaid:
+      "Заявка не оплачена. «Оплачено» ставится только после подтверждения Stripe — не наугад.",
+    syncEmpty:
+      "Из этого чата Telegram заявок ещё нет. Отправьте файл или создайте макет. Без подтверждения Stripe заявка остаётся неоплаченной.",
+    syncPayHint:
+      "К оплате. Откройте ссылку из этого чата — список не отмечает заявку оплаченной.",
+    ordersSiteLead:
+      "Заявки с печати, из конструктора и Telegram. Статусы из склада цеха. Оплачено только после Stripe.",
+    adminSiteLead:
+      "Производство и оплата разделены. Сначала цена, потом «к оплате». Оплачено руками не ставится.",
   },
   kk: {
     payTitle: "{id} билетіне төлем",
@@ -379,6 +424,16 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payLink: "Клиент сілтемесі",
     copyLink: "Көшіру",
     moveStatus: "Күйді ауыстыру",
+    syncUnpaid:
+      "Билет төленбеген. Төленді тек Stripe растағаннан кейін жазылады — жорамал емес.",
+    syncEmpty:
+      "Осы Telegram чаттан әлі билет жоқ. Файл жіберіңіз немесе дизайн жасаңыз. Stripe растамайынша төленбеген қалады.",
+    syncPayHint:
+      "Төлемге дайын. Осы чаттағы сілтемені ашыңыз — тізім билетті төленген деп белгілемейді.",
+    ordersSiteLead:
+      "Басып шығару, дизайнер және Telegram билеттері. Күй дүкен қоймасынан. Төленді тек Stripe-тан кейін.",
+    adminSiteLead:
+      "Өндіріс пен төлем бөлек. Алдымен баға, содан кейін төлемге дайын. Төленді қолмен қойылмайды.",
   },
   ky: {
     payTitle: "{id} билетине төлөм",
@@ -420,6 +475,16 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payLink: "Кардар шилтемеси",
     copyLink: "Көчүрүү",
     moveStatus: "Абалды жылдыруу",
+    syncUnpaid:
+      "Билет төлөнбөгөн. Төлөндү деп Stripe ырастагандан кийин гана жазылат — болжол эмес.",
+    syncEmpty:
+      "Бул Telegram чаттан азырынча билет жок. Файл жөнөтүңүз же дизайн жасаңыз. Stripe ырастамайынча төлөнбөй калат.",
+    syncPayHint:
+      "Төлөмгө даяр. Ушул чаттагы шилтемени ачыңыз — тизме билетти төлөнгөн деп белгилебейт.",
+    ordersSiteLead:
+      "Басып чыгаруу, дизайнер жана Telegram билеттери. Абал дүкөн кампасынан. Төлөндү тек Stripe'tан кийин.",
+    adminSiteLead:
+      "Өндүрүш менен төлөм бөлөк. Адегенде баа, андан кийин төлөмгө даяр. Төлөндү кол менен коюлбайт.",
   },
   uk: {
     payTitle: "Оплата заявки {id}",
@@ -461,6 +526,16 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payLink: "Посилання для клієнта",
     copyLink: "Копіювати",
     moveStatus: "Змінити статус",
+    syncUnpaid:
+      "Заявка не сплачена. «Сплачено» ставиться лише після підтвердження Stripe — не навмання.",
+    syncEmpty:
+      "З цього чату Telegram заявок ще немає. Надішліть файл або створіть макет. Без підтвердження Stripe заявка лишається несплаченою.",
+    syncPayHint:
+      "До сплати. Відкрийте посилання з цього чату — список не позначає заявку сплаченою.",
+    ordersSiteLead:
+      "Заявки з друку, конструктора та Telegram. Статуси зі складу цеху. Сплачено лише після Stripe.",
+    adminSiteLead:
+      "Виробництво й оплата окремо. Спочатку ціна, потім «до сплати». Сплачено руками не ставиться.",
   },
 };
 

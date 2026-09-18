@@ -90,8 +90,12 @@ export function PayDesk({ id, token }: { id: string; token: string }) {
       }
     }
     void load();
+    const timer = window.setInterval(() => {
+      void load();
+    }, 8000);
     return () => {
       cancelled = true;
+      window.clearInterval(timer);
     };
   }, [id, token, lang]);
 

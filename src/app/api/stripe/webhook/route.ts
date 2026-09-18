@@ -8,6 +8,7 @@ import {
   type StripeLikeEvent,
 } from "@/lib/checkout";
 import { constructStripeEvent } from "@/lib/stripe";
+import { paymentOf } from "@/lib/order-status";
 import {
   findOrderByCheckoutSession,
   findOrderByPaymentIntent,
@@ -17,6 +18,7 @@ import {
   stripeEventSeen,
   updateOrder,
 } from "@/lib/store";
+import { notifyPaymentChange } from "@/lib/telegram";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -78,11 +80,18 @@ export async function POST(request: Request) {
     updateOrder(next);
     recordLedger(
       order.id,
-      decision.action === "paid" ? "paid" : `payment_${decision.action}`,
+      paymentOf(next) === "PAID" ? "paid" : `payment_${decision.action}`,
       `${event.type} ${event.id}`,
     );
     rememberStripeEvent(event.id, event.type, order.id);
-    return NextResponse.json({ ok: true, action: decision.action });
+    if (paymentOf(next) !== paymentOf(order)) {
+      void notifyPaymentChange(next);
+    }
+    return NextResponse.json({
+      ok: true,
+      action: decision.action,
+      payment: paymentOf(next),
+    });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Could not apply webhook.";

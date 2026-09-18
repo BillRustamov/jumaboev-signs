@@ -17,11 +17,16 @@ import {
   printFileFromDataUrl,
 } from "@/lib/print-file";
 import { stampNewOrder } from "@/lib/order-status";
-import { listOrders, saveOrder } from "@/lib/store";
+import { listOrders, listOrdersByTelegramChat, saveOrder } from "@/lib/store";
 import { notifyShop } from "@/lib/telegram";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  const chatRaw = searchParams.get("telegramChatId");
+  if (chatRaw) {
+    const chatId = Number(chatRaw);
+    return NextResponse.json({ orders: listOrdersByTelegramChat(chatId) });
+  }
   const username = searchParams.get("username") ?? undefined;
   return NextResponse.json({ orders: listOrders(username) });
 }

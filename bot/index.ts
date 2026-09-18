@@ -28,6 +28,12 @@ import {
   telegramPrintUsername,
 } from "../src/lib/print-file";
 import { shopT } from "../src/lib/shop-entry";
+import {
+  canOfferPayLink,
+  customerOrdersText,
+} from "../src/lib/payment-sync";
+import { payT } from "../src/lib/order-copy";
+import { shopPayMessage } from "../src/lib/telegram";
 import { STYLE_PRESETS, applyPreset } from "../src/lib/sign-style";
 import { screenshotTruck, styledFields, telegramSendPhoto } from "./previews";
 import { formatPlace, parsePlace } from "../src/lib/design/migrate";
@@ -210,6 +216,21 @@ function summary(draft: Draft): string {
 
 function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchOrdersForChat(chatId?: number): Promise<SignOrder[]> {
+  if (!chatId) return [];
+  try {
+    const response = await fetch(
+      `${APP_URL}/api/orders?telegramChatId=${chatId}`,
+      { cache: "no-store" },
+    );
+    if (!response.ok) return [];
+    const payload = (await response.json()) as { orders?: SignOrder[] };
+    return Array.isArray(payload.orders) ? payload.orders : [];
+  } catch {
+    return [];
+  }
 }
 
 async function pingShop(): Promise<boolean> {
@@ -494,7 +515,46 @@ async function handleCallback(
     return draft;
   }
   if (data === "service:orders") {
-    await chat.send(shopT(draft.lang, "ordersBody"), menuKeyboard(draft.lang));
+    const tickets = await fetchOrdersForChat(draft.telegramChatId);
+    const list = customerOrdersText(tickets, draft.lang);
+    const text = `${shopT(draft.lang, "ordersBody")}\n\n${list}`;
+    const payButtons = tickets.filter(canOfferPayLink).map((order) => ({
+      id: `pay:${order.id}`,
+      label: `${payT(draft.lang, "payLink")} ${order.id}`,
+    }));
+    await chat.send(
+      text,
+      keyboardFrom(
+        [...payButtons, { id: "service:menu", label: shopT(draft.lang, "backToMenu") }],
+        1,
+      ),
+    );
+    return draft;
+  }
+  if (data.startsWith("pay:")) {
+    const id = data.slice(4);
+    const tickets = await fetchOrdersForChat(draft.telegramChatId);
+    const order = tickets.find((item) => item.id === id);
+    if (!order || !canOfferPayLink(order)) {
+      await chat.send(payT(draft.lang, "payNotReady"), menuKeyboard(draft.lang));
+      return draft;
+    }
+    try {
+      const response = await fetch(`${APP_URL}/api/orders/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mintPayLink: true }),
+      });
+      const payload = (await response.json()) as { payPath?: string; error?: string };
+      if (!response.ok || !payload.payPath) {
+        await chat.send(payload.error || payT(draft.lang, "payInvalid"), menuKeyboard(draft.lang));
+        return draft;
+      }
+      const payUrl = `${APP_URL}${payload.payPath}`;
+      await chat.send(shopPayMessage(order, payUrl), menuKeyboard(draft.lang));
+    } catch {
+      await chat.send(payT(draft.lang, "payInvalid"), menuKeyboard(draft.lang));
+    }
     return draft;
   }
   if (data === "service:contact") {

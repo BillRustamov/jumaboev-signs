@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, Inbox } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -16,53 +15,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { OrderStatusBadges } from "@/components/order-status-badges";
 import { PrintOrderCard } from "@/components/print-order-card";
 import { SignPreview } from "@/components/sign-preview";
-import {
-  readLocalOrders,
-  useUsername,
-} from "@/lib/client-session";
+import { useUsername } from "@/lib/client-session";
 import { formatUsd, isPriced } from "@/lib/money";
-import { isPrintOnly, type SignOrder } from "@/lib/order";
-import { hydrateOrder } from "@/lib/order-status";
+import { isPrintOnly } from "@/lib/order";
+import { payT } from "@/lib/order-copy";
+import { useShopOrders } from "@/lib/use-shop-orders";
 import { useShopLang } from "@/lib/shop-lang";
 
 export function OrdersBoard() {
   const lang = useShopLang();
   const username = useUsername();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [orders, setOrders] = useState<SignOrder[]>([]);
-
-  useEffect(() => {
-    const local = readLocalOrders();
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const response = await fetch("/api/orders", { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error("The shop list is unavailable right now.");
-        }
-        const payload = (await response.json()) as { orders: SignOrder[] };
-        if (cancelled) return;
-        setOrders(mergeOrders(payload.orders, local).map(hydrateOrder));
-      } catch (err) {
-        if (cancelled) return;
-        setOrders(local.map(hydrateOrder));
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Could not reach the shop list.",
-        );
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { loading, error, orders } = useShopOrders();
 
   if (loading) {
     return (
@@ -75,6 +38,16 @@ export function OrdersBoard() {
 
   return (
     <div className="space-y-4">
+      <div className="mb-4 max-w-2xl">
+        <p className="text-xs font-semibold tracking-[0.14em] text-[var(--gold)] uppercase">
+          Queue
+        </p>
+        <h1 className="font-heading mt-1 text-3xl font-semibold tracking-tight text-[var(--navy)]">
+          Shop orders
+        </h1>
+        <p className="mt-2 text-muted-foreground">{payT(lang, "ordersSiteLead")}</p>
+      </div>
+
       {error ? (
         <Alert variant="destructive">
           <AlertCircle />
@@ -134,13 +107,11 @@ export function OrdersBoard() {
                   <SignPreview fields={order} />
                 )}
                 <p className="text-xs text-muted-foreground">
-                  {new Date(order.createdAt).toLocaleString()}
+                  {new Date(order.updatedAt ?? order.createdAt).toLocaleString()}
                 </p>
                 {isPrintOnly(order) ? null : (
                   <Button className="w-full" variant="outline" asChild>
-                    <Link href={`/admin/print/${order.id}`}>
-                      Print sheet
-                    </Link>
+                    <Link href={`/admin/print/${order.id}`}>Print sheet</Link>
                   </Button>
                 )}
               </CardContent>
@@ -149,15 +120,5 @@ export function OrdersBoard() {
         </div>
       )}
     </div>
-  );
-}
-
-function mergeOrders(server: SignOrder[], local: SignOrder[]): SignOrder[] {
-  const map = new Map<string, SignOrder>();
-  for (const order of [...server, ...local]) {
-    map.set(order.id, order);
-  }
-  return Array.from(map.values()).sort((a, b) =>
-    b.createdAt.localeCompare(a.createdAt),
   );
 }

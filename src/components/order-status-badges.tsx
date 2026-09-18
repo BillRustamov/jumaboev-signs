@@ -21,7 +21,17 @@ export function OrderStatusBadges({
   return (
     <div className="flex flex-wrap gap-1.5">
       <Badge variant="secondary">{productionLabel(lang, production)}</Badge>
-      <Badge variant={payment === "UNPAID" ? "outline" : "secondary"}>
+      <Badge
+        variant={
+          payment === "PAID"
+            ? "default"
+            : payment === "PAYMENT_FAILED"
+              ? "destructive"
+              : payment === "PAYMENT_PENDING"
+                ? "secondary"
+                : "outline"
+        }
+      >
         {paymentLabel(lang, payment)}
       </Badge>
       {order.service === "PRINT_ONLY" ? (

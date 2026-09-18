@@ -16,6 +16,7 @@ import {
   recordLedger,
   updateOrder,
 } from "@/lib/store";
+import { notifyPaymentChange } from "@/lib/telegram";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -96,12 +97,15 @@ async function startCheckout(request: Request, id: string): Promise<Response> {
       );
     }
     const pending = applyCheckoutStarted(order, session.id);
-    updateOrder(pending);
+    const saved = updateOrder(pending);
     recordLedger(
       id,
       "checkout",
       `session ${session.id} for ${order.amountMinor} usd cents`,
     );
+    if (paymentOf(saved) === "PAYMENT_PENDING" && paymentOf(order) !== "PAYMENT_PENDING") {
+      void notifyPaymentChange(saved);
+    }
     return NextResponse.json({ url: session.url, sessionId: session.id });
   } catch (error) {
     const message =

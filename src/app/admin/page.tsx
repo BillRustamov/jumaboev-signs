@@ -16,10 +16,7 @@ export default function AdminPage() {
           Print sheets
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Production and payment are separate. Set an approved price before
-          Ready for payment. Card checkout is not open yet — tickets stay
-          unpaid. Custom designs still download a 20 × 12 in pair on a 24 in
-          roll.
+          Production and payment stay in sync with the shop store.
         </p>
       </div>
       <AdminDesk />

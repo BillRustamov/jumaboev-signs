@@ -70,7 +70,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     contactBody:
       "Khurshid Jumaboev prints the vinyl. Questions about size, pickup, or a ticket stay in this Telegram chat, or open the website counter.",
     ordersBody:
-      "Open My orders on the shop site to see tickets from this browser. In Telegram, confirmed tickets stay in this chat and on the print desk.",
+      "Tickets from this Telegram chat, with production and payment from the shop store. Paid only after Stripe confirms — never guessed.",
     printOnlyAsk:
       "Send the artwork file now — PDF, SVG, PNG, JPEG, or WebP. Company name is not needed before the file. We print a 20 × 12 in pair (left and right).",
     printOnlyGot:
@@ -121,7 +121,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     contactBody:
       "Vinilni Khurshid Jumaboev chop etadi. O‘lcham, olib ketish yoki chipta shu Telegram chatda yoki saytda.",
     ordersBody:
-      "Saytdagi Buyurtmalarim orqali shu brauzer chiptalarini ko‘ring. Telegramda tasdiqlangan chiptalar shu chatda va chop stolida qoladi.",
+      "Shu Telegram chat chiptalari — ishlab chiqarish va to‘lov do‘kon omboridan. To‘langan faqat Stripe tasdiqlagach, taxmin emas.",
     printOnlyAsk:
       "Hozir faylni yuboring — PDF, SVG, PNG, JPEG yoki WebP. Fayldan oldin kompaniya nomi shart emas. 20 × 12 juftlik chop etamiz.",
     printOnlyGot:
@@ -173,7 +173,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     contactBody:
       "Винилро Хуршид Ҷумабоев чоп мекунад. Андоза, гирифтан ё чипта дар ҳамин чати Telegram ё сайт.",
     ordersBody:
-      "Дар сайт Фармоишҳои ман-ро кушоед. Дар Telegram чиптаҳои тасдиқшуда дар ҳамин чат ва мизи чоп мемонанд.",
+      "Чиптаҳои ҳамин чати Telegram — истеҳсол ва пардохт аз анбори дӯкон. Пардохтшуда танҳо пас аз тасдиқи Stripe.",
     printOnlyAsk:
       "Акнун файлро фиристед — PDF, SVG, PNG, JPEG ё WebP. Пеш аз файл номи ширкат лозим нест.",
     printOnlyGot:
@@ -225,7 +225,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     contactBody:
       "Винил печатает Хуршид Джумабоев. Размер, самовывоз и заявки — в этом чате Telegram или на сайте.",
     ordersBody:
-      "На сайте откройте Мои заказы. В Telegram подтверждённые заявки остаются в этом чате и на печатном столе.",
+      "Заявки из этого чата Telegram — производство и оплата со склада цеха. Оплачено только после Stripe, не наугад.",
     printOnlyAsk:
       "Пришлите файл сейчас — PDF, SVG, PNG, JPEG или WebP. Имя компании до файла не нужно. Печатаем пару 20 × 12.",
     printOnlyGot:
@@ -277,7 +277,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     contactBody:
       "Винилді Хуршид Джумабоев басады. Өлшем, алу немесе билет осы Telegram чатта немесе сайтта.",
     ordersBody:
-      "Сайтта Тапсырыстарымды ашыңыз. Telegram-да расталған билеттер осы чатта және басып шығару үстелінде қалады.",
+      "Осы Telegram чат билеттері — өндіріс пен төлем дүкен қоймасынан. Төленді тек Stripe растағаннан кейін.",
     printOnlyAsk:
       "Файлды қазір жіберіңіз — PDF, SVG, PNG, JPEG немесе WebP. Файлдан бұрын компания аты керек емес.",
     printOnlyGot:
@@ -329,7 +329,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     contactBody:
       "Винилди Хуршид Жумабоев басат. Өлчөм, алуу же билет ушул Telegram чатта же сайтта.",
     ordersBody:
-      "Сайтта Буйрутмаларымды ачыңыз. Telegramда ырасталган билеттер ушул чатта жана басып чыгаруу столунда калат.",
+      "Бул Telegram чат билеттери — өндүрүш менен төлөм дүкөн кампасынан. Төлөндү тек Stripe ырастагандан кийин.",
     printOnlyAsk:
       "Файлды азыр жибериңиз — PDF, SVG, PNG, JPEG же WebP. Файлдан мурун компания аты керек эмес.",
     printOnlyGot:
@@ -381,7 +381,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     contactBody:
       "Вініл друкує Хуршид Джумабоєв. Розмір, самовивіз і заявки — в цьому чаті Telegram або на сайті.",
     ordersBody:
-      "На сайті відкрийте Мої замовлення. У Telegram підтверджені заявки лишаються в цьому чаті та на друкарському столі.",
+      "Заявки з цього чату Telegram — виробництво й оплата зі складу цеху. Сплачено лише після Stripe, не навмання.",
     printOnlyAsk:
       "Надішліть файл зараз — PDF, SVG, PNG, JPEG або WebP. Назва компанії до файла не потрібна. Друкуємо пару 20 × 12.",
     printOnlyGot:

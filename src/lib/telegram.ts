@@ -1,4 +1,5 @@
 import type { SignOrder } from "@/lib/order";
+import { paymentChangeMessage } from "@/lib/payment-sync";
 import { stripeConfig } from "@/lib/stripe-config";
 
 /** Public Telegram handle for this shop. The token stays in `.env`. */
@@ -74,6 +75,41 @@ export async function notifyCustomerPay(
     }
   } catch (error) {
     console.error("Could not notify customer Telegram.", error);
+  }
+}
+
+async function sendTelegram(chatId: string | number, text: string): Promise<void> {
+  const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
+  if (!token) return;
+  try {
+    const response = await fetch(
+      `https://api.telegram.org/bot${token}/sendMessage`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text,
+        }),
+      },
+    );
+    if (!response.ok) {
+      console.error("Telegram notify failed.", response.status, await response.text());
+    }
+  } catch (error) {
+    console.error("Could not notify Telegram.", error);
+  }
+}
+
+/** Push the stored payment status. Never invents PAID. */
+export async function notifyPaymentChange(order: SignOrder): Promise<void> {
+  const text = paymentChangeMessage(order);
+  if (order.telegramChatId) {
+    await sendTelegram(order.telegramChatId, text);
+  }
+  const shopChat = process.env.TELEGRAM_SHOP_CHAT_ID?.trim();
+  if (shopChat) {
+    await sendTelegram(shopChat, text);
   }
 }
 

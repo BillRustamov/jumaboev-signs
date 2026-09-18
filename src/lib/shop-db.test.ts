@@ -7,7 +7,7 @@ import { emptySign } from "./order";
 import { stampNewOrder } from "./order-status";
 import { resetShopDbForTests } from "./shop-db";
 import { markEventProcessed, eventWasProcessed } from "./shop-db";
-import { getOrder, listOrders, saveOrder } from "./store";
+import { getOrder, listOrders, listOrdersByTelegramChat, saveOrder } from "./store";
 
 test("sqlite store migrates a JSON backup and keeps new tickets", () => {
   const dir = mkdtempSync(path.join(tmpdir(), "jumaboev-db-"));
@@ -44,6 +44,7 @@ test("sqlite store migrates a JSON backup and keeps new tickets", () => {
       id: "JS-NEW1",
       username: "fresh",
       source: "telegram",
+      telegramChatId: 9001,
       createdAt: "2026-02-01T00:00:00.000Z",
       status: "received",
       service: "PRINT_ONLY",
@@ -56,6 +57,8 @@ test("sqlite store migrates a JSON backup and keeps new tickets", () => {
   assert.equal(created.paymentStatus, "UNPAID");
   assert.equal(created.accessTokenHash, undefined);
   assert.ok(listOrders().some((order) => order.id === "JS-NEW1"));
+  assert.equal(listOrdersByTelegramChat(9001).map((order) => order.id).join(), "JS-NEW1");
+  assert.equal(listOrdersByTelegramChat(1).length, 0);
   assert.equal(markEventProcessed("evt_1", "checkout.session.completed", "JS-NEW1"), true);
   assert.equal(eventWasProcessed("evt_1"), true);
   assert.equal(markEventProcessed("evt_1", "checkout.session.completed", "JS-NEW1"), false);

@@ -44,6 +44,8 @@ Tickets persist in SQLite at `data/shop.sqlite`. The first open migrates `data/o
 
 Each ticket has a **production** status and a separate **payment** status. Ready for payment needs an approved price in cents (never a fake $0). The customer pay page is `/orders/[id]/pay?token=…` with a hashed token. Admin cannot mark a ticket paid.
 
+Website `/orders`, `/admin`, the pay page, and Telegram **My orders** read the same SQLite row. They poll or refetch; a stale browser copy cannot invent `PAID`. Telegram is notified when payment actually changes (pending / paid / failed / unpaid / refunded) using that stored status.
+
 Card checkout is Stripe Checkout in **test mode only**. The amount comes from the approved ticket on the server. Live keys (`sk_live` / `rk_live`) are refused. If `STRIPE_SECRET_KEY` is unset, the pay page stays honest and disabled — the ticket stays unpaid. `PAID` is set only by `POST /api/stripe/webhook` after signature verification and an amount match. The Stripe success URL (`/orders/[id]/pay/return`) never writes payment status.
 
 ## Telegram bot

@@ -82,6 +82,11 @@ export function listOrders(username?: string): SignOrder[] {
   );
 }
 
+export function listOrdersByTelegramChat(chatId: number): SignOrder[] {
+  if (!Number.isFinite(chatId) || chatId === 0) return [];
+  return listOrders().filter((order) => order.telegramChatId === chatId);
+}
+
 export function recordLedger(orderId: string, kind: string, detail: string): void {
   appendLedger(shopDb(), orderId, kind, detail);
 }

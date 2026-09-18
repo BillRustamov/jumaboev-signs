@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, Inbox, Printer } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -17,41 +16,16 @@ import { AdminOrderControls } from "@/components/admin-order-controls";
 import { OrderStatusBadges } from "@/components/order-status-badges";
 import { PrintOrderCard } from "@/components/print-order-card";
 import { SignPreview } from "@/components/sign-preview";
-import { readLocalOrders } from "@/lib/client-session";
 import { formatUsd, isPriced } from "@/lib/money";
-import { isPrintOnly, type SignOrder } from "@/lib/order";
+import { isPrintOnly } from "@/lib/order";
 import { hydrateOrder } from "@/lib/order-status";
+import { payT } from "@/lib/order-copy";
+import { useShopOrders } from "@/lib/use-shop-orders";
 import { useShopLang } from "@/lib/shop-lang";
 
 export function AdminDesk() {
   const lang = useShopLang();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [orders, setOrders] = useState<SignOrder[]>([]);
-
-  useEffect(() => {
-    const local = readLocalOrders();
-    let cancelled = false;
-    async function load() {
-      try {
-        const response = await fetch("/api/orders", { cache: "no-store" });
-        if (!response.ok) throw new Error("Shop list unavailable.");
-        const payload = (await response.json()) as { orders: SignOrder[] };
-        if (cancelled) return;
-        setOrders(mergeOrders(payload.orders, local).map(hydrateOrder));
-      } catch (err) {
-        if (cancelled) return;
-        setOrders(local.map(hydrateOrder));
-        setError(err instanceof Error ? err.message : "Could not reach the shop list.");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { loading, error, orders, setOrders } = useShopOrders();
 
   if (loading) {
     return (
@@ -71,6 +45,8 @@ export function AdminDesk() {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       ) : null}
+
+      <p className="text-sm text-muted-foreground">{payT(lang, "adminSiteLead")}</p>
 
       <Card>
         <CardHeader>
@@ -165,15 +141,5 @@ export function AdminDesk() {
         </div>
       )}
     </div>
-  );
-}
-
-function mergeOrders(server: SignOrder[], local: SignOrder[]): SignOrder[] {
-  const map = new Map<string, SignOrder>();
-  for (const order of [...server, ...local]) {
-    map.set(order.id, order);
-  }
-  return Array.from(map.values()).sort((a, b) =>
-    b.createdAt.localeCompare(a.createdAt),
   );
 }
