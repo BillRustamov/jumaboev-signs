@@ -75,6 +75,8 @@ export type SignOrder = SignFields & {
   amountMinor?: number | null;
   currency?: string;
   accessTokenHash?: string;
+  stripeCheckoutSessionId?: string;
+  stripePaymentIntentId?: string;
   printExact?: boolean;
   printNotes?: string;
   originalFileName?: string;

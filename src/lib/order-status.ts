@@ -110,6 +110,14 @@ export function hydrateOrder(raw: SignOrder): SignOrder {
     amountMinor,
     currency: raw.currency === "usd" || !raw.currency ? "usd" : raw.currency,
     updatedAt: raw.updatedAt || raw.createdAt,
+    stripeCheckoutSessionId:
+      typeof raw.stripeCheckoutSessionId === "string"
+        ? raw.stripeCheckoutSessionId
+        : undefined,
+    stripePaymentIntentId:
+      typeof raw.stripePaymentIntentId === "string"
+        ? raw.stripePaymentIntentId
+        : undefined,
   };
 }
 
@@ -187,13 +195,13 @@ export function assertProductionMove(
   return null;
 }
 
-/** Admin never writes a paid state. Stripe webhooks will, later. */
+/** Admin never writes a paid state. Only a verified Stripe webhook does. */
 export function assertPaymentMove(next: PaymentStatus): string | null {
   if (next === "PAID" || next === "REFUNDED" || next === "PARTIALLY_REFUNDED") {
-    return "Payment status is not set by hand. Card pay is not open yet.";
+    return "Payment status is not set by hand. Paid is set only from a verified Stripe webhook.";
   }
   if (next === "PAYMENT_PENDING") {
-    return "Payment pending waits for a real checkout session.";
+    return "Payment pending is set when a checkout session starts, not from the admin desk.";
   }
   return null;
 }

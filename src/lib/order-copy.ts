@@ -148,6 +148,21 @@ export type PayCopyKey =
   | "payNotReady"
   | "payDue"
   | "payOffline"
+  | "payMissingKeys"
+  | "payLiveBlocked"
+  | "payInvalidKey"
+  | "payCard"
+  | "payContinue"
+  | "payWaitWebhook"
+  | "payConfirmed"
+  | "payReturnTitle"
+  | "payReturnLead"
+  | "payFailed"
+  | "payPending"
+  | "payStartError"
+  | "payRefunded"
+  | "payCardHint"
+  | "payCancelled"
   | "paySize"
   | "productionLabel"
   | "paymentLabel"
@@ -168,7 +183,28 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payNotReady: "This ticket is not ready for payment.",
     payDue: "Amount due {amount} for one 20 × 12 in pair.",
     payOffline:
-      "Card checkout is not open on this shop yet. Do not type a card number here. The ticket stays unpaid.",
+      "Card checkout is not open on this shop. Do not type a card number here. The ticket stays unpaid.",
+    payMissingKeys:
+      "Card checkout is not configured. Stripe test keys are missing. Do not type a card number here. The ticket stays unpaid.",
+    payLiveBlocked:
+      "Live Stripe keys are refused. This shop only accepts test-mode checkout. The ticket stays unpaid.",
+    payInvalidKey:
+      "The Stripe key on this server is not a test key. Checkout stays closed. The ticket stays unpaid.",
+    payCard: "Pay with card",
+    payContinue: "Continue to Stripe",
+    payWaitWebhook:
+      "If you already paid, wait. We only mark the ticket paid after Stripe confirms — never from this page.",
+    payConfirmed: "This ticket is paid. Stripe confirmed the approved amount.",
+    payReturnTitle: "Returned from Stripe",
+    payReturnLead:
+      "Opening the success URL does not mark this ticket paid. Waiting for a verified Stripe webhook.",
+    payFailed: "Card payment did not go through. You can try again if the ticket is still ready.",
+    payPending: "Checkout was started. Finish the Stripe page, then wait for confirmation.",
+    payStartError: "Could not start Stripe Checkout.",
+    payRefunded: "This ticket was refunded.",
+    payCardHint:
+      "Pay the approved amount on Stripe. We only mark the ticket paid after Stripe confirms.",
+    payCancelled: "This ticket is cancelled and cannot be paid.",
     paySize: "20 × 12 in · 1 pair",
     productionLabel: "Production",
     paymentLabel: "Payment",
@@ -188,7 +224,28 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payNotReady: "Chipta to‘lovga tayyor emas.",
     payDue: "Bir 20 × 12 juft uchun {amount}.",
     payOffline:
-      "Karta to‘lovi hali ochilmagan. Bu yerga karta raqamini yozmang. Chipta to‘lanmagan qoladi.",
+      "Karta to‘lovi ochiq emas. Bu yerga karta raqamini yozmang. Chipta to‘lanmagan qoladi.",
+    payMissingKeys:
+      "Karta to‘lovi sozlanmagan. Stripe test kalitlari yo‘q. Karta raqamini yozmang. Chipta to‘lanmagan qoladi.",
+    payLiveBlocked:
+      "Jonli Stripe kalitlari rad etiladi. Faqat test to‘lovi. Chipta to‘lanmagan qoladi.",
+    payInvalidKey:
+      "Bu serverdagi Stripe kaliti test kaliti emas. To‘lov yopiq. Chipta to‘lanmagan qoladi.",
+    payCard: "Karta bilan to‘lash",
+    payContinue: "Stripe’ga davom etish",
+    payWaitWebhook:
+      "To‘lagan bo‘lsangiz, kuting. Chipta faqat Stripe tasdiqlagach to‘langan bo‘ladi — bu sahifa belgilamaydi.",
+    payConfirmed: "Chipta to‘langan. Stripe tasdiqlangan summani qabul qildi.",
+    payReturnTitle: "Stripe’dan qaytdingiz",
+    payReturnLead:
+      "Muvaffaqiyat sahifasi chiptani to‘langan qilmaydi. Tasdiqlangan webhook kutilmoqda.",
+    payFailed: "Karta to‘lovi o‘tmadi. Chipta tayyor bo‘lsa, qayta urinib ko‘ring.",
+    payPending: "To‘lov boshlandi. Stripe sahifasini tugating, keyin tasdiqni kuting.",
+    payStartError: "Stripe Checkout ochilmadi.",
+    payRefunded: "Bu chipta qaytarildi.",
+    payCardHint:
+      "Tasdiqlangan summani Stripe’da to‘lang. Chipta faqat Stripe tasdiqlagach to‘langan bo‘ladi.",
+    payCancelled: "Chipta bekor qilingan, to‘lab bo‘lmaydi.",
     paySize: "20 × 12 · 1 juft",
     productionLabel: "Ishlab chiqarish",
     paymentLabel: "To‘lov",
@@ -208,7 +265,28 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payNotReady: "Чипта барои пардохт омода нест.",
     payDue: "Барои як ҷуфти 20 × 12 {amount}.",
     payOffline:
-      "Пардохти корт ҳанӯз кушода нест. Рақами корт нанависед. Чипта пардохтнашуда мемонад.",
+      "Пардохти корт кушода нест. Рақами корт нанависед. Чипта пардохтнашуда мемонад.",
+    payMissingKeys:
+      "Пардохти корт танзим нашудааст. Калидҳои тестии Stripe нестанд. Рақами корт нанависед. Чипта пардохтнашуда мемонад.",
+    payLiveBlocked:
+      "Калидҳои зиндаи Stripe рад мешаванд. Танҳо пардохти тестӣ. Чипта пардохтнашуда мемонад.",
+    payInvalidKey:
+      "Калиди Stripe дар ин сервер тести нест. Пардохт баста аст. Чипта пардохтнашуда мемонад.",
+    payCard: "Пардохт бо корт",
+    payContinue: "Идома дар Stripe",
+    payWaitWebhook:
+      "Агар пардохт карда бошед, интизор шавед. Чипта танҳо пас аз тасдиқи Stripe пардохтшуда мешавад — ин саҳифа не.",
+    payConfirmed: "Чипта пардохт шуд. Stripe маблағи тасдиқшударо қабул кард.",
+    payReturnTitle: "Аз Stripe баргаштед",
+    payReturnLead:
+      "URL-и муваффақият чиптаро пардохтшуда намекунад. Вебхуки тасдиқшуда интизор аст.",
+    payFailed: "Пардохти корт нагузашт. Агар чипта омода бошад, бори дигар кӯшиш кунед.",
+    payPending: "Пардохт оғоз шуд. Саҳифаи Stripe-ро анҷом диҳед, сипас тасдиқро интизор шавед.",
+    payStartError: "Stripe Checkout кушода нашуд.",
+    payRefunded: "Ин чипта бозгардонда шуд.",
+    payCardHint:
+      "Маблағи тасдиқшударо дар Stripe пардохт кунед. Чипта танҳо пас аз тасдиқи Stripe пардохтшуда мешавад.",
+    payCancelled: "Чипта бекор шуд ва пардохт намешавад.",
     paySize: "20 × 12 · 1 ҷуфт",
     productionLabel: "Истеҳсол",
     paymentLabel: "Пардохт",
@@ -228,7 +306,28 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payNotReady: "Заявка не готова к оплате.",
     payDue: "К оплате {amount} за одну пару 20 × 12.",
     payOffline:
-      "Оплата картой в этом цехе ещё не включена. Не вводите номер карты. Заявка остаётся неоплаченной.",
+      "Оплата картой в этом цехе не включена. Не вводите номер карты. Заявка остаётся неоплаченной.",
+    payMissingKeys:
+      "Оплата картой не настроена. Нет тестовых ключей Stripe. Не вводите номер карты. Заявка остаётся неоплаченной.",
+    payLiveBlocked:
+      "Боевые ключи Stripe отклоняются. Только тестовая оплата. Заявка остаётся неоплаченной.",
+    payInvalidKey:
+      "Ключ Stripe на этом сервере не тестовый. Оплата закрыта. Заявка остаётся неоплаченной.",
+    payCard: "Оплатить картой",
+    payContinue: "Продолжить в Stripe",
+    payWaitWebhook:
+      "Если вы уже оплатили — подождите. Заявка становится оплаченной только после подтверждения Stripe, не с этой страницы.",
+    payConfirmed: "Заявка оплачена. Stripe подтвердил утверждённую сумму.",
+    payReturnTitle: "Возврат из Stripe",
+    payReturnLead:
+      "Страница успеха не отмечает заявку оплаченной. Ждём проверенный webhook Stripe.",
+    payFailed: "Оплата картой не прошла. Если заявка ещё к оплате, попробуйте снова.",
+    payPending: "Оплата начата. Завершите страницу Stripe и дождитесь подтверждения.",
+    payStartError: "Не удалось открыть Stripe Checkout.",
+    payRefunded: "По этой заявке сделан возврат.",
+    payCardHint:
+      "Оплатите утверждённую сумму в Stripe. Заявка станет оплаченной только после подтверждения Stripe.",
+    payCancelled: "Заявка отменена и не может быть оплачена.",
     paySize: "20 × 12 · 1 пара",
     productionLabel: "Производство",
     paymentLabel: "Оплата",
@@ -248,7 +347,28 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payNotReady: "Билет төлемге дайын емес.",
     payDue: "Бір 20 × 12 жұп үшін {amount}.",
     payOffline:
-      "Карта төлемі әлі ашық емес. Карта нөмірін жазбаңыз. Билет төленбеген күйде қалады.",
+      "Карта төлемі ашық емес. Карта нөмірін жазбаңыз. Билет төленбеген күйде қалады.",
+    payMissingKeys:
+      "Карта төлемі бапталмаған. Stripe тест кілттері жоқ. Карта нөмірін жазбаңыз. Билет төленбеген күйде қалады.",
+    payLiveBlocked:
+      "Тірі Stripe кілттері қабылданбайды. Тек тест төлемі. Билет төленбеген күйде қалады.",
+    payInvalidKey:
+      "Осы сервердегі Stripe кілті тест кілті емес. Төлем жабық. Билет төленбеген күйде қалады.",
+    payCard: "Картамен төлеу",
+    payContinue: "Stripe-та жалғастыру",
+    payWaitWebhook:
+      "Төлеп қойсаңыз, күтіңіз. Билет тек Stripe растағаннан кейін төленген болады — бұл беттен емес.",
+    payConfirmed: "Билет төленді. Stripe бекітілген соманы растады.",
+    payReturnTitle: "Stripe-тан оралдыңыз",
+    payReturnLead:
+      "Сәттілік URL билетті төленген деп белгілемейді. Расталған webhook күтілуде.",
+    payFailed: "Карта төлемі өтпеді. Билет әлі дайын болса, қайта көріңіз.",
+    payPending: "Төлем басталды. Stripe бетін аяқтап, растауды күтіңіз.",
+    payStartError: "Stripe Checkout ашылмады.",
+    payRefunded: "Бұл билет қайтарылды.",
+    payCardHint:
+      "Бекітілген соманы Stripe-та төлеңіз. Билет тек Stripe растағаннан кейін төленген болады.",
+    payCancelled: "Билет болдырылмады, төлеуге болмайды.",
     paySize: "20 × 12 · 1 жұп",
     productionLabel: "Өндіріс",
     paymentLabel: "Төлем",
@@ -267,7 +387,28 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payNoPrice: "Хуршид азырынча баа койгон жок.",
     payNotReady: "Билет төлөмгө даяр эмес.",
     payOffline:
-      "Карта төлөмү ачыла элек. Карта номерин жазбаңыз. Билет төлөнбөй калат.",
+      "Карта төлөмү ачык эмес. Карта номерин жазбаңыз. Билет төлөнбөй калат.",
+    payMissingKeys:
+      "Карта төлөмү жөндөлгөн эмес. Stripe тест ачкычтары жок. Карта номерин жазбаңыз. Билет төлөнбөй калат.",
+    payLiveBlocked:
+      "Жандуу Stripe ачкычтары четке кагылат. Тек тест төлөмү. Билет төлөнбөй калат.",
+    payInvalidKey:
+      "Бул сервердеги Stripe ачкычы тест ачкычы эмес. Төлөм жабык. Билет төлөнбөй калат.",
+    payCard: "Карта менен төлөө",
+    payContinue: "Stripe'та улантуу",
+    payWaitWebhook:
+      "Төлөп койсоңуз, күтүңүз. Билет Stripe ырастагандан кийин гана төлөнгөн болот — бул барактан эмес.",
+    payConfirmed: "Билет төлөндү. Stripe бекитилген сумманы ырастады.",
+    payReturnTitle: "Stripe'тан кайттыңыз",
+    payReturnLead:
+      "Ийгилик URL билетти төлөнгөн деп белгилебейт. Текшерилген webhook күтүлүүдө.",
+    payFailed: "Карта төлөмү өткөн жок. Билет дагы даяр болсо, кайра аракет кылыңыз.",
+    payPending: "Төлөм башталды. Stripe барагын бүтүрүп, ырастоону күтүңүз.",
+    payStartError: "Stripe Checkout ачылган жок.",
+    payRefunded: "Бул билет кайтарылды.",
+    payCardHint:
+      "Бекитилген сумманы Stripe'та төлөңүз. Билет Stripe ырастагандан кийин гана төлөнгөн болот.",
+    payCancelled: "Билет жокко чыгарылган, төлөөгө болбойт.",
     payDue: "Бир 20 × 12 жуп үчүн {amount}.",
     paySize: "20 × 12 · 1 жуп",
     productionLabel: "Өндүрүш",
@@ -288,7 +429,28 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
     payNotReady: "Заявка не готова до оплати.",
     payDue: "До сплати {amount} за одну пару 20 × 12.",
     payOffline:
-      "Оплата карткою в цьому цеху ще не ввімкнена. Не вводьте номер картки. Заявка лишається несплаченою.",
+      "Оплата карткою в цьому цеху не ввімкнена. Не вводьте номер картки. Заявка лишається несплаченою.",
+    payMissingKeys:
+      "Оплату карткою не налаштовано. Немає тестових ключів Stripe. Не вводьте номер картки. Заявка лишається несплаченою.",
+    payLiveBlocked:
+      "Бойові ключі Stripe відхиляються. Лише тестова оплата. Заявка лишається несплаченою.",
+    payInvalidKey:
+      "Ключ Stripe на цьому сервері не тестовий. Оплата закрита. Заявка лишається несплаченою.",
+    payCard: "Сплатити карткою",
+    payContinue: "Продовжити в Stripe",
+    payWaitWebhook:
+      "Якщо вже сплатили — зачекайте. Заявка стає сплаченою лише після підтвердження Stripe, не з цієї сторінки.",
+    payConfirmed: "Заявку сплачено. Stripe підтвердив затверджену суму.",
+    payReturnTitle: "Повернення зі Stripe",
+    payReturnLead:
+      "Сторінка успіху не позначає заявку сплаченою. Чекаємо перевірений webhook Stripe.",
+    payFailed: "Оплата карткою не пройшла. Якщо заявка ще до сплати, спробуйте знову.",
+    payPending: "Оплату розпочато. Завершіть сторінку Stripe і дочекайтеся підтвердження.",
+    payStartError: "Не вдалося відкрити Stripe Checkout.",
+    payRefunded: "За цією заявкою зроблено повернення.",
+    payCardHint:
+      "Сплатіть затверджену суму в Stripe. Заявка стане сплаченою лише після підтвердження Stripe.",
+    payCancelled: "Заявку скасовано і не можна сплатити.",
     paySize: "20 × 12 · 1 пара",
     productionLabel: "Виробництво",
     paymentLabel: "Оплата",

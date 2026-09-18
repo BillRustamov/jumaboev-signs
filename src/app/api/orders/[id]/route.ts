@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
+import { describeCheckout } from "@/lib/checkout";
 import {
   assertPaymentMove,
   assertProductionMove,
-  canEnterReadyForPayment,
   hydrateOrder,
   isPaymentStatus,
   isProductionStatus,
@@ -38,7 +38,10 @@ export async function GET(
     if (!order) {
       return NextResponse.json({ error: "This pay link is not valid." }, { status: 404 });
     }
-    return NextResponse.json(order);
+    return NextResponse.json({
+      order,
+      checkout: describeCheckout(order),
+    });
   }
   const order = getPublicOrder(id);
   if (!order) {

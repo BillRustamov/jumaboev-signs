@@ -1,4 +1,5 @@
 import type { SignOrder } from "@/lib/order";
+import { stripeConfig } from "@/lib/stripe-config";
 
 /** Public Telegram handle for this shop. The token stays in `.env`. */
 export const TELEGRAM_BOT_USERNAME = "usprinter_bot";
@@ -40,7 +41,9 @@ export function shopPayMessage(order: SignOrder, payUrl: string): string {
     order.amountMinor
       ? `Amount: ${(order.amountMinor / 100).toFixed(2)} USD`
       : "Amount: set by the shop",
-    `Open this link to review the ticket. Card checkout is not open yet — the ticket stays unpaid.`,
+    stripeConfig().enabled
+      ? "Open this link to pay the approved amount. Paid is set only after Stripe confirms — never from the success page."
+      : "Open this link to review the ticket. Card checkout is not configured — the ticket stays unpaid.",
     payUrl,
   ].join("\n");
 }

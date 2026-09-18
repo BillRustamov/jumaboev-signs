@@ -3,6 +3,8 @@ import { accessTokenMatches, createAccessToken } from "@/lib/order-token";
 import { hydrateOrder } from "@/lib/order-status";
 import {
   appendLedger,
+  eventWasProcessed,
+  markEventProcessed,
   rowToOrder,
   shopDb,
   snapshotOrders,
@@ -82,6 +84,51 @@ export function listOrders(username?: string): SignOrder[] {
 
 export function recordLedger(orderId: string, kind: string, detail: string): void {
   appendLedger(shopDb(), orderId, kind, detail);
+}
+
+export function getOrderIfTokenInternal(
+  id: string,
+  token: string,
+): SignOrder | undefined {
+  const order = getOrder(id);
+  if (!order || !accessTokenMatches(token, order.accessTokenHash)) return undefined;
+  return order;
+}
+
+export function findOrderByCheckoutSession(sessionId: string): SignOrder | undefined {
+  if (!sessionId) return undefined;
+  const rows = shopDb()
+    .prepare("SELECT json FROM orders")
+    .all() as Array<{ json: string }>;
+  for (const row of rows) {
+    const order = rowToOrder(row);
+    if (order.stripeCheckoutSessionId === sessionId) return order;
+  }
+  return undefined;
+}
+
+export function findOrderByPaymentIntent(intentId: string): SignOrder | undefined {
+  if (!intentId) return undefined;
+  const rows = shopDb()
+    .prepare("SELECT json FROM orders")
+    .all() as Array<{ json: string }>;
+  for (const row of rows) {
+    const order = rowToOrder(row);
+    if (order.stripePaymentIntentId === intentId) return order;
+  }
+  return undefined;
+}
+
+export function rememberStripeEvent(
+  id: string,
+  kind: string,
+  orderId: string | null,
+): boolean {
+  return markEventProcessed(id, kind, orderId);
+}
+
+export function stripeEventSeen(id: string): boolean {
+  return eventWasProcessed(id);
 }
 
 export function attachAccessToken(id: string): { order: SignOrder; token: string } {

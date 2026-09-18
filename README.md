@@ -42,7 +42,9 @@ Open [http://127.0.0.1:43147](http://127.0.0.1:43147). The app binds on `0.0.0.0
 
 Tickets persist in SQLite at `data/shop.sqlite`. The first open migrates `data/orders.json` after a dated backup (`data/orders.json.bak-2026-09-18`). New writes also snapshot `data/orders.snapshot.json`. Those files are gitignored. There is no login.
 
-Each ticket has a **production** status and a separate **payment** status. Payment stays `UNPAID` until a real Stripe webhook exists — the admin desk cannot mark a ticket paid. Ready for payment needs an approved price in cents (never a fake $0). The customer pay page is `/orders/[id]/pay?token=…` with a hashed token. Card checkout is not open yet.
+Each ticket has a **production** status and a separate **payment** status. Ready for payment needs an approved price in cents (never a fake $0). The customer pay page is `/orders/[id]/pay?token=…` with a hashed token. Admin cannot mark a ticket paid.
+
+Card checkout is Stripe Checkout in **test mode only**. The amount comes from the approved ticket on the server. Live keys (`sk_live` / `rk_live`) are refused. If `STRIPE_SECRET_KEY` is unset, the pay page stays honest and disabled — the ticket stays unpaid. `PAID` is set only by `POST /api/stripe/webhook` after signature verification and an amount match. The Stripe success URL (`/orders/[id]/pay/return`) never writes payment status.
 
 ## Telegram bot
 
@@ -61,6 +63,8 @@ To talk to real Telegram:
 TELEGRAM_BOT_TOKEN=your-bot-token
 APP_URL=http://127.0.0.1:43147
 TELEGRAM_SHOP_CHAT_ID=           # optional: shop ping for every ticket
+STRIPE_SECRET_KEY=              # optional test key only; unset keeps checkout closed
+STRIPE_WEBHOOK_SECRET=          # required to mark tickets paid
 ```
 
 3. Keep `npm run dev` running so confirmed tickets can POST to `/api/orders`.

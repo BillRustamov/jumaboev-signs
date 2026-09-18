@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: [],
+  serverExternalPackages: ["stripe"],
   // Cursor Preview (and other tunnels) load the shop from a different host
   // than 127.0.0.1. Without this, /_next scripts 403 and the page spins.
   // "null" covers sandboxed iframe Origin: null.

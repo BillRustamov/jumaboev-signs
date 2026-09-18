@@ -24,7 +24,10 @@ export function dbPath(): string {
 
 export function shopDb(): DatabaseSync {
   const g = globalThis as GlobalDb;
-  if (g.__jumaboevShopDb) return g.__jumaboevShopDb;
+  if (g.__jumaboevShopDb) {
+    ensureSchema(g.__jumaboevShopDb);
+    return g.__jumaboevShopDb;
+  }
   const file = dbPath();
   mkdirSync(path.dirname(file), { recursive: true });
   const db = new DatabaseSync(file);
@@ -56,9 +59,21 @@ export function shopDb(): DatabaseSync {
     );
     CREATE INDEX IF NOT EXISTS ledger_order ON ledger(order_id);
   `);
+  ensureSchema(db);
   migrateJsonIfNeeded(db);
   g.__jumaboevShopDb = db;
   return db;
+}
+
+function ensureSchema(db: DatabaseSync): void {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS processed_events (
+      id TEXT PRIMARY KEY,
+      kind TEXT NOT NULL,
+      order_id TEXT,
+      created_at TEXT NOT NULL
+    );
+  `);
 }
 
 export function resetShopDbForTests(): void {
@@ -208,6 +223,26 @@ export function snapshotOrders(orders: SignOrder[]): void {
   } catch (error) {
     console.error("Could not write orders snapshot.", error);
   }
+}
+
+export function markEventProcessed(
+  id: string,
+  kind: string,
+  orderId: string | null,
+): boolean {
+  const result = shopDb()
+    .prepare(
+      "INSERT OR IGNORE INTO processed_events (id, kind, order_id, created_at) VALUES (?, ?, ?, ?)",
+    )
+    .run(id, kind, orderId, new Date().toISOString()) as { changes: number };
+  return Number(result.changes) > 0;
+}
+
+export function eventWasProcessed(id: string): boolean {
+  const row = shopDb()
+    .prepare("SELECT id FROM processed_events WHERE id = ?")
+    .get(id) as { id: string } | undefined;
+  return Boolean(row);
 }
 
 export function listLedger(orderId: string): Array<{

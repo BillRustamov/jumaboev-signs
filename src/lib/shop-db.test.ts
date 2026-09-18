@@ -6,6 +6,7 @@ import { test } from "node:test";
 import { emptySign } from "./order";
 import { stampNewOrder } from "./order-status";
 import { resetShopDbForTests } from "./shop-db";
+import { markEventProcessed, eventWasProcessed } from "./shop-db";
 import { getOrder, listOrders, saveOrder } from "./store";
 
 test("sqlite store migrates a JSON backup and keeps new tickets", () => {
@@ -55,5 +56,8 @@ test("sqlite store migrates a JSON backup and keeps new tickets", () => {
   assert.equal(created.paymentStatus, "UNPAID");
   assert.equal(created.accessTokenHash, undefined);
   assert.ok(listOrders().some((order) => order.id === "JS-NEW1"));
+  assert.equal(markEventProcessed("evt_1", "checkout.session.completed", "JS-NEW1"), true);
+  assert.equal(eventWasProcessed("evt_1"), true);
+  assert.equal(markEventProcessed("evt_1", "checkout.session.completed", "JS-NEW1"), false);
   resetShopDbForTests();
 });
