@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { formatUsd, isPriced } from "@/lib/money";
-import { payT } from "@/lib/order-copy";
+import { payT, paymentLabel, productionLabel } from "@/lib/order-copy";
 import { paymentOf, productionOf } from "@/lib/order-status";
 import type { SignOrder } from "@/lib/order";
 import { shopT } from "@/lib/shop-entry";
@@ -102,11 +102,13 @@ export function PayDesk({ id, token }: { id: string; token: string }) {
         )}
         <Alert>
           <AlertCircle />
-          <AlertTitle>{payT(lang, "paymentLabel")}: {payment}</AlertTitle>
+          <AlertTitle>
+            {payT(lang, "paymentLabel")}: {paymentLabel(lang, payment)}
+          </AlertTitle>
           <AlertDescription>{payT(lang, "payOffline")}</AlertDescription>
         </Alert>
         <p className="text-xs text-muted-foreground">
-          {payT(lang, "productionLabel")}: {production}
+          {payT(lang, "productionLabel")}: {productionLabel(lang, production)}
         </p>
         <Button variant="outline" asChild>
           <Link href="/">{shopT(lang, "backToMenu")}</Link>
