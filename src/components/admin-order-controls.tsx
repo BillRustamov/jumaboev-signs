@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatUsd, isPriced } from "@/lib/money";
-import { payT } from "@/lib/order-copy";
+import { payT, productionLabel } from "@/lib/order-copy";
 import {
   canEnterReadyForPayment,
   nextProductionStates,
@@ -109,7 +109,7 @@ export function AdminOrderControls({
               >
                 {status === "READY_FOR_PAYMENT"
                   ? payT(lang, "readyPay")
-                  : status.replaceAll("_", " ")}
+                  : productionLabel(lang, status)}
               </Button>
             ))}
           </div>
