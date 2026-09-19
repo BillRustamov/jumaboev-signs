@@ -34,7 +34,7 @@ import {
 } from "../src/lib/payment-sync";
 import { payT } from "../src/lib/order-copy";
 import { shopPayMessage } from "../src/lib/telegram";
-import { STYLE_PRESETS, applyPreset } from "../src/lib/sign-style";
+import { LETTERING_PRESETS, applyPreset } from "../src/lib/sign-style";
 import { screenshotTruck, styledFields, telegramSendPhoto } from "./previews";
 import { formatPlace, parsePlace } from "../src/lib/design/migrate";
 
@@ -117,7 +117,7 @@ function skipKeyboard(lang: Lang) {
 
 function styleKeyboard() {
   return keyboardFrom(
-    STYLE_PRESETS.map((preset) => ({
+    LETTERING_PRESETS.map((preset) => ({
       id: `style:${preset.id}`,
       label: preset.label,
     })),
@@ -313,7 +313,7 @@ async function presentStyles(draft: Draft, chat: Chat): Promise<void> {
     if (sendPhoto) {
       await Promise.race([
         (async () => {
-          for (const preset of STYLE_PRESETS) {
+          for (const preset of LETTERING_PRESETS) {
             const png = await screenshotTruck(
               styledFields(draft.fields, preset.id),
             );
@@ -682,16 +682,16 @@ function isImageDocument(
 }
 
 async function configureBot(bot: Bot) {
-  await bot.api.setMyName("Jumaboev Signs");
+  await bot.api.setMyName("usprint");
   await bot.api.setMyShortDescription(
     "USDOT truck door vinyl · 20 × 12 in each cab side. Order a matched pair.",
   );
   await bot.api.setMyDescription(
-    "Jumaboev Signs prints vinyl USDOT truck doors. Example cut is 20 × 12 in for each cab side. Tap Start for the shop menu: print a file you already have, or create a new design. Company name and USDOT required by FMCSA on custom designs; MC required on that shop ticket. Logo optional. Unit numbers are a separate small print.",
+    "usprint prints vinyl USDOT truck doors. Example cut is 20 × 12 in for each cab side. Tap Start for the shop menu: print a file you already have, or create a new design. Company name and USDOT required by FMCSA on custom designs; MC required on that shop ticket. Logo optional. Unit numbers are a separate small print.",
   );
   await bot.api.setMyCommands([
     { command: "start", description: "Open the shop menu" },
-    { command: "help", description: "How Jumaboev Signs works" },
+    { command: "help", description: "How usprint works" },
   ]);
 }
 
@@ -1014,7 +1014,7 @@ async function runTelegram(token: string) {
       console.error("Could not update Telegram bot profile.", error);
     }
   }
-  console.log("Jumaboev Signs Telegram bot is polling.");
+  console.log("usprint Telegram bot is polling.");
   for (;;) {
     try {
       await bot.api.deleteWebhook({ drop_pending_updates: false });

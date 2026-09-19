@@ -26,7 +26,7 @@ test("wide logo suggests side-by-side and square suggests spotlight", () => {
   );
 });
 
-test("auto improve turns a square logo into spotlight at a large size", () => {
+test("auto improve turns a square logo into spotlight without shrinking USDOT", () => {
   const start = {
     ...emptySign(),
     companyName: "RIDGE HAULING",
@@ -36,19 +36,23 @@ test("auto improve turns a square logo into spotlight at a large size", () => {
     mcNumber: "1051888",
     logoDataUrl: SAMPLE_MARK,
     logoAspect: 1,
-    logoSize: 2,
+    logoSize: 5,
     templateId: "clean-white" as const,
     showMc: false,
   };
   const { fields, notes } = autoImprove(start);
   assert.equal(fields.templateId, "logo-spotlight");
-  assert.ok(fields.logoSize >= 4);
+  assert.ok(fields.logoSize <= 5);
   assert.equal(fields.showMc, true);
-  assert.ok(notes.some((note) => /spotlight|enlarged|MC/i.test(note)));
+  assert.ok(notes.some((note) => /spotlight|MC|logo/i.test(note)));
   const doc = compileDesign(layoutInputFrom(fields));
   assert.equal(doc.widthIn, 20);
   assert.equal(doc.heightIn, 12);
   assert.equal(hasLogoTextCollision(doc), false);
+  const usdot = doc.elements.find((item) => item.type === "text" && item.role === "usdot");
+  const mc = doc.elements.find((item) => item.type === "text" && item.role === "mc");
+  assert.ok(usdot && usdot.type === "text" && usdot.fontSizeIn >= 1.75);
+  assert.ok(mc && mc.type === "text" && mc.fontSizeIn >= 1.55);
 });
 
 test("auto improve sends a wide logo to side-by-side", () => {

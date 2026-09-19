@@ -79,6 +79,10 @@ export async function localSqlite(file: string): Promise<ShopSql> {
 }
 
 export async function tryCloudflareD1(): Promise<ShopSql | null> {
+  if (process.env.SHOP_USE_SQLITE === "1") return null;
+  if (process.env.NODE_ENV !== "production" && process.env.SHOP_USE_D1 !== "1") {
+    return null;
+  }
   try {
     const { getCloudflareContext } = await import("@opennextjs/cloudflare");
     const ctx = await getCloudflareContext({ async: true });

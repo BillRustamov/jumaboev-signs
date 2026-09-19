@@ -56,6 +56,8 @@ export type SignFields = {
 export type SignOrder = SignFields & {
   id: string;
   username: string;
+  /** Shop account that owns this ticket. Guest and Telegram tickets omit it. */
+  userId?: string;
   source: OrderSource;
   language?: string;
   telegramChatId?: number;
@@ -135,10 +137,14 @@ export function emptySign(): SignFields {
 }
 
 export function validateUsername(name: string): string | null {
-  if (!/^[a-zA-Z0-9_]{3,24}$/.test(name.trim())) {
-    return "Username must be 3–24 letters, numbers, or underscores.";
+  const trimmed = name.trim();
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed) && trimmed.length >= 5 && trimmed.length <= 254) {
+    return null;
   }
-  return null;
+  if (/^[a-zA-Z0-9_]{3,24}$/.test(trimmed)) {
+    return null;
+  }
+  return "Enter your email.";
 }
 
 export function validateSign(fields: SignFields): string[] {

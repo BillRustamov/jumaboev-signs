@@ -1,0 +1,21 @@
+[Unit]
+Description=usprint.app Next.js shop
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/usprint
+Environment=NODE_ENV=production
+Environment=PORT=43147
+Environment=APP_URL=https://www.usprint.app
+Environment=HOSTNAME=127.0.0.1
+EnvironmentFile=-/var/www/usprint/.env
+# Do not use /run/user/0/fnm_multishells/... — www-data cannot execute that.
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 43147
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

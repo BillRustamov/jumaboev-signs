@@ -9,6 +9,8 @@ export type SignFontId = "condensed" | "sans" | "serif";
 export type TemplateId =
   | "clean-white"
   | "logo-spotlight"
+  | "white-minimal"
+  | "white-premium"
   | "side-by-side"
   | "direct-truck"
   | "classic-plaque";
@@ -104,38 +106,61 @@ export const TEMPLATES: {
   label: string;
   hint: string;
   production: ProductionMode;
+  group: "primary" | "more";
 }[] = [
   {
     id: "clean-white",
-    label: "Clean white",
-    hint: "White vinyl · name and USDOT fill the panel",
+    label: "Clean White",
+    hint: "White vinyl · strong name, protected USDOT and MC",
     production: "printed-plaque",
+    group: "primary",
   },
   {
     id: "logo-spotlight",
-    label: "Logo spotlight",
-    hint: "Large mark on top, lettering below",
+    label: "White with Logo",
+    hint: "Logo on top · name and locked USDOT / MC below",
     production: "printed-plaque",
+    group: "primary",
+  },
+  {
+    id: "white-minimal",
+    label: "White Minimal",
+    hint: "Little decoration · larger DOT and MC block",
+    production: "printed-plaque",
+    group: "primary",
+  },
+  {
+    id: "white-premium",
+    label: "White Premium Accent",
+    hint: "White vinyl · accent rule and border · locked IDs",
+    production: "printed-plaque",
+    group: "primary",
   },
   {
     id: "side-by-side",
-    label: "Side by side",
-    hint: "Logo left · name and IDs right",
+    label: "Logo left",
+    hint: "Wide mark left · name and IDs right",
     production: "printed-plaque",
+    group: "more",
   },
   {
     id: "direct-truck",
     label: "Direct lettering",
     hint: "Dark type on the truck — no filled plaque",
     production: "cut-lettering",
+    group: "more",
   },
   {
     id: "classic-plaque",
     label: "Classic plaque",
-    hint: "Full-panel board · huge USDOT and MC bars",
+    hint: "Printed board · huge USDOT and MC bars",
     production: "printed-plaque",
+    group: "more",
   },
 ];
+
+export const PRIMARY_TEMPLATES = TEMPLATES.filter((item) => item.group === "primary");
+export const MORE_TEMPLATES = TEMPLATES.filter((item) => item.group === "more");
 
 const TEMPLATE_ALIAS: Record<string, TemplateId> = {
   "premium-plaque": "classic-plaque",
@@ -143,6 +168,10 @@ const TEMPLATE_ALIAS: Record<string, TemplateId> = {
   minimal: "direct-truck",
   suggested: "clean-white",
   plaque: "classic-plaque",
+  "logo-header": "logo-spotlight",
+  "white-accent": "white-premium",
+  "white-standard": "clean-white",
+  "white-regulatory": "white-minimal",
 };
 
 export function isTemplateId(value: unknown): value is TemplateId {

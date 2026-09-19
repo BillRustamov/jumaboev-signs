@@ -21,11 +21,16 @@ import { WhiteSemiTruck } from "@/components/white-semi-truck";
 import { clampLogoSize, type LogoSize } from "@/lib/logo-size";
 import { digitsOnly, type SignFields } from "@/lib/order";
 import {
-  STYLE_PRESETS,
+  PLAQUE_PRESETS,
+  LETTERING_OPTIONS,
+  ACCENT_OPTIONS,
   applyPreset,
+  composeLetteringAccent,
+  letteringIdFromColors,
+  accentIdFromColors,
   type SignPalette,
 } from "@/lib/sign-style";
-import { TEMPLATES, type SignFontId, type TemplateId } from "@/lib/design";
+import { PRIMARY_TEMPLATES, MORE_TEMPLATES, compileDesign, type SignFontId, type TemplateId } from "@/lib/design";
 import { formatPlace, parsePlace } from "@/lib/design/migrate";
 import { uiT } from "@/lib/shop-copy";
 import {
@@ -175,7 +180,7 @@ export function LetteringFields({
             {uiT(lang, "removeFile")}
           </Button>
         ) : null}
-      {fields.logoDataUrl ? (
+        {fields.logoDataUrl ? (
         <ArtworkControls
           fields={fields}
           onChange={(patch) => {
@@ -184,6 +189,36 @@ export function LetteringFields({
           }}
         />
       ) : null}
+      {fields.logoDataUrl ? (
+        <p className="text-xs text-muted-foreground">{uiT(lang, "logoKeepsIds")}</p>
+      ) : null}
+      {fields.logoDataUrl
+        ? localizeNotes(lang, compileDesign({
+            companyName: fields.companyName,
+            city: fields.city,
+            state: fields.state,
+            legalName: fields.legalName,
+            dotNumber: fields.dotNumber,
+            mcNumber: fields.mcNumber,
+            logoDataUrl: fields.logoDataUrl,
+            logoAspect: fields.logoAspect,
+            logoSize: fields.logoSize,
+            nameFont: fields.nameFont,
+            templateId: fields.templateId,
+            showChevrons: fields.showChevrons,
+            showMc: fields.showMc,
+            colors: fields.colors,
+            artworkRole: fields.artworkRole,
+            artworkFit: fields.artworkFit,
+            artworkOffsetX: fields.artworkOffsetX,
+            artworkOffsetY: fields.artworkOffsetY,
+            logoContainsName: fields.logoContainsName,
+          }).warnings).map((note) => (
+            <p key={note} className="text-xs text-[var(--navy)]">
+              {note}
+            </p>
+          ))
+        : null}
       </div>
     </div>
   );
@@ -211,8 +246,32 @@ export function ColorFields({
 >) {
   const lang = useShopLang();
   const contrast = localizeNotes(lang, contrastNotes);
+  const letteringId = letteringIdFromColors(fields.colors);
+  const accentId = accentIdFromColors(fields.colors);
+
+  function applyLettering(nextLettering: string) {
+    const built = composeLetteringAccent(nextLettering, accentId);
+    setFields((current) => ({
+      ...current,
+      paletteId: built.paletteId,
+      colors: built.colors,
+      showChevrons: false,
+    }));
+    setColorPicked(true);
+  }
+
+  function applyAccent(nextAccent: string) {
+    const built = composeLetteringAccent(letteringId, nextAccent);
+    setFields((current) => ({
+      ...current,
+      paletteId: built.paletteId,
+      colors: built.colors,
+    }));
+    setColorPicked(true);
+  }
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {contrast.length ? (
         <Alert>
           <AlertCircle />
@@ -220,69 +279,115 @@ export function ColorFields({
           <AlertDescription>{contrast[0]}</AlertDescription>
         </Alert>
       ) : null}
-      <div className="grid grid-cols-2 gap-2">
-        {STYLE_PRESETS.map((preset) => {
-          const preview = {
-            ...fields,
-            ...applyPreset(preset.id),
-            showMc: true,
-            logoSize: fields.logoSize,
-            logoDataUrl: fields.logoDataUrl,
-            logoAspect: fields.logoAspect,
-            templateId: fields.templateId,
-            nameFont: fields.nameFont,
-          };
-          const selected = colorPicked && fields.paletteId === preset.id;
-          return (
-            <Button
-              key={preset.id}
-              type="button"
-              variant="outline"
-              className={cn(
-                "h-auto w-full flex-col items-stretch gap-2 p-2 text-left whitespace-normal",
-                selected && "border-[var(--navy)] ring-2 ring-[var(--navy)]",
-              )}
-              onClick={() => {
-                setFields((current) => ({
-                  ...current,
-                  ...applyPreset(preset.id),
-                  showMc: true,
-                  nameFont: current.nameFont,
-                  logoSize: current.logoSize,
-                  templateId: current.templateId,
-                  logoDataUrl: current.logoDataUrl,
-                  logoAspect: current.logoAspect,
-                }));
-                setColorPicked(true);
-              }}
-            >
-              <div className="w-full min-w-0">
-                <TruckSign
-                  fields={preview}
-                  className="pointer-events-none w-full shadow-none"
+      <div className="space-y-2">
+        <Label>{uiT(lang, "letteringColor")}</Label>
+        <div className="grid grid-cols-2 gap-2">
+          {LETTERING_OPTIONS.map((option) => {
+            const selected = colorPicked && letteringId === option.id;
+            return (
+              <Button
+                key={option.id}
+                type="button"
+                variant="outline"
+                className={cn(
+                  "h-11 justify-start gap-2",
+                  selected && "border-[var(--navy)] ring-2 ring-[var(--navy)]",
+                )}
+                onClick={() => applyLettering(option.id)}
+              >
+                <span
+                  className="size-4 rounded-full ring-1 ring-black/15"
+                  style={{ backgroundColor: option.ink }}
                 />
-              </div>
-              <span className="flex gap-1 px-1" aria-hidden>
-                {[
-                  preset.colors.face,
-                  preset.colors.name,
-                  preset.colors.plate,
-                  preset.colors.outerBorder,
-                ].map((swatch, index) => (
-                  <span
-                    key={`${preset.id}-${index}`}
-                    className="size-3 rounded-full ring-1 ring-black/15"
-                    style={{ backgroundColor: swatch }}
+                <span>{option.label}</span>
+              </Button>
+            );
+          })}
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label>{uiT(lang, "accentColor")}</Label>
+        <div className="grid grid-cols-4 gap-2">
+          {ACCENT_OPTIONS.map((option) => {
+            const selected = colorPicked && accentId === option.id;
+            return (
+              <Button
+                key={option.id}
+                type="button"
+                variant="outline"
+                className={cn(
+                  "h-11 flex-col gap-1 px-1",
+                  selected && "border-[var(--navy)] ring-2 ring-[var(--navy)]",
+                )}
+                onClick={() => applyAccent(option.id)}
+              >
+                <span
+                  className="size-3 rounded-full ring-1 ring-black/15"
+                  style={{
+                    backgroundColor: option.color ?? "#ffffff",
+                    boxShadow: option.color ? undefined : "inset 0 0 0 1px #bbb",
+                  }}
+                />
+                <span className="text-[11px] font-normal">
+                  {option.id === "none" ? uiT(lang, "accentNone") : option.label}
+                </span>
+              </Button>
+            );
+          })}
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label>{uiT(lang, "moreBackgrounds")}</Label>
+        <div className="grid grid-cols-2 gap-2">
+          {PLAQUE_PRESETS.filter((preset) => preset.id !== "cut-black").map((preset) => {
+            const preview = {
+              ...fields,
+              ...applyPreset(preset.id),
+              showMc: true,
+              logoSize: fields.logoSize,
+              logoDataUrl: fields.logoDataUrl,
+              logoAspect: fields.logoAspect,
+              templateId: fields.templateId,
+              nameFont: fields.nameFont,
+            };
+            const selected = colorPicked && fields.paletteId === preset.id;
+            return (
+              <Button
+                key={preset.id}
+                type="button"
+                variant="outline"
+                className={cn(
+                  "h-auto w-full flex-col items-stretch gap-2 p-2 text-left whitespace-normal",
+                  selected && "border-[var(--navy)] ring-2 ring-[var(--navy)]",
+                )}
+                onClick={() => {
+                  setFields((current) => ({
+                    ...current,
+                    ...applyPreset(preset.id),
+                    showMc: true,
+                    nameFont: current.nameFont,
+                    logoSize: current.logoSize,
+                    templateId: current.templateId,
+                    logoDataUrl: current.logoDataUrl,
+                    logoAspect: current.logoAspect,
+                  }));
+                  setColorPicked(true);
+                }}
+              >
+                <div className="w-full min-w-0">
+                  <TruckSign
+                    fields={preview}
+                    className="pointer-events-none w-full shadow-none"
                   />
-                ))}
-              </span>
-              <span className="px-1">{presetName(lang, preset.id)}</span>
-              <span className="px-1 text-[11px] font-normal text-muted-foreground">
-                {presetHint(lang, preset.id)}
-              </span>
-            </Button>
-          );
-        })}
+                </div>
+                <span className="px-1">{presetName(lang, preset.id)}</span>
+                <span className="px-1 text-[11px] font-normal text-muted-foreground">
+                  {presetHint(lang, preset.id)}
+                </span>
+              </Button>
+            );
+          })}
+        </div>
       </div>
       {showTruck && colorPicked ? (
         <div className="space-y-2">
@@ -337,8 +442,46 @@ export function LayoutFields({
         <p className="text-xs text-muted-foreground">
           {uiT(lang, "layoutCardsHint")}
         </p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-2">
+          {PRIMARY_TEMPLATES.map((template) => {
+            const preview = {
+              ...fields,
+              templateId: template.id as TemplateId,
+              showMc: true,
+            };
+            const selected = fields.templateId === template.id;
+            return (
+              <Button
+                key={template.id}
+                type="button"
+                variant="outline"
+                className={cn(
+                  "h-auto w-full flex-col items-stretch gap-1.5 p-1.5 text-left whitespace-normal",
+                  selected && "border-[var(--navy)] ring-2 ring-[var(--navy)]",
+                )}
+                onClick={() => {
+                  update("templateId", template.id);
+                  markLayoutReady();
+                }}
+              >
+                <div className="w-full min-w-0">
+                  <TruckSign
+                    fields={preview}
+                    className="pointer-events-none w-full shadow-none"
+                  />
+                </div>
+                <span className="px-1 text-xs font-medium">
+                  {templateName(lang, template.id)}
+                </span>
+              </Button>
+            );
+          })}
+        </div>
+        <p className="pt-1 text-xs font-medium text-[var(--navy)]">
+          {uiT(lang, "moreLayouts")}
+        </p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {TEMPLATES.map((template) => {
+          {MORE_TEMPLATES.map((template) => {
             const preview = {
               ...fields,
               templateId: template.id as TemplateId,

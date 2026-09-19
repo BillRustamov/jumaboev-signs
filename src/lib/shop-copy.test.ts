@@ -15,6 +15,7 @@ const REQUIRED: UiKey[] = [
   "cartEmpty",
   "checkoutTitle",
   "adminKicker",
+  "accountTitle",
 ];
 
 test("every shop language has website body copy", () => {

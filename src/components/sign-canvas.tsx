@@ -39,6 +39,7 @@ export function SignCanvas({
   className,
   title,
   previewBackdrop = true,
+  mockupOutline = false,
 }: {
   fields?: SignFields;
   design?: DesignDocument;
@@ -46,6 +47,8 @@ export function SignCanvas({
   title?: string;
   /** Checkerboard behind cut lettering. Off for production sheets. */
   previewBackdrop?: boolean;
+  /** Fine edge for white vinyl on a white truck. Never used on print sheets. */
+  mockupOutline?: boolean;
 }) {
   const doc = design ?? (fields ? designFromFields(fields) : null);
   const paintId = useId().replace(/:/g, "");
@@ -98,6 +101,19 @@ export function SignCanvas({
           strokeWidth={background.borderIn}
         />
       )}
+      {mockupOutline && !transparent ? (
+        <rect
+          x={0.04}
+          y={0.04}
+          width={widthIn - 0.08}
+          height={heightIn - 0.08}
+          rx={radius}
+          ry={radius}
+          fill="none"
+          stroke="rgba(20, 28, 36, 0.38)"
+          strokeWidth={0.045}
+        />
+      ) : null}
       {doc.elements.map((el) => {
         if (!el.visible) return null;
         if (el.type === "band") {

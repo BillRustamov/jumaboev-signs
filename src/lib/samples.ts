@@ -68,7 +68,7 @@ function sampleFields(opts: {
 
 export const SUGGESTED_LAYOUT: DriverSample = {
   id: "clean-white",
-  label: "Clean white",
+  label: "Clean White",
   hint: "20 × 12 in · white vinyl · black lettering",
   fields: sampleFields({
     preset: "white-black",
@@ -84,8 +84,8 @@ export const DRIVER_SAMPLES: DriverSample[] = [
   SUGGESTED_LAYOUT,
   {
     id: "logo-spotlight",
-    label: "Logo spotlight",
-    hint: "20 × 12 in · large mark, name and IDs below",
+    label: "White with Logo",
+    hint: "20 × 12 in · logo on top, locked USDOT and MC",
     fields: sampleFields({
       preset: "white-navy",
       templateId: "logo-spotlight",
@@ -98,20 +98,49 @@ export const DRIVER_SAMPLES: DriverSample[] = [
     }),
   },
   {
-    id: "side-by-side",
-    label: "Side by side",
-    hint: "20 × 12 in · wide mark left, lettering right",
+    id: "white-minimal",
+    label: "White Minimal",
+    hint: "20 × 12 in · larger DOT and MC, little decoration",
     fields: sampleFields({
-      preset: "white-red",
-      templateId: "side-by-side",
+      preset: "white-green",
+      templateId: "white-minimal",
       city: "PHOENIX",
       state: "AZ",
       dot: "17550331",
       mc: "628114",
+    }),
+  },
+  {
+    id: "white-premium",
+    label: "White Premium Accent",
+    hint: "20 × 12 in · gold rule and border on white vinyl",
+    fields: sampleFields({
+      preset: "white-gold",
+      templateId: "white-premium",
+      city: "ATLANTA",
+      state: "GA",
+      dot: "20144510",
+      mc: "796102",
+    }),
+  },
+  {
+    id: "side-by-side",
+    label: "Logo left",
+    hint: "20 × 12 in · wide mark left, lettering right",
+    fields: sampleFields({
+      preset: "white-red",
+      templateId: "side-by-side",
+      city: "CHICAGO",
+      state: "IL",
+      dot: "34882106",
+      mc: "901244",
       logo: SAMPLE_MARK_WIDE,
       aspect: 240 / 84,
     }),
   },
+];
+
+export const OPTIONAL_SAMPLES: DriverSample[] = [
   {
     id: "direct-truck",
     label: "Direct lettering",
@@ -156,13 +185,15 @@ const SAMPLE_ALIASES: Record<string, string> = {
   black: "direct-truck",
   "red-line": "side-by-side",
   asphalt: "logo-spotlight",
+  "white-with-logo": "logo-spotlight",
+  "logo-header": "logo-spotlight",
 };
 
 export function sampleById(id: string | null | undefined): DriverSample | undefined {
   if (!id) return undefined;
   const resolved = SAMPLE_ALIASES[id] ?? id;
   if (resolved === BLANK_SAMPLE.id) return BLANK_SAMPLE;
-  return DRIVER_SAMPLES.find((sample) => sample.id === resolved);
+  return [...DRIVER_SAMPLES, ...OPTIONAL_SAMPLES].find((sample) => sample.id === resolved);
 }
 
 export function lookFromSample(sample: DriverSample): SignFields {
@@ -207,7 +238,7 @@ export const SAMPLE_CATEGORIES: {
   {
     id: "white-minimal",
     label: "White & Minimal",
-    blurb: "White vinyl, large black type, no extra box.",
+    blurb: "White vinyl, large black type, protected USDOT and MC.",
   },
   {
     id: "logo-focused",
@@ -239,8 +270,12 @@ export const CATALOG_FILTERS: { id: CatalogFilter; label: string }[] = [
   { id: "no-logo", label: "No logo" },
 ];
 
-/** Five layouts plus the blank upload card. No color duplicates. */
-export const GALLERY_SAMPLES: DriverSample[] = [...DRIVER_SAMPLES, BLANK_SAMPLE];
+/** Primary white layouts plus optional dark/cut cards and the blank upload. */
+export const GALLERY_SAMPLES: DriverSample[] = [
+  ...DRIVER_SAMPLES,
+  ...OPTIONAL_SAMPLES,
+  BLANK_SAMPLE,
+];
 
 function faceLuminance(hex: string): number {
   const raw = hex.replace("#", "").padEnd(6, "0");
@@ -253,7 +288,9 @@ function faceLuminance(hex: string): number {
 export function sampleCategory(sample: DriverSample): SampleCategory {
   if (sample.id === "blank") return "upload";
   const id = sample.fields.templateId;
-  if (id === "clean-white") return "white-minimal";
+  if (id === "clean-white" || id === "white-minimal" || id === "white-premium") {
+    return "white-minimal";
+  }
   if (id === "logo-spotlight" || id === "side-by-side") return "logo-focused";
   if (id === "direct-truck") return "classic-lettering";
   return "premium-plaque";

@@ -19,6 +19,7 @@ import {
   updateOrder,
 } from "@/lib/store";
 import { notifyPaymentChange } from "@/lib/telegram";
+import { notifyPaymentEmail } from "@/lib/shop-mail";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -86,6 +87,7 @@ export async function POST(request: Request) {
     await rememberStripeEvent(event.id, event.type, order.id);
     if (paymentOf(next) !== paymentOf(order)) {
       void notifyPaymentChange(next);
+      void notifyPaymentEmail(next);
     }
     return NextResponse.json({
       ok: true,

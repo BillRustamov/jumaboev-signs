@@ -17,6 +17,7 @@ import {
   updateOrder,
 } from "@/lib/store";
 import { notifyPaymentChange } from "@/lib/telegram";
+import { notifyPaymentEmail } from "@/lib/shop-mail";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -105,6 +106,7 @@ async function startCheckout(request: Request, id: string): Promise<Response> {
     );
     if (paymentOf(saved) === "PAYMENT_PENDING" && paymentOf(order) !== "PAYMENT_PENDING") {
       void notifyPaymentChange(saved);
+      void notifyPaymentEmail(saved);
     }
     return NextResponse.json({ url: session.url, sessionId: session.id });
   } catch (error) {

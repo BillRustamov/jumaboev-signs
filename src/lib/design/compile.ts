@@ -13,15 +13,20 @@ import {
   type SignFontId,
   type TextElement,
 } from "@/lib/design/schema";
-import { suggestedLogoBox, logoScaleFromSize, logoSlotMax } from "@/lib/design/logo";
+import {
+  suggestedLogoBox,
+  logoScaleFromSize,
+  logoSlotMax,
+  containLogo,
+} from "@/lib/design/logo";
 import {
   parsePlace,
   resolveFont,
   resolvePlace,
   resolveTemplate,
 } from "@/lib/design/migrate";
-import { fitFontSize, fitToBox, wrapText } from "@/lib/design/typography";
-import { TEMPLATE_LAYOUT, normalizeShares } from "@/lib/design/layout";
+import { fitFontSize, fitToBox, wrapText, measureLine } from "@/lib/design/typography";
+import { TEMPLATE_LAYOUT, normalizeShares, REGULATORY } from "@/lib/design/layout";
 import { defaultStyle, type SignPalette } from "@/lib/sign-style";
 import {
   artworkPlacement,
@@ -142,9 +147,17 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       }
     : {
         fill: ink.face,
-        radiusIn: templateId === "classic-plaque" ? 0.28 : 0.22,
+        radiusIn:
+          templateId === "classic-plaque" || templateId === "white-premium"
+            ? 0.28
+            : 0.22,
         borderColor: ink.accent,
-        borderIn: templateId === "classic-plaque" ? 0.12 : 0.07,
+        borderIn:
+          templateId === "classic-plaque" || templateId === "white-premium"
+            ? 0.12
+            : templateId === "white-minimal"
+              ? 0.04
+              : 0.07,
       };
 
   function companyMeasure(maxWidth: number, startSize: number, minSize: number) {
@@ -179,10 +192,24 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     elements.push(...chevrons());
   }
 
-  if (hasLogo) {
+  if (hasLogo && !existingSign) {
     const logo = elements.find((item): item is LogoElement => item.type === "logo");
-    if (logo && logo.heightIn < 1.1 && !existingSign) {
-      warnings.push("Logo is small on this layout. Increase size or pick Logo spotlight.");
+    const usdot = elements.find(
+      (item): item is TextElement => item.type === "text" && item.role === "usdot",
+    );
+    const mcEl = elements.find(
+      (item): item is TextElement => item.type === "text" && item.role === "mc",
+    );
+    if (logo && logo.heightIn < 1.1) {
+      warnings.push(
+        "Logo is small on this layout. Increase size or pick White with Logo.",
+      );
+    }
+    if (usdot && usdot.fontSizeIn + 0.001 < REGULATORY.usdotMinIn) {
+      warnings.push("USDOT must stay at a readable size. The logo was limited so the ID stays visible.");
+    }
+    if (mcEl && showMc && mcEl.fontSizeIn + 0.001 < REGULATORY.mcMinIn) {
+      warnings.push("MC must stay at a readable size. The logo was limited so the ID stays visible.");
     }
   }
 
@@ -227,27 +254,133 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     const side = config.logoPlacement === "side";
     const spotlight = config.logoPlacement === "spotlight";
     const boxMode =
-      spotlight ? "spotlight" : side ? "side" : templateId === "classic-plaque" ? "small" : "balanced";
+      spotlight
+        ? "spotlight"
+        : side
+          ? "side"
+          : templateId === "classic-plaque"
+            ? "small"
+            : "balanced";
+    const showLogoSlot = hasLogo || spotlight || side;
+    const lockIds = hasLogo || spotlight;
+    const canvasTop = pad;
+    const canvasBottom = CANVAS_HEIGHT_IN - pad;
+    const ruleH = config.rule ? 0.075 : 0;
+    const split = config.idFormat === "split";
+    const idTracking = split ? 0.02 : 0.04;
+    const usdotInline = `USDOT ${dot}`;
+    const mcInline = `MC ${mc}`;
+    const usdotText = split ? dot : usdotInline;
+    const mcText = split ? mc : mcInline;
+    const labelH = (box: number) => Math.min(0.52, Math.max(0.34, box * 0.22));
+    const numberH = (box: number) =>
+      split ? Math.max(REGULATORY.usdotMinIn, box - labelH(box) - 0.12) : box;
+    const nameMin = logoContainsName ? 0.82 : REGULATORY.nameMinIn;
+    const inkId = config.bands ? ink.plateText : ink.legal;
+
+    const idWidthNeeded = Math.max(
+      measureLine(usdotText, font, REGULATORY.usdotMinIn, idTracking),
+      showMc ? measureLine(mcText, font, REGULATORY.mcMinIn, idTracking) : 0,
+    );
 
     let logoW = 0;
     let logoH = 0;
-    if (hasLogo) {
-      const box = logoBox(boxMode);
-      logoW = box.widthIn;
-      logoH = box.heightIn;
-    } else if (spotlight) {
-      logoW = 9.4;
-      logoH = 2.35;
-    } else if (side) {
-      logoW = 6.6;
-      logoH = 8.0;
+    const requested = hasLogo
+      ? logoBox(boxMode)
+      : spotlight
+        ? { widthIn: 9.4, heightIn: 2.15 }
+        : side
+          ? { widthIn: 6.6, heightIn: 8.0 }
+          : { widthIn: 0, heightIn: 0 };
+
+    if (side && showLogoSlot) {
+      const maxLogoW = Math.max(
+        2.4,
+        CANVAS_WIDTH_IN - pad * 2 - 0.4 - Math.min(idWidthNeeded, 13.2),
+      );
+      const maxLogoH = canvasBottom - canvasTop;
+      const aspect =
+        typeof input.logoAspect === "number" && input.logoAspect > 0.05
+          ? input.logoAspect
+          : requested.widthIn / Math.max(0.2, requested.heightIn);
+      const fitted = containLogo(
+        Math.min(requested.widthIn, maxLogoW),
+        Math.min(requested.heightIn, maxLogoH),
+        aspect,
+      );
+      logoW = fitted.widthIn;
+      logoH = fitted.heightIn;
+      if (hasLogo && requested.widthIn > maxLogoW + 0.05) {
+        warnings.push(
+          "Logo was reduced so USDOT and MC stay at a readable size. Try a smaller logo or wrap the company name.",
+        );
+      }
     }
 
     const textX = side ? pad + logoW + 0.4 : pad;
     const textW = CANVAS_WIDTH_IN - textX - pad;
     const boxX = textX;
-    const canvasTop = pad;
-    const canvasBottom = CANVAS_HEIGHT_IN - pad;
+
+    const lockedUsdot = fitToBox(usdotText, font, textW, REGULATORY.usdotMinIn * 1.05, {
+      tracking: idTracking,
+      minSize: REGULATORY.usdotMinIn,
+      maxLines: 1,
+      wrap: false,
+    });
+    const lockedMc = showMc
+      ? fitToBox(mcText, font, textW, REGULATORY.mcMinIn * 1.05, {
+          tracking: idTracking,
+          minSize: REGULATORY.mcMinIn,
+          maxLines: 1,
+          wrap: false,
+        })
+      : null;
+
+    const lockedUsdotBox = split
+      ? lockedUsdot.size + labelH(lockedUsdot.size + 0.7) + 0.22
+      : lockedUsdot.size * 1.12;
+    const lockedMcBox = lockedMc
+      ? split
+        ? lockedMc.size + labelH(lockedMc.size + 0.7) + 0.22
+        : lockedMc.size * 1.12
+      : 0;
+    const lockedIdBlock =
+      lockedUsdotBox + (showMc ? REGULATORY.gapIn + lockedMcBox : 0);
+
+    const shares = normalizeShares(config, {
+      hasPlace: Boolean(place),
+      hasLlc: Boolean(llc),
+      showMc,
+    });
+
+    if (!side && showLogoSlot) {
+      const brandCeiling =
+        canvasBottom - lockedIdBlock - (config.rule ? ruleH + gap : 0) - gap;
+      const nameFloor = nameMin * 1.05;
+      const extra =
+        (llc ? 0.36 : 0) + (place ? 0.36 : 0) + gap * (1 + (llc ? 1 : 0) + (place ? 1 : 0));
+      const maxLogoH = Math.max(1.05, brandCeiling - canvasTop - nameFloor - extra);
+      const maxLogoW = textW;
+      const aspect =
+        typeof input.logoAspect === "number" && input.logoAspect > 0.05
+          ? input.logoAspect
+          : requested.widthIn / Math.max(0.2, requested.heightIn || 1);
+      const fitted = containLogo(
+        Math.min(requested.widthIn, maxLogoW),
+        Math.min(requested.heightIn, maxLogoH),
+        aspect,
+      );
+      logoW = fitted.widthIn;
+      logoH = fitted.heightIn;
+      if (
+        hasLogo &&
+        (requested.heightIn > maxLogoH + 0.08 || requested.widthIn > maxLogoW + 0.08)
+      ) {
+        warnings.push(
+          "Logo was reduced so USDOT and MC stay at a readable size. Try a smaller logo, White with Logo, or wrap the company name.",
+        );
+      }
+    }
 
     if (hasLogo && !side) {
       stack.push(logoEl(centerX(logoW), canvasTop, logoW, logoH, false, boxMode));
@@ -301,29 +434,32 @@ export function compileDesign(input: LayoutInput): DesignDocument {
     }
 
     const textTop =
-      side || (!hasLogo && !spotlight)
+      side || (!showLogoSlot)
         ? canvasTop
         : canvasTop + logoH + gap;
 
-    const shares = normalizeShares(config, {
-      hasPlace: Boolean(place),
-      hasLlc: Boolean(llc),
-      showMc,
-    });
-    const ruleH = config.rule ? 0.075 : 0;
-    const idRows = showMc ? 2 : 1;
-    const identityReserve = (llc ? 0.42 : 0) + (place ? 0.42 : 0) + ruleH + gap * (2 + idRows);
-    const flexH = Math.max(2.8, canvasBottom - textTop - identityReserve);
+    const identityReserve =
+      (llc ? 0.42 : 0) + (place ? 0.42 : 0) + ruleH + gap * (2 + (showMc ? 2 : 1));
+    const flexH = lockIds
+      ? Math.max(nameMin, canvasBottom - textTop - lockedIdBlock - (config.rule ? ruleH + gap : 0) - gap)
+      : Math.max(2.8, canvasBottom - textTop - identityReserve);
 
-    const nameMin = logoContainsName ? 0.82 : 1.05;
-    const nameM = fitToBox(company, font, textW, flexH * shares.name, {
-      tracking: -0.03,
-      minSize: nameMin,
-      maxLines: 3,
-      wrap: true,
-    });
+    const nameM = fitToBox(
+      company,
+      font,
+      textW,
+      lockIds
+        ? Math.max(nameMin, flexH - (llc ? 0.42 : 0) - (place ? 0.42 : 0))
+        : flexH * shares.name,
+      {
+        tracking: -0.03,
+        minSize: nameMin,
+        maxLines: 3,
+        wrap: true,
+      },
+    );
     const llcM = llc
-      ? fitToBox(llc, font, textW, Math.max(0.32, flexH * shares.subtitle * (place ? 0.45 : 1)), {
+      ? fitToBox(llc, font, textW, Math.max(0.32, (lockIds ? 0.38 : flexH * shares.subtitle) * (place ? 0.45 : 1)), {
           tracking: 0.18,
           minSize: 0.3,
           maxLines: 1,
@@ -331,7 +467,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
         })
       : null;
     const placeM = place
-      ? fitToBox(placeText, font, textW, Math.max(0.32, flexH * shares.subtitle * (llc ? 0.55 : 1)), {
+      ? fitToBox(placeText, font, textW, Math.max(0.32, (lockIds ? 0.38 : flexH * shares.subtitle) * (llc ? 0.55 : 1)), {
           tracking: 0.14,
           minSize: 0.3,
           maxLines: 1,
@@ -339,15 +475,6 @@ export function compileDesign(input: LayoutInput): DesignDocument {
         })
       : null;
 
-    const usdotInline = `USDOT ${dot}`;
-    const mcInline = `MC ${mc}`;
-    const split = config.idFormat === "split";
-    const idTracking = split ? 0.02 : 0.04;
-    const labelH = (box: number) => Math.min(0.52, Math.max(0.34, box * 0.22));
-    const numberH = (box: number) =>
-      split ? Math.max(0.85, box - labelH(box) - 0.12) : box;
-
-    const inkId = config.bands ? ink.plateText : ink.legal;
     let y = textTop;
 
     stack.push(
@@ -418,21 +545,33 @@ export function compileDesign(input: LayoutInput): DesignDocument {
 
     const bandX = config.fullWidthBands ? Math.min(pad, 0.2) : boxX;
     const bandW = config.fullWidthBands ? CANVAS_WIDTH_IN - bandX * 2 : textW;
-    const idInnerGap = showMc ? gap : 0;
-    const remaining = Math.max(1.6, canvasBottom - y);
-    let usdotBoxH = showMc ? (remaining - idInnerGap) / 2 : remaining;
-    let mcBoxH = showMc ? (remaining - idInnerGap) / 2 : 0;
+    const idInnerGap = showMc ? (lockIds ? REGULATORY.gapIn : gap) : 0;
+    if (lockIds) {
+      const idStart = canvasBottom - lockedIdBlock;
+      if (y < idStart - 0.02) y = idStart;
+    }
+    const remaining = Math.max(lockIds ? lockedIdBlock : 1.6, canvasBottom - y);
+    let usdotBoxH = lockIds
+      ? lockedUsdotBox
+      : showMc
+        ? (remaining - idInnerGap) / 2
+        : remaining;
+    let mcBoxH = lockIds
+      ? lockedMcBox
+      : showMc
+        ? (remaining - idInnerGap) / 2
+        : 0;
 
-    const usdotFit = fitToBox(split ? dot : usdotInline, font, textW, numberH(usdotBoxH), {
+    const usdotFit = fitToBox(usdotText, font, textW, numberH(usdotBoxH), {
       tracking: idTracking,
-      minSize: 1.05,
+      minSize: REGULATORY.usdotMinIn,
       maxLines: 1,
       wrap: false,
     });
     const mcFit = showMc
-      ? fitToBox(split ? mc : mcInline, font, textW, numberH(mcBoxH), {
+      ? fitToBox(mcText, font, textW, numberH(mcBoxH), {
           tracking: idTracking,
-          minSize: 0.95,
+          minSize: REGULATORY.mcMinIn,
           maxLines: 1,
           wrap: false,
         })
@@ -446,7 +585,7 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       ghost: boolean,
     ) => {
       const rowTop = y;
-      boxH = Math.min(boxH, Math.max(0.85, canvasBottom - rowTop));
+      boxH = Math.min(boxH, Math.max(fitted.size, canvasBottom - rowTop));
       if (config.bands) {
         stack.push(bandEl(`band-${role}`, bandX, rowTop, bandW, boxH));
       }
@@ -519,12 +658,15 @@ export function compileDesign(input: LayoutInput): DesignDocument {
       paintIdRow("mc", mcFit, mcBoxH, "MC", !input.mcNumber.trim());
     }
 
-    const limit = CANVAS_HEIGHT_IN - 0.1;
+    const limit = CANVAS_HEIGHT_IN - 0.08;
+    const protectedRole = new Set(["usdot", "mc", "id-label"]);
     for (const el of stack) {
-      if (el.yIn + el.heightIn > limit) {
+      const lockedText =
+        el.type === "text" && protectedRole.has(el.role);
+      if (el.yIn + el.heightIn > limit && !lockedText) {
         el.heightIn = Math.max(0.28, limit - el.yIn);
       }
-      if (el.yIn < 0.08) {
+      if (el.yIn < 0.08 && el.type !== "text") {
         const extra = 0.08 - el.yIn;
         el.yIn = 0.08;
         el.heightIn = Math.max(0.28, el.heightIn - extra);

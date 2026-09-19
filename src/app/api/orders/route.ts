@@ -17,8 +17,15 @@ import {
   printFileFromDataUrl,
 } from "@/lib/print-file";
 import { stampNewOrder } from "@/lib/order-status";
-import { listOrders, listOrdersByTelegramChat, saveOrder } from "@/lib/store";
+import {
+  listOrders,
+  listOrdersByTelegramChat,
+  listOrdersForAccount,
+  saveOrder,
+} from "@/lib/store";
 import { notifyShop } from "@/lib/telegram";
+import { userFromRequest } from "@/lib/auth";
+import { notifyOrderReceived } from "@/lib/shop-mail";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -27,8 +34,20 @@ export async function GET(request: Request) {
     const chatId = Number(chatRaw);
     return NextResponse.json({ orders: await listOrdersByTelegramChat(chatId) });
   }
+  if (searchParams.get("mine") === "1") {
+    const user = await userFromRequest(request);
+    if (!user) return NextResponse.json({ orders: [] });
+    return NextResponse.json({ orders: await listOrdersForAccount(user) });
+  }
   const username = searchParams.get("username") ?? undefined;
-  return NextResponse.json({ orders: await listOrders(username) });
+  if (username) {
+    const user = await userFromRequest(request);
+    if (!user || user.username.toLowerCase() !== username.toLowerCase()) {
+      return NextResponse.json({ orders: [] });
+    }
+    return NextResponse.json({ orders: await listOrdersForAccount(user) });
+  }
+  return NextResponse.json({ orders: await listOrders() });
 }
 
 export async function POST(request: Request) {
@@ -41,7 +60,8 @@ export async function POST(request: Request) {
 
   const input = body as Partial<SignOrder>;
   const fields = normalizeSign(input);
-  const username = String(input.username ?? "").trim();
+  const account = await userFromRequest(request);
+  const username = String(account?.username ?? input.username ?? "").trim();
   const usernameError = validateUsername(username);
   if (usernameError) {
     return NextResponse.json({ error: usernameError }, { status: 400 });
@@ -83,6 +103,7 @@ export async function POST(request: Request) {
     ...fields,
     id: input.id?.startsWith("JS-") ? input.id : createOrderId(),
     username,
+    userId: account?.id,
     source,
     language: input.language,
     telegramChatId,
@@ -106,5 +127,6 @@ export async function POST(request: Request) {
 
   const saved = await saveOrder(stampNewOrder(order));
   void notifyShop(saved);
+  void notifyOrderReceived(saved, account?.email);
   return NextResponse.json(saved);
 }

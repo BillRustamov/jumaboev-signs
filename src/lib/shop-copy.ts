@@ -71,6 +71,12 @@ export type UiKey =
   | "colorUsdotMc"
   | "colorFace"
   | "colorBorder"
+  | "letteringColor"
+  | "accentColor"
+  | "moreBackgrounds"
+  | "moreLayouts"
+  | "accentNone"
+  | "logoKeepsIds"
   | "layoutLabel"
   | "layoutCardsHint"
   | "doorFont"
@@ -196,6 +202,26 @@ export type UiKey =
   | "noDoorOrders"
   | "noOrdersForUser"
   | "noOrdersAnon"
+  | "signIn"
+  | "createAccount"
+  | "accountNav"
+  | "accountKicker"
+  | "accountTitle"
+  | "accountLead"
+  | "accountEmail"
+  | "accountPassword"
+  | "accountPasswordHint"
+  | "accountSignIn"
+  | "accountSignUp"
+  | "accountSignedInAs"
+  | "accountHistoryLead"
+  | "accountSignOut"
+  | "accountSaveHistory"
+  | "checkoutSignedIn"
+  | "checkoutCreateAccount"
+  | "ordersSignInHint"
+  | "accountWorking"
+  | "accountCreated"
   | "printSheet"
   | "printExistingTag"
   | "adminKicker"
@@ -319,6 +345,9 @@ export type UiKey =
   | "noteMcOn"
   | "noteMovedShare"
   | "noteEnlargedLogo"
+  | "noteReducedLogo"
+  | "noteReducedLogoHint"
+  | "noteLogoSmall"
   | "noteWhiteBlack"
   | "noteCondensed"
   | "noteCropStays"
@@ -333,6 +362,11 @@ export type UiKey =
   | "noteCancelledPay"
   | "noteAlreadyPaid"
   | "noteHandPaid"
+  | "noteEmailInvalid"
+  | "notePasswordShort"
+  | "noteAccountExists"
+  | "noteAccountWrong"
+  | "noteTooManyAuth"
   | "size20in"
   | "size12in"
   | "size23in"
@@ -539,13 +573,13 @@ const UI_ROWS: Record<UiKey, Row> = {
     "Обов’язково. Вкажіть назву, USDOT і MC, що друкуємо — не зразок.",
   ),
   colorsHint: L(
-    "Required. Tap a look — each card is that color on the door. The truck below matches the cart.",
-    "Majburiy. Ko‘rinishni bosing — har karta o‘sha rang eshikda. Pastdagi yuk mashinasi savatdagidek.",
-    "Ҳатмӣ. Намудро пахш кунед — ҳар корт ҳамон ранг дар дар аст. Мошини поён мисли сабад аст.",
-    "Обязательно. Нажмите вид — каждая карточка этого цвета на двери. Грузовик ниже как в корзине.",
-    "Міндетті. Көріністі басыңыз — әр карта сол түс есікте. Төмендегі жүк көлігі себеттегідей.",
-    "Милдеттүү. Көрүнүштү басыңыз — ар карта ошол түс эшикте. Төмөнкү жүк ташуучу себеттегидей.",
-    "Обов’язково. Натисніть вигляд — кожна картка цього кольору на дверях. Вантажівка нижче як у кошику.",
+    "Required. Pick lettering and a small accent on white vinyl. Dark plaques stay optional.",
+    "Majburiy. Oq vinilda yozuv rangi va kichik aksentni tanlang. Qorong‘i plaketkalar ixtiyoriy.",
+    "Ҳатмӣ. Ранги навишта ва аксенти хурдро дар винили сафед интихоб кунед. Лавҳаҳои торик ихтиёрӣ мемонанд.",
+    "Обязательно. Выберите цвет надписи и небольшой акцент на белом виниле. Тёмные таблички остаются опцией.",
+    "Міндетті. Ақ винилде жазу түсі мен кіші акцентті таңдаңыз. Қою тақталар қосымша болып қалады.",
+    "Милдеттүү. Ак винилде жазуу түсүн жана кичине акцентти тандаңыз. Кара такталар кошумча бойдон калат.",
+    "Обов’язково. Оберіть колір напису і невеликий акцент на білому вінілі. Темні таблички лишаються опцією.",
   ),
   layoutHint: L(
     "Required. Pick a layout, set logo size, and choose a door font. What you see is what prints.",
@@ -913,15 +947,61 @@ const UI_ROWS: Record<UiKey, Row> = {
   colorUsdotMc: L("USDOT and MC", "USDOT va MC", "USDOT ва MC", "USDOT и MC", "USDOT және MC", "USDOT жана MC", "USDOT і MC"),
   colorFace: L("Face", "Yuzasi", "Рӯя", "Лицо", "Беті", "Бети", "Лице"),
   colorBorder: L("Border", "Chegara", "Марз", "Рамка", "Жиек", "Чек", "Рамка"),
+  letteringColor: L(
+    "Lettering color",
+    "Yozuv rangi",
+    "Ранги навишта",
+    "Цвет надписи",
+    "Жазу түсі",
+    "Жазуу түсү",
+    "Колір напису",
+  ),
+  accentColor: L(
+    "Accent color",
+    "Aksent rangi",
+    "Ранги аксент",
+    "Цвет акцента",
+    "Акцент түсі",
+    "Акцент түсү",
+    "Колір акценту",
+  ),
+  moreBackgrounds: L(
+    "More backgrounds",
+    "Boshqa fonlar",
+    "Заминаҳои дигар",
+    "Другие фоны",
+    "Басқа фондар",
+    "Башка фондор",
+    "Інші фони",
+  ),
+  moreLayouts: L(
+    "More layouts",
+    "Boshqa joylashuvlar",
+    "Тарҳҳои дигар",
+    "Другие макеты",
+    "Басқа орналасулар",
+    "Башка жайгашуулар",
+    "Інші макети",
+  ),
+  accentNone: L("None", "Yo‘q", "Нест", "Нет", "Жоқ", "Жок", "Немає"),
+  logoKeepsIds: L(
+    "USDOT and MC stay at a locked readable size. The logo shrinks first if space is tight.",
+    "USDOT va MC o‘qiladigan o‘lchamda qoladi. Joy tor bo‘lsa avval logo kichrayadi.",
+    "USDOT ва MC дар андозаи хондашаванда мемонанд. Агар ҷо ҷиддӣ бошад, аввал лого хурд мешавад.",
+    "USDOT и MC остаются читаемого размера. Если тесно — сначала уменьшается логотип.",
+    "USDOT пен MC оқылатын өлшемде қалады. Орын тар болса, алдымен логотип кішірейеді.",
+    "USDOT жана MC окула турган өлчөмдө калат. Жер тар болсо, адегенде логотип кичирейет.",
+    "USDOT і MC лишаються читабельного розміру. Якщо тісно — спершу зменшується логотип.",
+  ),
   layoutLabel: L("Layout", "Joylashuv", "Тарҳ", "Макет", "Орналасу", "Жайгашуу", "Макет"),
   layoutCardsHint: L(
-    "Each card is a different composition, not a recolor.",
-    "Har karta boshqa kompozitsiya, qayta bo‘yalgan emas.",
-    "Ҳар корт таркиби дигар аст, на ранги нав.",
-    "Каждая карточка — другая композиция, не перекрас.",
-    "Әр карта басқа композиция, қайта бояу емес.",
-    "Ар карта башка композиция, кайра боёо эмес.",
-    "Кожна картка — інша композиція, не перефарбування.",
+    "White layouts first. USDOT and MC stay locked; the logo adapts.",
+    "Avval oq joylashuvlar. USDOT va MC qulflangan; logo moslashadi.",
+    "Аввал тарҳҳои сафед. USDOT ва MC қулфанд; лого мутобиқ мешавад.",
+    "Сначала белые макеты. USDOT и MC зафиксированы; логотип подстраивается.",
+    "Алдымен ақ орналасулар. USDOT пен MC бекітілген; логотип бейімделеді.",
+    "Адегенде ак жайгашуулар. USDOT жана MC кулпуланган; логотип ылайыкташат.",
+    "Спочатку білі макети. USDOT і MC зафіксовані; логотип підлаштовується.",
   ),
   doorFont: L(
     "Door font",
@@ -1734,6 +1814,138 @@ const UI_ROWS: Record<UiKey, Row> = {
     "Даяр файлды басыңыз же жаңы дизайн жасаңыз. ырасталган билеттер бул жерге түшөт.",
     "Надрукуйте готовий файл або створіть новий макет. Підтверджені заявки з’являться тут.",
   ),
+  signIn: L("Sign in", "Kirish", "Вуруд", "Войти", "Кіру", "Кирүү", "Увійти"),
+  createAccount: L(
+    "Create account",
+    "Hisob ochish",
+    "Сохтани ҳисоб",
+    "Создать аккаунт",
+    "Аккаунт ашу",
+    "Аккаунт ачуу",
+    "Створити акаунт",
+  ),
+  accountNav: L("Account", "Hisob", "Ҳисоб", "Аккаунт", "Аккаунт", "Аккаунт", "Акаунт"),
+  accountKicker: L("Account", "Hisob", "Ҳисоб", "Аккаунт", "Аккаунт", "Аккаунт", "Акаунт"),
+  accountTitle: L(
+    "Save your door tickets",
+    "Eshik chiptalarini saqlang",
+    "Чиптаҳои дарро нигоҳ доред",
+    "Сохраните заявки на двери",
+    "Есік билеттерін сақтаңыз",
+    "Эшик билеттерин сактаңыз",
+    "Збережіть заявки на двері",
+  ),
+  accountLead: L(
+    "Email and password keep every confirmed pair on this shop — phone, computer, or a new browser.",
+    "Email va parol tasdiqlangan juftlarni shu do‘konda saqlaydi — telefon, kompyuter yoki yangi brauzer.",
+    "Почта ва рамз ҳар ҷуфти тасдиқшударо дар ҳамин дӯкон нигоҳ медорад — телефон, компютер ё браузери нав.",
+    "Почта и пароль хранят каждую подтверждённую пару в этом цехе — телефон, компьютер или новый браузер.",
+    "Email мен құпия сөз расталған жұптарды осы дүкенде сақтайды — телефон, компьютер немесе жаңа браузер.",
+    "Email жана сырсөз ырасталган жуптарды ушул дүкөндө сактайт — телефон, компьютер же жаңы браузер.",
+    "Пошта й пароль зберігають кожну підтверджену пару в цій майстерні — телефон, комп’ютер чи новий браузер.",
+  ),
+  accountEmail: L("Email", "Email", "Почта", "Эл. почта", "Email", "Email", "Email"),
+  accountPassword: L(
+    "Password",
+    "Parol",
+    "Рамз",
+    "Пароль",
+    "Құпия сөз",
+    "Сырсөз",
+    "Пароль",
+  ),
+  accountPasswordHint: L(
+    "At least 8 characters.",
+    "Kamida 8 belgi.",
+    "Ҳадди ақал 8 аломат.",
+    "Не меньше 8 символов.",
+    "Кемінде 8 таңба.",
+    "Кеминде 8 белги.",
+    "Щонайменше 8 символів.",
+  ),
+  accountSignIn: L("Sign in", "Kirish", "Вуруд", "Войти", "Кіру", "Кирүү", "Увійти"),
+  accountSignUp: L(
+    "Create account",
+    "Hisob ochish",
+    "Сохтани ҳисоб",
+    "Создать аккаунт",
+    "Аккаунт ашу",
+    "Аккаунт ачуу",
+    "Створити акаунт",
+  ),
+  accountSignedInAs: L(
+    "Signed in as {email}",
+    "{email} sifatida kirdingiz",
+    "Ҳамчун {email} ворид шудед",
+    "Вы вошли как {email}",
+    "{email} ретінде кірдіңіз",
+    "{email} катары кирдиңиз",
+    "Ви увійшли як {email}",
+  ),
+  accountHistoryLead: L(
+    "New tickets and older ones for {user} stay on My orders from any device.",
+    "Yangi chiptalar va @{user} ostidagi eskilar istalgan qurilmadan Mening buyurtmalarimda qoladi.",
+    "Чиптаҳои нав ва кӯҳнаҳо зери @{user} аз ҳар дастгоҳ дар Фармоишҳои ман мемонанд.",
+    "Новые заявки и старые под @{user} остаются в «Мои заказы» с любого устройства.",
+    "Жаңа билеттер мен @{user} астындағы ескілері кез келген құрылғыдан Менің тапсырыстарымда қалады.",
+    "Жаңы билеттер жана @{user} астындагы эскилери каалаган түзмөктөн Менин буйрутмаларымда калат.",
+    "Нові заявки й старі під @{user} лишаються в «Мої замовлення» з будь-якого пристрою.",
+  ),
+  accountSignOut: L("Sign out", "Chiqish", "Баромад", "Выйти", "Шығу", "Чыгуу", "Вийти"),
+  accountSaveHistory: L(
+    "Create an account so this ticket stays in your history.",
+    "Hisob oching — chipta tarixingizda qoladi.",
+    "Ҳисоб созед — чипта дар таърихи шумо мемонад.",
+    "Создайте аккаунт — заявка останется в истории.",
+    "Аккаунт ашыңыз — билет тарихыңызда қалады.",
+    "Аккаунт ачыңыз — билет тарыхыңызда калат.",
+    "Створіть акаунт — заявка лишиться в історії.",
+  ),
+  checkoutSignedIn: L(
+    "Saving to {email}. Confirmed pairs stay on My orders.",
+    "{email} ga saqlanadi. Tasdiqlangan juftlar Mening buyurtmalarimda qoladi.",
+    "Ба {email} захира мешавад. Ҷуфтҳои тасдиқшуда дар Фармоишҳои ман мемонанд.",
+    "Сохраняем на {email}. Подтверждённые пары останутся в «Мои заказы».",
+    "{email} мекенжайына сақталады. Расталған жұптар Менің тапсырыстарымда қалады.",
+    "{email} дарегине сакталат. ырасталган жуптар Менин буйрутмаларымда калат.",
+    "Зберігаємо на {email}. Підтверджені пари лишаться в «Мої замовлення».",
+  ),
+  checkoutCreateAccount: L(
+    "Create an account to keep this history on every phone and browser.",
+    "Hisob oching — tarix har telefon va brauzerda qoladi.",
+    "Ҳисоб созед — таърих дар ҳар телефон ва браузер мемонад.",
+    "Создайте аккаунт, чтобы история была на каждом телефоне и в браузере.",
+    "Аккаунт ашыңыз — тарих әр телефон мен браузерде қалады.",
+    "Аккаунт ачыңыз — тарых ар бир телефон менен браузерде калат.",
+    "Створіть акаунт, щоб історія була на кожному телефоні й у браузері.",
+  ),
+  ordersSignInHint: L(
+    "Sign in to see tickets saved to your account. This browser still shows locally saved ones.",
+    "Hisobingizdagi chiptalarni ko‘rish uchun kiring. Bu brauzer mahalliy saqlanganlarni ham ko‘rsatadi.",
+    "Барои дидани чиптаҳои ҳисоб ворид шавед. Ин браузер ҳанӯз маҳаллиро нишон медиҳад.",
+    "Войдите, чтобы видеть заявки аккаунта. Этот браузер всё ещё показывает локально сохранённые.",
+    "Аккаунттағы билеттерді көру үшін кіріңіз. Бұл браузер әлі жергілікті сақталғандарын көрсетеді.",
+    "Аккаунттагы билеттерди көрүү үчүн кириңиз. Бул браузер дагы жергиликтүү сакталгандарын көрсөтөт.",
+    "Увійдіть, щоб бачити заявки акаунта. Цей браузер досі показує збережені локально.",
+  ),
+  accountWorking: L(
+    "Saving account",
+    "Hisob saqlanmoqda",
+    "Ҳисоб захира мешавад",
+    "Сохраняем аккаунт",
+    "Аккаунт сақталуда",
+    "Аккаунт сакталууда",
+    "Зберігаємо акаунт",
+  ),
+  accountCreated: L(
+    "Account saved. Tickets you place now stay in My orders.",
+    "Hisob saqlandi. Endi yuborgan chiptalar Mening buyurtmalarimda qoladi.",
+    "Ҳисоб захира шуд. Чиптаҳое, ки ҳозир мефиристед, дар Фармоишҳои ман мемонанд.",
+    "Аккаунт сохранён. Заявки, которые вы отправите, останутся в «Мои заказы».",
+    "Аккаунт сақталды. Қазір жіберген билеттер Менің тапсырыстарымда қалады.",
+    "Аккаунт сакталды. Азыр жөнөткөн билеттер Менин буйрутмаларымда калат.",
+    "Акаунт збережено. Заявки, які ви надішлете, лишаться в «Мої замовлення».",
+  ),
   printSheet: L("Print sheet", "Chop varaqasi", "Варақаи чоп", "Печатный лист", "Баспа парағы", "Басма барагы", "Друкарський аркуш"),
   printExistingTag: L("print-existing", "tayyor-fayl", "тарҳи-тайёр", "готовый-макет", "дайын-файл", "даяр-файл", "готовий-макет"),
   adminKicker: L("Admin", "Admin", "Админ", "Админ", "Әкімші", "Админ", "Адмін"),
@@ -2385,6 +2597,33 @@ const UI_ROWS: Record<UiKey, Row> = {
     "Логотип негизги белги катары окулушу үчүн чоңойтулду.",
     "Логотип збільшено, щоб читався як основний знак.",
   ),
+  noteReducedLogo: L(
+    "Reduced the logo so USDOT and MC stay at a readable size.",
+    "USDOT va MC o‘qiladigan o‘lchamda qolishi uchun logo kichraytirildi.",
+    "Лого хурд карда шуд, то USDOT ва MC хонда шаванд.",
+    "Логотип уменьшен, чтобы USDOT и MC остались читаемыми.",
+    "USDOT пен MC оқылатын болуы үшін логотип кішірейтілді.",
+    "USDOT жана MC окула турган болушу үчүн логотип кичирейтилди.",
+    "Логотип зменшено, щоб USDOT і MC лишилися читабельними.",
+  ),
+  noteReducedLogoHint: L(
+    "Logo was reduced so USDOT and MC stay at a readable size. Try a smaller logo, White with Logo, or wrap the company name.",
+    "USDOT va MC o‘qilishi uchun logo kichraytirildi. Kichikroq logo, White with Logo yoki nomni ikki qator qiling.",
+    "Лого хурд шуд, то USDOT ва MC хонда шаванд. Логои хурдтар, White with Logo ё номро ду сатр кунед.",
+    "Логотип уменьшен, чтобы USDOT и MC остались читаемыми. Возьмите логотип меньше, White with Logo или перенесите имя.",
+    "USDOT пен MC оқылуы үшін логотип кішірейтілді. Кішірек логотип, White with Logo немесе атауды ораңыз.",
+    "USDOT жана MC окулушу үчүн логотип кичирейтилди. Кичине логотип, White with Logo же атты ороңуз.",
+    "Логотип зменшено, щоб USDOT і MC лишилися читабельними. Менший логотип, White with Logo або перенесіть назву.",
+  ),
+  noteLogoSmall: L(
+    "Logo is small on this layout. Increase size or pick White with Logo.",
+    "Bu joylashuvda logo kichik. O‘lchamni oshiring yoki White with Logo ni tanlang.",
+    "Дар ин тарҳ лого хурд аст. Андозаро зиёд кунед ё White with Logo-ро интихоб кунед.",
+    "На этом макете логотип мелкий. Увеличьте размер или выберите White with Logo.",
+    "Бұл орналасуда логотип кішкентай. Өлшемді үлкейтіңіз немесе White with Logo таңдаңыз.",
+    "Бул жайгашууда логотип кичине. Өлчөмдү чоңойтуңуз же White with Logo тандаңыз.",
+    "На цьому макеті логотип дрібний. Збільшіть розмір або оберіть White with Logo.",
+  ),
   noteWhiteBlack: L(
     "Switched to white vinyl and black lettering for daylight contrast.",
     "Kunduzgi kontrast uchun oq vinil va qora yozuvga o‘tkazildi.",
@@ -2510,6 +2749,51 @@ const UI_ROWS: Record<UiKey, Row> = {
     "Төлем күйі қолмен қойылмайды. Төленді тек расталған Stripe webhook-тан кейін.",
     "Төлөм абалы кол менен коюлбайт. Төлөндү тек текшерилген Stripe webhook'тан кийин.",
     "Статус оплати руками не ставиться. Сплачено лише після перевіреного webhook Stripe.",
+  ),
+  noteEmailInvalid: L(
+    "Enter a valid email.",
+    "To‘g‘ri email kiriting.",
+    "Почтаи дуруст ворид кунед.",
+    "Введите корректную почту.",
+    "Жарамды email енгізіңіз.",
+    "Туура email киргизиңиз.",
+    "Введіть коректну пошту.",
+  ),
+  notePasswordShort: L(
+    "Password must be at least 8 characters.",
+    "Parol kamida 8 belgidan iborat bo‘lishi kerak.",
+    "Рамз бояд ҳадди ақал 8 аломат бошад.",
+    "Пароль должен быть не короче 8 символов.",
+    "Құпия сөз кемінде 8 таңба болуы керек.",
+    "Сырсөз кеминде 8 белги болушу керек.",
+    "Пароль має містити щонайменше 8 символів.",
+  ),
+  noteAccountExists: L(
+    "An account with this email already exists.",
+    "Bu email bilan hisob allaqachon bor.",
+    "Ҳисоб бо ин почта аллакай ҳаст.",
+    "Аккаунт с этой почтой уже есть.",
+    "Бұл email-мен аккаунт бар.",
+    "Бул email менен аккаунт бар.",
+    "Акаунт із цією поштою вже є.",
+  ),
+  noteAccountWrong: L(
+    "Email or password is wrong.",
+    "Email yoki parol noto‘g‘ri.",
+    "Почта ё рамз нодуруст аст.",
+    "Почта или пароль неверны.",
+    "Email немесе құпия сөз қате.",
+    "Email же сырсөз туура эмес.",
+    "Пошта або пароль неправильні.",
+  ),
+  noteTooManyAuth: L(
+    "Too many sign-in attempts. Wait a few minutes.",
+    "Kirish urinishlari ko‘p. Bir necha daqiqa kuting.",
+    "Кӯшишҳои вуруд зиёданд. Чанд дақиқа интизор шавед.",
+    "Слишком много попыток входа. Подождите несколько минут.",
+    "Кіру әрекеттері тым көп. Бірнеше минут күтіңіз.",
+    "Кирүү аракеттери өтө көп. Бир нече мүнөт күтүңүз.",
+    "Забагато спроб входу. Зачекайте кілька хвилин.",
   ),
   size20in: L("20 inches", "20 dyuym", "20 дюйм", "20 дюймов", "20 дюйм", "20 дюйм", "20 дюймів"),
   size12in: L("12 inches", "12 dyuym", "12 дюйм", "12 дюймов", "12 дюйм", "12 дюйм", "12 дюймів"),

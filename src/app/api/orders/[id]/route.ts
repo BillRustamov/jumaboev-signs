@@ -20,6 +20,7 @@ import {
   updateOrder,
 } from "@/lib/store";
 import { notifyCustomerPay } from "@/lib/telegram";
+import { notifyPayReadyEmail } from "@/lib/shop-mail";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -130,7 +131,10 @@ export async function PATCH(
     const minted = await attachAccessToken(id);
     next = minted.order;
     const payPath = `/orders/${id}/pay?token=${encodeURIComponent(minted.token)}`;
-    if (wantsReady) void notifyCustomerPay(next, payPath);
+    if (wantsReady) {
+      void notifyCustomerPay(next, payPath);
+      void notifyPayReadyEmail(next, payPath);
+    }
     return NextResponse.json({ order: next, payPath, token: minted.token });
   }
 

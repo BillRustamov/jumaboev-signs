@@ -57,7 +57,7 @@ type EntryCopy = Record<ShopEntryKey, string>;
 export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
   en: {
     howCanWeHelp: "How can we help you today?",
-    lead: "Jumaboev Signs prints a matched 20 × 12 in pair for each cab side. Pick a service — you do not type commands.",
+    lead: "usprint prints a matched 20 × 12 in pair for each cab side. Pick a service — you do not type commands.",
     printExisting: "I already have a design",
     printExistingHint:
       "Upload your PDF, SVG, PNG, JPEG, or WebP. We print it at 20 × 12 in. No designer wizard.",
@@ -68,7 +68,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     contactShop: "Contact the shop",
     language: "Language",
     contactBody:
-      "Khurshid Jumaboev prints the vinyl. Questions about size, pickup, or a ticket stay in this Telegram chat, or open the website counter.",
+      "usprint prints the vinyl. Questions about size, pickup, or a ticket stay in this Telegram chat, or open the website counter.",
     ordersBody:
       "Tickets from this Telegram chat, with production and payment from the shop store. Paid only after Stripe confirms — never guessed.",
     printOnlyAsk:
@@ -87,18 +87,18 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     languageSet: "Language set.",
     menuAgain: "How can we help you today?",
     helpMenu:
-      "Jumaboev Signs prints USDOT door vinyl, 20 × 12 in each cab side.\n\nTap I already have a design to send a file, or Create a new design to build one here. Use My orders or Contact the shop anytime. The Start button on Telegram opens this menu — you do not type commands.",
+      "usprint prints USDOT door vinyl, 20 × 12 in each cab side.\n\nTap I already have a design to send a file, or Create a new design to build one here. Use My orders or Contact the shop anytime. The Start button on Telegram opens this menu — you do not type commands.",
     printOnlyTitle: "Print a file you already have",
     printOnlyDrop:
       "Drop a PDF, SVG, PNG, JPEG, or WebP here — or choose a file. We keep the original and do not run it. Default size is 20 × 12 in, one pair.",
     printOnlyNeedFile: "Add a print file before the ticket.",
-    printOnlyNeedContact: "Add a shop username so Khurshid can find this ticket.",
+    printOnlyNeedContact: "Add your email so the shop can find this ticket.",
     printOnlySubmit: "Send the print ticket",
     printOnlyWorking: "Sending the file to the print desk…",
     printOnlyError: "The shop list did not take that ticket. Keep the file and try again.",
     printExactMode: "Print exactly as sent",
     printNotesMode: "Change note: {notes}",
-    printOnlyUsername: "Shop username (3–24 letters, numbers, or _)",
+    printOnlyUsername: "Email",
     printOnlyReplace: "Replace file",
     backToMenu: "Shop menu",
     samplesNav: "Samples",
@@ -108,7 +108,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
   },
   uz: {
     howCanWeHelp: "Bugun qanday yordam beraylik?",
-    lead: "Jumaboev Signs har bir kabina tomoni uchun 20 × 12 dyuym juftlik chop etadi. Xizmatni bosing — buyruq yozmang.",
+    lead: "usprint har bir kabina tomoni uchun 20 × 12 dyuym juftlik chop etadi. Xizmatni bosing — buyruq yozmang.",
     printExisting: "Menda tayyor dizayn bor",
     printExistingHint:
       "PDF, SVG, PNG, JPEG yoki WebP yuboring. 20 × 12 dyuymda chop etamiz. Dizayner yo‘q.",
@@ -119,7 +119,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     contactShop: "Do‘kon bilan bog‘lanish",
     language: "Til",
     contactBody:
-      "Vinilni Khurshid Jumaboev chop etadi. O‘lcham, olib ketish yoki chipta shu Telegram chatda yoki saytda.",
+      "Vinilni usprint chop etadi. O‘lcham, olib ketish yoki chipta shu Telegram chatda yoki saytda.",
     ordersBody:
       "Shu Telegram chat chiptalari — ishlab chiqarish va to‘lov do‘kon omboridan. To‘langan faqat Stripe tasdiqlagach, taxmin emas.",
     printOnlyAsk:
@@ -139,7 +139,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     languageSet: "Til tanlandi.",
     menuAgain: "Bugun qanday yordam beraylik?",
     helpMenu:
-      "Jumaboev Signs USDOT eshik vinilini chop etadi, har tomon 20 × 12.\n\nTayyor dizayn yoki Yangi dizayn ni bosing. Buyruq yozmang.",
+      "usprint USDOT eshik vinilini chop etadi, har tomon 20 × 12.\n\nTayyor dizayn yoki Yangi dizayn ni bosing. Buyruq yozmang.",
     printOnlyTitle: "Tayyor faylni chop etish",
     printOnlyDrop:
       "PDF, SVG, PNG, JPEG yoki WebP tashlang yoki tanlang. Aslini saqlaymiz, ishga tushirmaymiz. Standart: 20 × 12, bitta juft.",
@@ -160,7 +160,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
   },
   tg: {
     howCanWeHelp: "Имрӯз чӣ кумак кунем?",
-    lead: "Jumaboev Signs як ҷуфт 20 × 12 дюйм барои ҳар тарафи кабина чоп мекунад. Хизматро пахш кунед — фармон нанависед.",
+    lead: "usprint як ҷуфт 20 × 12 дюйм барои ҳар тарафи кабина чоп мекунад. Хизматро пахш кунед — фармон нанависед.",
     printExisting: "Ман тарҳи тайёр дорам",
     printExistingHint:
       "PDF, SVG, PNG, JPEG ё WebP фиристед. Дар 20 × 12 чоп мекунем. Тарроҳ нест.",
@@ -191,7 +191,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     languageSet: "Забон интихоб шуд.",
     menuAgain: "Имрӯз чӣ кумак кунем?",
     helpMenu:
-      "Jumaboev Signs винили дари USDOT чоп мекунад, 20 × 12 ҳар тараф.\n\nТарҳи тайёр ё Тарҳи навро пахш кунед. Фармон нанависед.",
+      "usprint винили дари USDOT чоп мекунад, 20 × 12 ҳар тараф.\n\nТарҳи тайёр ё Тарҳи навро пахш кунед. Фармон нанависед.",
     printOnlyTitle: "Файли тайёрро чоп кардан",
     printOnlyDrop:
       "PDF, SVG, PNG, JPEG ё WebP гузоред ё интихоб кунед. Аслиро нигоҳ медорем, иҷро намекунем. Стандарт: 20 × 12, як ҷуфт.",
@@ -212,7 +212,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
   },
   ru: {
     howCanWeHelp: "Чем помочь сегодня?",
-    lead: "Jumaboev Signs печатает пару 20 × 12 дюймов на каждую сторону кабины. Нажмите услугу — команды вводить не нужно.",
+    lead: "usprint печатает пару 20 × 12 дюймов на каждую сторону кабины. Нажмите услугу — команды вводить не нужно.",
     printExisting: "У меня уже есть макет",
     printExistingHint:
       "Загрузите PDF, SVG, PNG, JPEG или WebP. Печатаем 20 × 12. Без конструктора.",
@@ -243,7 +243,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     languageSet: "Язык выбран.",
     menuAgain: "Чем помочь сегодня?",
     helpMenu:
-      "Jumaboev Signs печатает USDOT-винил, 20 × 12 на сторону кабины.\n\nНажмите У меня уже есть макет или Создать новый макет. Команды вводить не нужно.",
+      "usprint печатает USDOT-винил, 20 × 12 на сторону кабины.\n\nНажмите У меня уже есть макет или Создать новый макет. Команды вводить не нужно.",
     printOnlyTitle: "Печать готового файла",
     printOnlyDrop:
       "Перетащите PDF, SVG, PNG, JPEG или WebP — или выберите файл. Храним оригинал, не запускаем. По умолчанию 20 × 12, одна пара.",
@@ -264,7 +264,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
   },
   kk: {
     howCanWeHelp: "Бүгін қалай көмектесейік?",
-    lead: "Jumaboev Signs кабинаның әр жағына 20 × 12 дюйм жұп басады. Қызметті басыңыз — команда жазбаңыз.",
+    lead: "usprint кабинаның әр жағына 20 × 12 дюйм жұп басады. Қызметті басыңыз — команда жазбаңыз.",
     printExisting: "Дайын макетім бар",
     printExistingHint:
       "PDF, SVG, PNG, JPEG немесе WebP жіберіңіз. 20 × 12 басамыз. Дизайнер жоқ.",
@@ -295,7 +295,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     languageSet: "Тіл таңдалды.",
     menuAgain: "Бүгін қалай көмектесейік?",
     helpMenu:
-      "Jumaboev Signs USDOT есік винилін басады, әр жақ 20 × 12.\n\nДайын макет немесе Жаңа макет-ті басыңыз. Команда жазбаңыз.",
+      "usprint USDOT есік винилін басады, әр жақ 20 × 12.\n\nДайын макет немесе Жаңа макет-ті басыңыз. Команда жазбаңыз.",
     printOnlyTitle: "Дайын файлды басу",
     printOnlyDrop:
       "PDF, SVG, PNG, JPEG немесе WebP тастаңыз не таңдаңыз. Түпнұсқаны сақтаймыз, іске қоспаймыз. Әдепкі: 20 × 12, бір жұп.",
@@ -316,7 +316,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
   },
   ky: {
     howCanWeHelp: "Бүгүн кантип жардам берели?",
-    lead: "Jumaboev Signs кабинанын ар тарабына 20 × 12 дюйм жуп басат. Кызматты басыңыз — буйрук жазбаңыз.",
+    lead: "usprint кабинанын ар тарабына 20 × 12 дюйм жуп басат. Кызматты басыңыз — буйрук жазбаңыз.",
     printExisting: "Даяр макетим бар",
     printExistingHint:
       "PDF, SVG, PNG, JPEG же WebP жибериңиз. 20 × 12 басабыз. Дизайнер жок.",
@@ -347,7 +347,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     languageSet: "Тил тандалды.",
     menuAgain: "Бүгүн кантип жардам берели?",
     helpMenu:
-      "Jumaboev Signs USDOT эшик винилин басат, ар тарап 20 × 12.\n\nДаяр макет же Жаңы макетти басыңыз. Буйрук жазбаңыз.",
+      "usprint USDOT эшик винилин басат, ар тарап 20 × 12.\n\nДаяр макет же Жаңы макетти басыңыз. Буйрук жазбаңыз.",
     printOnlyTitle: "Даяр файлды басуу",
     printOnlyDrop:
       "PDF, SVG, PNG, JPEG же WebP таштаңыз же тандаңыз. Түпнусканы сактайбыз, иштетпейбиз. Демейки: 20 × 12, бир жуп.",
@@ -368,7 +368,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
   },
   uk: {
     howCanWeHelp: "Чим допомогти сьогодні?",
-    lead: "Jumaboev Signs друкує пару 20 × 12 дюймів на кожен бік кабіни. Натисніть послугу — команди вводити не потрібно.",
+    lead: "usprint друкує пару 20 × 12 дюймів на кожен бік кабіни. Натисніть послугу — команди вводити не потрібно.",
     printExisting: "У мене вже є макет",
     printExistingHint:
       "Надішліть PDF, SVG, PNG, JPEG або WebP. Друкуємо 20 × 12. Без конструктора.",
@@ -399,7 +399,7 @@ export const SHOP_ENTRY: Record<ShopLang, EntryCopy> = {
     languageSet: "Мову вибрано.",
     menuAgain: "Чим допомогти сьогодні?",
     helpMenu:
-      "Jumaboev Signs друкує USDOT-вініл, 20 × 12 на бік кабіни.\n\nНатисніть У мене вже є макет або Створити новий макет. Команди вводити не потрібно.",
+      "usprint друкує USDOT-вініл, 20 × 12 на бік кабіни.\n\nНатисніть У мене вже є макет або Створити новий макет. Команди вводити не потрібно.",
     printOnlyTitle: "Друк готового файла",
     printOnlyDrop:
       "Перетягніть PDF, SVG, PNG, JPEG або WebP — або оберіть файл. Зберігаємо оригінал, не запускаємо. Типово 20 × 12, одна пара.",

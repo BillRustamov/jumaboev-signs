@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef, useState, type PointerEvent } from "react";
 import { cn } from "@/lib/utils";
 import type { SignFields } from "@/lib/order";
 import { TruckSign } from "@/components/truck-sign";
+import { isLightFace } from "@/lib/sign-style";
 import {
   aabbBottom,
   aabbOfQuad,
@@ -92,10 +93,12 @@ export function TruckMockup({
   const fit = fitSignToDoor(config, nudge);
   const box = overlayBoxStyle(fit.rect, contained, side);
   const flipped = side === "other";
+  const outlineWhite = !cut && isLightFace(fields.colors.face);
   const sign = (
     <TruckSign
       fields={fields}
       previewBackdrop={false}
+      mockupOutline={outlineWhite}
       className={cn(
         "h-full w-full",
         cut ? "shadow-none" : "rounded-[0.12em] shadow-[0_1px_4px_rgba(0,0,0,0.28)]",

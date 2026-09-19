@@ -65,6 +65,16 @@ function fitAspect(
   return { widthIn, heightIn };
 }
 
+/** Contain a logo in a slot. Never stretch. Never grow past the slot. */
+export function containLogo(
+  maxW: number,
+  maxH: number,
+  aspect: number,
+): { widthIn: number; heightIn: number } {
+  const safeAspect = aspect > 0.05 && Number.isFinite(aspect) ? aspect : 1;
+  return fitAspect(Math.max(0.8, maxW), Math.max(0.8, maxH), safeAspect);
+}
+
 export function suggestedLogoBox(
   canvasW: number,
   canvasH: number,

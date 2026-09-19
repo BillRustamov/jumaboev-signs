@@ -21,6 +21,8 @@ test("gallery has unique ids and one card per layout", () => {
 
 test("categories cover the five layouts plus upload", () => {
   assert.equal(sampleCategory(sampleById("clean-white")!), "white-minimal");
+  assert.equal(sampleCategory(sampleById("white-minimal")!), "white-minimal");
+  assert.equal(sampleCategory(sampleById("white-premium")!), "white-minimal");
   assert.equal(sampleCategory(sampleById("logo-spotlight")!), "logo-focused");
   assert.equal(sampleCategory(sampleById("side-by-side")!), "logo-focused");
   assert.equal(sampleCategory(sampleById("direct-truck")!), "classic-lettering");

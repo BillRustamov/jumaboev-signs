@@ -5,6 +5,14 @@ import {
   type TemplateId,
 } from "@/lib/design/schema";
 
+/** Locked USDOT / MC type. Logo and decoration yield before these sizes. */
+export const REGULATORY = {
+  usdotMinIn: 1.75,
+  mcMinIn: 1.55,
+  gapIn: 0.14,
+  nameMinIn: 1.05,
+} as const;
+
 /** Per-template composition knobs. Auto-fit uses shares, then grows leftover into ID rows. */
 export type TemplateLayoutConfig = {
   outerPadding: number;
@@ -33,6 +41,38 @@ export const TEMPLATE_LAYOUT: Record<TemplateId, TemplateLayoutConfig> = {
     nameShare: 0.34,
     placeShare: 0.08,
     idShare: 0.54,
+    bands: false,
+    fullWidthBands: false,
+    rule: true,
+    align: "center",
+    idFormat: "inline",
+    logoPlacement: "top",
+  },
+  "white-minimal": {
+    outerPadding: 0.32,
+    sectionGap: 0.08,
+    titleScale: 1,
+    subtitleScale: 0.84,
+    idRowScale: 1.22,
+    nameShare: 0.28,
+    placeShare: 0.07,
+    idShare: 0.65,
+    bands: false,
+    fullWidthBands: false,
+    rule: false,
+    align: "center",
+    idFormat: "inline",
+    logoPlacement: "top",
+  },
+  "white-premium": {
+    outerPadding: 0.42,
+    sectionGap: 0.1,
+    titleScale: 1,
+    subtitleScale: 0.9,
+    idRowScale: 1.12,
+    nameShare: 0.32,
+    placeShare: 0.08,
+    idShare: 0.56,
     bands: false,
     fullWidthBands: false,
     rule: true,

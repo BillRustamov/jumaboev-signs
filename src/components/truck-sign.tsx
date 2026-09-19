@@ -12,10 +12,12 @@ export function TruckSign({
   fields,
   className,
   previewBackdrop = true,
+  mockupOutline = false,
   ...props
 }: {
   fields: SignFields;
   previewBackdrop?: boolean;
+  mockupOutline?: boolean;
 } & HTMLAttributes<HTMLDivElement>) {
   return (
     <div
@@ -25,6 +27,7 @@ export function TruckSign({
       <SignCanvas
         fields={fields}
         previewBackdrop={previewBackdrop}
+        mockupOutline={mockupOutline}
         className="h-full w-full overflow-visible"
       />
     </div>

@@ -26,14 +26,16 @@ import {
 } from "@/lib/order";
 import { uiT } from "@/lib/shop-copy";
 import { localizeNote } from "@/lib/shop-labels";
+import { useAccount } from "@/lib/use-account";
 import { useShopLang } from "@/lib/shop-lang";
 
 export function CheckoutDesk() {
   const lang = useShopLang();
   const items = useCart();
   const storedUsername = useUsername();
+  const { user } = useAccount();
   const [usernameDraft, setUsernameDraft] = useState<string | null>(null);
-  const username = usernameDraft ?? storedUsername;
+  const username = user?.username ?? usernameDraft ?? storedUsername;
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -74,6 +76,7 @@ export function CheckoutDesk() {
         };
         const response = await fetch("/api/orders", {
           method: "POST",
+          credentials: "same-origin",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(order),
         });
@@ -111,14 +114,6 @@ export function CheckoutDesk() {
         </CardHeader>
         <CardFooter className="flex-wrap gap-2">
           <Button asChild>
-            <Link href={`/admin/print/${placed[0].id}`}>
-              {uiT(lang, "downloadPrintSheet")}
-            </Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/admin">{uiT(lang, "adminPrintDesk")}</Link>
-          </Button>
-          <Button variant="outline" asChild>
             <Link href="/orders">{uiT(lang, "viewShopOrders")}</Link>
           </Button>
         </CardFooter>
@@ -182,19 +177,32 @@ export function CheckoutDesk() {
                 <AlertDescription>{usernameError}</AlertDescription>
               </Alert>
             ) : null}
-            <div className="space-y-2">
-              <Label htmlFor="checkout-username">{uiT(lang, "shopUsername")}</Label>
-              <Input
-                id="checkout-username"
-                value={username}
-                placeholder="elbrus_dispatch"
-                autoComplete="username"
-                onChange={(event) => {
-                  setUsernameDraft(event.target.value);
-                  setUsernameError(null);
-                }}
-              />
-            </div>
+            {user ? (
+              <p className="text-sm text-muted-foreground">
+                {uiT(lang, "checkoutSignedIn", { email: user.email })}
+              </p>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="checkout-username">{uiT(lang, "accountEmail")}</Label>
+                  <Input
+                    id="checkout-username"
+                    type="email"
+                    value={username}
+                    autoComplete="email"
+                    onChange={(event) => {
+                      setUsernameDraft(event.target.value);
+                      setUsernameError(null);
+                    }}
+                  />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  <Link href="/account?next=/checkout" className="underline underline-offset-2">
+                    {uiT(lang, "checkoutCreateAccount")}
+                  </Link>
+                </p>
+              </>
+            )}
             <Button type="submit" disabled={submitting}>
               {submitting ? (
                 <>

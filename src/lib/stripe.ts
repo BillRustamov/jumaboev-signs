@@ -96,7 +96,7 @@ export async function createCheckoutSession(
             currency: "usd",
             unit_amount: order.amountMinor,
             product_data: {
-              name: `Jumaboev Signs ${order.id}`,
+              name: `usprint ${order.id}`,
               description: "20 × 12 in vinyl pair (left + right door)",
             },
           },

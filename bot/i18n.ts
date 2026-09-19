@@ -46,9 +46,9 @@ type Copy = {
 export const COPY: Record<Lang, Copy> = {
   en: {
     chooseLanguage:
-      "Jumaboev Signs\nUSDOT truck door vinyl\n\nExample cut is 20 × 12 in each cab side — filled plaque with logo, company name, city and state, USDOT, then MC. Left and right match. Company name and USDOT are required by FMCSA. MC is required on this shop ticket. Logo optional. Unit numbers are a separate small print.\n\nChoose a language:",
+      "usprint\nUSDOT truck door vinyl\n\nExample cut is 20 × 12 in each cab side — filled plaque with logo, company name, city and state, USDOT, then MC. Left and right match. Company name and USDOT are required by FMCSA. MC is required on this shop ticket. Logo optional. Unit numbers are a separate small print.\n\nChoose a language:",
     languageSet:
-      "English selected. Jumaboev Signs prints vinyl DOT doors, 20 × 12 in for each cab side.",
+      "English selected. usprint prints vinyl DOT doors, 20 × 12 in for each cab side.",
     askUsername: "Create a shop username (3–24 letters, numbers, or _).",
     badUsername: "That username does not work. Use 3–24 letters, numbers, or _.",
     askCompany: "Door name as on MCS-150 (legal or one trade name)? Example: ELBRUS",
@@ -78,15 +78,15 @@ export const COPY: Record<Lang, Copy> = {
       "Order {id} received. Khurshid will print two vinyl doors, 20 × 12 in for each cab side.",
     shopPosted: "The ticket is on the shop print desk.",
     cancelled: "Cleared. The shop menu is back.",
-    help: "Jumaboev Signs prints USDOT door vinyl, 20 × 12 in each cab side — logo, company name, city and state, USDOT, then MC.\n\nTap I already have a design to send a file, or Create a new design to build one here. Use My orders or Contact the shop anytime. The Start button opens this menu — you do not type commands.",
+    help: "usprint prints USDOT door vinyl, 20 × 12 in each cab side — logo, company name, city and state, USDOT, then MC.\n\nTap I already have a design to send a file, or Create a new design to build one here. Use My orders or Contact the shop anytime. The Start button opens this menu — you do not type commands.",
     shopUnreachable:
       "Telegram kept the ticket, but the website list was unreachable. Keep the shop site running, then confirm again from the shop menu.",
   },
   uz: {
     chooseLanguage:
-      "Jumaboev Signs\nUSDOT kabina vinili\n\nHar bir juftlik kabinaning har tomoni uchun 20 × 12 dyuym. Chap va o‘ng mos. Tilni tanlang.",
+      "usprint\nUSDOT kabina vinili\n\nHar bir juftlik kabinaning har tomoni uchun 20 × 12 dyuym. Chap va o‘ng mos. Tilni tanlang.",
     languageSet:
-      "O‘zbekcha tanlandi. Jumaboev Signs har bir kabina tomoni uchun 20 × 12 dyuym vinil DOT eshik chop etadi.",
+      "O‘zbekcha tanlandi. usprint har bir kabina tomoni uchun 20 × 12 dyuym vinil DOT eshik chop etadi.",
     askUsername: "Do‘kon foydalanuvchi nomini yozing (3–24 harf, raqam yoki _).",
     badUsername: "Bu nom mos emas. 3–24 harf, raqam yoki _ yozing.",
     askCompany: "Eshikdagi kompaniya nomi? Masalan: ELBRUS",
@@ -118,9 +118,9 @@ export const COPY: Record<Lang, Copy> = {
   },
   tg: {
     chooseLanguage:
-      "Jumaboev Signs\nВинили дари USDOT\n\nҲар ҷуфт 20 × 12 дюйм барои ҳар тарафи кабина. Чап ва рост мувофиқанд.\n\nЗабонро интихоб кунед:",
+      "usprint\nВинили дари USDOT\n\nҲар ҷуфт 20 × 12 дюйм барои ҳар тарафи кабина. Чап ва рост мувофиқанд.\n\nЗабонро интихоб кунед:",
     languageSet:
-      "Тоҷикӣ интихоб шуд. Jumaboev Signs дарҳои винили DOT 20 × 12 дюйм барои ҳар тарафи кабина чоп мекунад.",
+      "Тоҷикӣ интихоб шуд. usprint дарҳои винили DOT 20 × 12 дюйм барои ҳар тарафи кабина чоп мекунад.",
     askUsername: "Номи корбар созед (3–24 ҳарф, рақам ё _).",
     badUsername: "Ин ном мувофиқ нест. 3–24 ҳарф, рақам ё _ нависед.",
     askCompany: "Номи ширкат дар дар? Намуна: ELBRUS",
@@ -152,9 +152,9 @@ export const COPY: Record<Lang, Copy> = {
   },
   ru: {
     chooseLanguage:
-      "Jumaboev Signs\nВиниловые USDOT-двери\n\nКаждая пара — 20 × 12 дюймов на сторону кабины, левая и правая совпадают.\n\nВыберите язык:",
+      "usprint\nВиниловые USDOT-двери\n\nКаждая пара — 20 × 12 дюймов на сторону кабины, левая и правая совпадают.\n\nВыберите язык:",
     languageSet:
-      "Русский выбран. Jumaboev Signs печатает виниловые DOT-двери 20 × 12 дюймов на каждую сторону кабины.",
+      "Русский выбран. usprint печатает виниловые DOT-двери 20 × 12 дюймов на каждую сторону кабины.",
     askUsername: "Придумайте имя в магазине (3–24 буквы, цифры или _).",
     badUsername: "Так нельзя. 3–24 буквы, цифры или _.",
     askCompany: "Название на двери? Пример: ELBRUS",
@@ -186,9 +186,9 @@ export const COPY: Record<Lang, Copy> = {
   },
   kk: {
     chooseLanguage:
-      "Jumaboev Signs\nUSDOT винил есік\n\nӘр жұп кабинаның әр жағына 20 × 12. Сол және оң сәйкес.\n\nТілді таңдаңыз:",
+      "usprint\nUSDOT винил есік\n\nӘр жұп кабинаның әр жағына 20 × 12. Сол және оң сәйкес.\n\nТілді таңдаңыз:",
     languageSet:
-      "Қазақша таңдалды. Jumaboev Signs кабинаның әр жағына 20 × 12 винил DOT есік басады.",
+      "Қазақша таңдалды. usprint кабинаның әр жағына 20 × 12 винил DOT есік басады.",
     askUsername: "Дүкен пайдаланушы атын жазыңыз (3–24 әріп, сан немесе _).",
     badUsername: "Бұл ат жарамайды. 3–24 әріп, сан немесе _ жазыңыз.",
     askCompany: "Есіктегі компания атауы? Мысалы: ELBRUS",
@@ -220,9 +220,9 @@ export const COPY: Record<Lang, Copy> = {
   },
   ky: {
     chooseLanguage:
-      "Jumaboev Signs\nUSDOT винил эшик\n\nАр бир жуп кабинанын ар тарабына 20 × 12. Сол жана оң дал келет.\n\nТилди тандаңыз:",
+      "usprint\nUSDOT винил эшик\n\nАр бир жуп кабинанын ар тарабына 20 × 12. Сол жана оң дал келет.\n\nТилди тандаңыз:",
     languageSet:
-      "Кыргызча тандалды. Jumaboev Signs кабинанын ар бир тарабына 20 × 12 винил DOT эшик басат.",
+      "Кыргызча тандалды. usprint кабинанын ар бир тарабына 20 × 12 винил DOT эшик басат.",
     askUsername: "Дүкөн колдонуучу атын жазыңыз (3–24 тамга, сан же _).",
     badUsername: "Бул ат туура эмес. 3–24 тамга, сан же _ жазыңыз.",
     askCompany: "Эшиктеги компаниянын аты? Мисалы: ELBRUS",
@@ -254,9 +254,9 @@ export const COPY: Record<Lang, Copy> = {
   },
   uk: {
     chooseLanguage:
-      "Jumaboev Signs\nВінілові USDOT-двері\n\nКожна пара — 20 × 12 дюймів на бік кабіни, ліва і права збігаються.\n\nОберіть мову:",
+      "usprint\nВінілові USDOT-двері\n\nКожна пара — 20 × 12 дюймів на бік кабіни, ліва і права збігаються.\n\nОберіть мову:",
     languageSet:
-      "Українську вибрано. Jumaboev Signs друкує вінілові DOT-двері 20 × 12 дюймів на кожен бік кабіни.",
+      "Українську вибрано. usprint друкує вінілові DOT-двері 20 × 12 дюймів на кожен бік кабіни.",
     askUsername: "Придумайте ім’я в майстерні (3–24 літери, цифри або _).",
     badUsername: "Так не можна. 3–24 літери, цифри або _.",
     askCompany: "Назва на дверях? Приклад: ELBRUS",

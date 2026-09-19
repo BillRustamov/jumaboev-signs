@@ -30,6 +30,8 @@ import {
   resolvePrintMime,
 } from "@/lib/print-file";
 import { shopT } from "@/lib/shop-entry";
+import { uiT } from "@/lib/shop-copy";
+import { useAccount } from "@/lib/use-account";
 import { useShopLang } from "@/lib/shop-lang";
 
 type FileDraft = {
@@ -42,8 +44,9 @@ type FileDraft = {
 export function PrintOnlyDesk() {
   const lang = useShopLang();
   const storedUsername = useUsername();
+  const { user } = useAccount();
   const [usernameDraft, setUsernameDraft] = useState<string | null>(null);
-  const username = usernameDraft ?? storedUsername;
+  const username = user?.username ?? usernameDraft ?? storedUsername;
   const [file, setFile] = useState<FileDraft | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   const [exact, setExact] = useState(true);
@@ -123,6 +126,7 @@ export function PrintOnlyDesk() {
     try {
       const response = await fetch("/api/orders", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(order),
       });
@@ -258,23 +262,35 @@ export function PrintOnlyDesk() {
               />
             ) : null}
             <p className="text-sm text-muted-foreground">{modeLabel}</p>
-            <div className="space-y-2">
-              <Label htmlFor="print-username">
-                {shopT(lang, "printOnlyUsername")}
-              </Label>
-              <Input
-                id="print-username"
-                value={username}
-                onChange={(event) => {
-                  setUsernameDraft(event.target.value);
-                  setUsernameError(null);
-                }}
-                autoComplete="username"
-              />
-              {usernameError ? (
-                <p className="text-sm text-destructive">{usernameError}</p>
-              ) : null}
-            </div>
+            {user ? (
+              <p className="text-sm text-muted-foreground">
+                {uiT(lang, "checkoutSignedIn", { email: user.email })}
+              </p>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="print-username">
+                  {uiT(lang, "accountEmail")}
+                </Label>
+                <Input
+                  id="print-username"
+                  type="email"
+                  value={username}
+                  onChange={(event) => {
+                    setUsernameDraft(event.target.value);
+                    setUsernameError(null);
+                  }}
+                  autoComplete="email"
+                />
+                {usernameError ? (
+                  <p className="text-sm text-destructive">{usernameError}</p>
+                ) : null}
+                <p className="text-sm text-muted-foreground">
+                  <Link href="/account?next=/print" className="underline underline-offset-2">
+                    {uiT(lang, "checkoutCreateAccount")}
+                  </Link>
+                </p>
+              </div>
+            )}
           </CardContent>
           <CardFooter className="flex flex-wrap gap-2">
             <Button type="submit" disabled={submitting}>

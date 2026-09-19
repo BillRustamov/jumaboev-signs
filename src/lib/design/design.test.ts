@@ -199,6 +199,8 @@ test("required IDs stay inside the 12 inch canvas", () => {
     "side-by-side",
     "direct-truck",
     "classic-plaque",
+    "white-minimal",
+    "white-premium",
   ] as const) {
     const doc = base({ templateId: id });
     assert.ok(bottom(doc) <= 11.95, `${id} bottom ${bottom(doc)}`);
@@ -326,4 +328,77 @@ test("classic plaque ID bands span nearly the full width", () => {
     assert.ok(band.widthIn >= 18.8, `band width ${band.widthIn}`);
   }
   assert.ok(doc.elements.some((el) => el.type === "text" && el.role === "id-label"));
+});
+
+test("USDOT and MC stay locked when a large logo is added", () => {
+  const noLogo = base({
+    logoDataUrl: "",
+    templateId: "clean-white",
+    companyName: "RIDGE HAULING",
+  });
+  const withLogo = base({
+    logoDataUrl: "data:image/png;base64,aaa",
+    logoAspect: 1,
+    logoSize: 5,
+    templateId: "clean-white",
+    companyName: "RIDGE HAULING",
+  });
+  assert.ok(lineSize(withLogo, "usdot") >= 1.75, `usdot ${lineSize(withLogo, "usdot")}`);
+  assert.ok(lineSize(withLogo, "mc") >= 1.55, `mc ${lineSize(withLogo, "mc")}`);
+  const logo = withLogo.elements.find((el) => el.type === "logo");
+  const usdot = withLogo.elements.find((el) => el.type === "text" && el.role === "usdot");
+  const mc = withLogo.elements.find((el) => el.type === "text" && el.role === "mc");
+  assert.ok(logo && usdot && mc);
+  assert.ok(logo.yIn + logo.heightIn <= usdot.yIn - 0.04);
+  assert.ok(usdot.yIn + usdot.heightIn <= 12.05);
+  assert.ok(mc.yIn + mc.heightIn <= 12.05);
+  assert.ok(lineSize(noLogo, "usdot") >= 1.7);
+});
+
+test("growing the logo does not shrink USDOT or MC", () => {
+  const small = base({
+    logoSize: 1,
+    logoAspect: 1,
+    templateId: "logo-spotlight",
+    companyName: "RIDGE HAULING",
+  });
+  const large = base({
+    logoSize: 5,
+    logoAspect: 1,
+    templateId: "logo-spotlight",
+    companyName: "RIDGE HAULING",
+  });
+  assert.ok(
+    Math.abs(lineSize(small, "usdot") - lineSize(large, "usdot")) < 0.08,
+    `usdot ${lineSize(small, "usdot")} vs ${lineSize(large, "usdot")}`,
+  );
+  assert.ok(
+    Math.abs(lineSize(small, "mc") - lineSize(large, "mc")) < 0.08,
+    `mc ${lineSize(small, "mc")} vs ${lineSize(large, "mc")}`,
+  );
+  const smallLogo = small.elements.find((el) => el.type === "logo");
+  const largeLogo = large.elements.find((el) => el.type === "logo");
+  assert.ok(smallLogo && largeLogo);
+  assert.ok(largeLogo.widthIn * largeLogo.heightIn > smallLogo.widthIn * smallLogo.heightIn);
+  assert.ok(
+    Math.abs((largeLogo.widthIn / largeLogo.heightIn) - (smallLogo.widthIn / smallLogo.heightIn)) <
+      0.08,
+  );
+});
+
+test("white-minimal and white-premium keep a white face and locked IDs", () => {
+  for (const id of ["white-minimal", "white-premium"] as const) {
+    const doc = base({ templateId: id, logoDataUrl: "", companyName: "RIDGE" });
+    assert.notEqual(doc.background.fill, "none");
+    assert.ok(lineSize(doc, "usdot") >= 1.7, `${id} usdot ${lineSize(doc, "usdot")}`);
+    assert.ok(lineSize(doc, "mc") >= 1.5, `${id} mc ${lineSize(doc, "mc")}`);
+    assert.ok(bottom(doc) <= 11.95);
+  }
+  const premium = base({ templateId: "white-premium", logoDataUrl: "" });
+  assert.ok(premium.background.borderIn >= 0.1);
+  const minimal = base({ templateId: "white-minimal", logoDataUrl: "" });
+  assert.equal(
+    minimal.elements.some((el) => el.type === "rule"),
+    false,
+  );
 });

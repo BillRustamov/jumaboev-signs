@@ -21,7 +21,7 @@ export function HomeEntry() {
   return (
     <div>
       <p className="text-xs font-semibold tracking-[0.14em] text-[var(--gold)] uppercase">
-        Jumaboev Signs
+        usprint
       </p>
       <h1 className="font-heading mt-3 text-3xl font-semibold tracking-tight text-[var(--navy)] sm:text-4xl lg:text-[2.75rem] lg:leading-tight">
         {shopT(lang, "howCanWeHelp")}

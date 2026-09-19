@@ -38,7 +38,7 @@ import {
   type WizardStep,
 } from "@/components/mobile-designer";
 import { addToCart, type CartItem } from "@/lib/cart";
-import { autoImprove } from "@/lib/auto-improve";
+import { autoImprove, suggestTemplate } from "@/lib/auto-improve";
 import { suggestArtworkRole } from "@/lib/artwork";
 import { clampLogoSize } from "@/lib/logo-size";
 import { validateSign, type SignFields } from "@/lib/order";
@@ -159,17 +159,27 @@ export function OrderStudio() {
           image.naturalHeight > 0
             ? image.naturalWidth / image.naturalHeight
             : undefined;
-        setFields((current) => ({
-          ...current,
-          logoDataUrl: dataUrl,
-          originalArtworkUrl: dataUrl,
-          logoAspect: aspect,
-          artworkRole:
+        setFields((current) => {
+          const role =
             current.artworkRole === "existing-sign" || current.artworkRole === "logo"
               ? current.artworkRole
-              : suggestArtworkRole(aspect),
-          artworkFit: current.artworkFit || "contain",
-        }));
+              : suggestArtworkRole(aspect);
+          const nextTemplate =
+            role === "logo" &&
+            (current.templateId === "clean-white" || current.templateId === "white-minimal")
+              ? suggestTemplate({ logoDataUrl: dataUrl, logoAspect: aspect })
+              : current.templateId;
+          return {
+            ...current,
+            logoDataUrl: dataUrl,
+            originalArtworkUrl: dataUrl,
+            logoAspect: aspect,
+            artworkRole: role,
+            artworkFit: role === "existing-sign" ? current.artworkFit || "contain" : "contain",
+            templateId: nextTemplate,
+            logoSize: current.logoDataUrl ? current.logoSize : 3,
+          };
+        });
         touch();
       };
       image.onerror = () => {

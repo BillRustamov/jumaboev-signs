@@ -1,6 +1,6 @@
-# Jumaboev Signs
+# usprint
 
-Khurshid Jumaboev’s shop slice: vinyl USDOT truck door decals that follow FMCSA 49 CFR § 390.21. The customer product is a **20 × 12 in** door (never 24×24, never 20×10). Default look is **white vinyl with black lettering** — large company name, USDOT, then MC. Dark printed plaques are an option.
+usprint shop: vinyl USDOT truck door decals that follow FMCSA 49 CFR § 390.21. The customer product is a **20 × 12 in** door (never 24×24, never 20×10). Default look is **white vinyl with black lettering** — large company name, USDOT, then MC. Dark printed plaques are an option.
 
 FMCSA requires company name and USDOT on both sides of the power unit, readable from 50 feet, in strong contrast. There is no fixed federal letter height. **MC is not required on the truck**; this shop still prints MC on the plaque and requires it on the ticket. Logo is optional. **Unit numbers are a separate small print** and do not go on this vinyl.
 

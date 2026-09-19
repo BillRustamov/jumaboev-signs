@@ -92,6 +92,17 @@ export async function listOrdersByTelegramChat(
   return (await listOrders()).filter((order) => order.telegramChatId === chatId);
 }
 
+export async function listOrdersForAccount(account: {
+  id: string;
+  username: string;
+}): Promise<SignOrder[]> {
+  return (await listOrders()).filter((order) => {
+    if (order.userId === account.id) return true;
+    if (order.userId) return false;
+    return order.username.toLowerCase() === account.username.toLowerCase();
+  });
+}
+
 export async function recordLedger(
   orderId: string,
   kind: string,

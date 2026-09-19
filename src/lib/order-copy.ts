@@ -182,7 +182,7 @@ export type PayCopyKey =
 const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
   en: {
     payTitle: "Pay for ticket {id}",
-    payLead: "Jumaboev Signs · 20 × 12 in pair.",
+    payLead: "usprint · 20 × 12 in pair.",
     payInvalid: "This pay link is not valid.",
     payNoPrice: "Khurshid has not set a shop price yet.",
     payNotReady: "This ticket is not ready for payment.",
@@ -233,7 +233,7 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
   },
   uz: {
     payTitle: "{id} chiptasi uchun to‘lov",
-    payLead: "Jumaboev Signs · 20 × 12 juft.",
+    payLead: "usprint · 20 × 12 juft.",
     payInvalid: "Bu to‘lov havolasi yaroqsiz.",
     payNoPrice: "Khurshid hali narx qo‘ymagan.",
     payNotReady: "Chipta to‘lovga tayyor emas.",
@@ -284,7 +284,7 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
   },
   tg: {
     payTitle: "Пардохт барои чиптаи {id}",
-    payLead: "Jumaboev Signs · ҷуфти 20 × 12.",
+    payLead: "usprint · ҷуфти 20 × 12.",
     payInvalid: "Ин пайванди пардохт нодуруст аст.",
     payNoPrice: "Хуршид ҳанӯз нарх нагузоштааст.",
     payNotReady: "Чипта барои пардохт омода нест.",
@@ -335,7 +335,7 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
   },
   ru: {
     payTitle: "Оплата заявки {id}",
-    payLead: "Jumaboev Signs · пара 20 × 12.",
+    payLead: "usprint · пара 20 × 12.",
     payInvalid: "Эта ссылка на оплату недействительна.",
     payNoPrice: "Хуршид ещё не назначил цену.",
     payNotReady: "Заявка не готова к оплате.",
@@ -386,7 +386,7 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
   },
   kk: {
     payTitle: "{id} билетіне төлем",
-    payLead: "Jumaboev Signs · 20 × 12 жұп.",
+    payLead: "usprint · 20 × 12 жұп.",
     payInvalid: "Бұл төлем сілтемесі жарамсыз.",
     payNoPrice: "Хуршид әлі баға қоймады.",
     payNotReady: "Билет төлемге дайын емес.",
@@ -437,7 +437,7 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
   },
   ky: {
     payTitle: "{id} билетине төлөм",
-    payLead: "Jumaboev Signs · 20 × 12 жуп.",
+    payLead: "usprint · 20 × 12 жуп.",
     payInvalid: "Бул төлөм шилтемеси жараксыз.",
     payNoPrice: "Хуршид азырынча баа койгон жок.",
     payNotReady: "Билет төлөмгө даяр эмес.",
@@ -488,7 +488,7 @@ const PAY: Record<ShopLang, Record<PayCopyKey, string>> = {
   },
   uk: {
     payTitle: "Оплата заявки {id}",
-    payLead: "Jumaboev Signs · пара 20 × 12.",
+    payLead: "usprint · пара 20 × 12.",
     payInvalid: "Це посилання на оплату недійсне.",
     payNoPrice: "Хуршид ще не призначив ціну.",
     payNotReady: "Заявка не готова до оплати.",

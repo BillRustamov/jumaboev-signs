@@ -25,7 +25,7 @@ export function PrintSheet({
       style={{ width: `${SHEET_W_IN}in`, height: `${SHEET_H_IN}in` }}
     >
       <p className="absolute left-[0.45in] top-[0.28in] font-sans text-[0.2in] tracking-wide text-neutral-700">
-        Jumaboev Signs
+        usprint
         {orderId ? ` · ${orderId}` : ""} · matched pair · {VINYL.printSize} each ·
         24 in roll
       </p>

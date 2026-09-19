@@ -10,40 +10,18 @@ import {
 
 const DATA_DIR = path.join(process.cwd(), "data");
 
-const SCHEMA = `
-    CREATE TABLE IF NOT EXISTS orders (
-      id TEXT PRIMARY KEY,
-      json TEXT NOT NULL,
-      username TEXT NOT NULL,
-      service TEXT NOT NULL,
-      production_status TEXT NOT NULL,
-      payment_status TEXT NOT NULL,
-      amount_minor INTEGER,
-      currency TEXT,
-      access_token_hash TEXT,
-      telegram_chat_id INTEGER,
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS ledger (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      order_id TEXT NOT NULL,
-      kind TEXT NOT NULL,
-      detail TEXT NOT NULL,
-      created_at TEXT NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS meta (
-      key TEXT PRIMARY KEY,
-      value TEXT NOT NULL
-    );
-    CREATE INDEX IF NOT EXISTS ledger_order ON ledger(order_id);
-    CREATE TABLE IF NOT EXISTS processed_events (
-      id TEXT PRIMARY KEY,
-      kind TEXT NOT NULL,
-      order_id TEXT,
-      created_at TEXT NOT NULL
-    );
-`;
+const SCHEMA_STATEMENTS = [
+  `CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, json TEXT NOT NULL, username TEXT NOT NULL, service TEXT NOT NULL, production_status TEXT NOT NULL, payment_status TEXT NOT NULL, amount_minor INTEGER, currency TEXT, access_token_hash TEXT, telegram_chat_id INTEGER, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS ledger (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id TEXT NOT NULL, kind TEXT NOT NULL, detail TEXT NOT NULL, created_at TEXT NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)`,
+  `CREATE INDEX IF NOT EXISTS ledger_order ON ledger(order_id)`,
+  `CREATE TABLE IF NOT EXISTS processed_events (id TEXT PRIMARY KEY, kind TEXT NOT NULL, order_id TEXT, created_at TEXT NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, username TEXT NOT NULL, created_at TEXT NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, expires_at TEXT NOT NULL, created_at TEXT NOT NULL)`,
+  `CREATE INDEX IF NOT EXISTS users_email ON users(email)`,
+  `CREATE INDEX IF NOT EXISTS sessions_user ON sessions(user_id)`,
+  `CREATE INDEX IF NOT EXISTS sessions_expires ON sessions(expires_at)`,
+];
 
 function jsonFile(): string {
   return process.env.SHOP_JSON_PATH || path.join(DATA_DIR, "orders.json");
@@ -56,7 +34,10 @@ function snapshotFile(): string {
 type GlobalDb = typeof globalThis & {
   __jumaboevShopSql?: ShopSql;
   __jumaboevShopSqlReady?: Promise<ShopSql>;
+  __jumaboevShopSqlGen?: number;
 };
+
+const SHOP_SQL_GEN = 3;
 
 export function dbPath(): string {
   return process.env.SHOP_DB_PATH || path.join(DATA_DIR, "shop.sqlite");
@@ -64,6 +45,11 @@ export function dbPath(): string {
 
 export async function shopDb(): Promise<ShopSql> {
   const g = globalThis as GlobalDb;
+  if (g.__jumaboevShopSqlGen !== SHOP_SQL_GEN) {
+    g.__jumaboevShopSql = undefined;
+    g.__jumaboevShopSqlReady = undefined;
+    g.__jumaboevShopSqlGen = SHOP_SQL_GEN;
+  }
   if (g.__jumaboevShopSql) {
     await ensureSchema(g.__jumaboevShopSql);
     return g.__jumaboevShopSql;
@@ -85,7 +71,20 @@ async function openShopSql(): Promise<ShopSql> {
 }
 
 async function ensureSchema(db: ShopSql): Promise<void> {
-  await db.exec(SCHEMA);
+  for (const statement of SCHEMA_STATEMENTS) {
+    await db.exec(`${statement};`);
+  }
+  await ensureOrderUserColumn(db);
+}
+
+async function ensureOrderUserColumn(db: ShopSql): Promise<void> {
+  const rows = (await db.prepare("PRAGMA table_info(orders)").all()) as Array<{
+    name: string;
+  }>;
+  if (!rows.some((row) => row.name === "user_id")) {
+    await db.exec("ALTER TABLE orders ADD COLUMN user_id TEXT");
+  }
+  await db.exec("CREATE INDEX IF NOT EXISTS orders_user ON orders(user_id)");
 }
 
 export function resetShopDbForTests(): void {
@@ -189,9 +188,9 @@ export async function writeOrderRow(db: ShopSql, order: SignOrder): Promise<void
       `
     INSERT INTO orders (
       id, json, username, service, production_status, payment_status,
-      amount_minor, currency, access_token_hash, telegram_chat_id,
+      amount_minor, currency, access_token_hash, telegram_chat_id, user_id,
       created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET
       json = excluded.json,
       username = excluded.username,
@@ -202,6 +201,7 @@ export async function writeOrderRow(db: ShopSql, order: SignOrder): Promise<void
       currency = excluded.currency,
       access_token_hash = excluded.access_token_hash,
       telegram_chat_id = excluded.telegram_chat_id,
+      user_id = excluded.user_id,
       updated_at = excluded.updated_at
   `,
     )
@@ -216,6 +216,7 @@ export async function writeOrderRow(db: ShopSql, order: SignOrder): Promise<void
       hydrated.currency ?? "usd",
       hydrated.accessTokenHash ?? null,
       hydrated.telegramChatId ?? null,
+      hydrated.userId ?? null,
       hydrated.createdAt,
       hydrated.updatedAt ?? hydrated.createdAt,
     );

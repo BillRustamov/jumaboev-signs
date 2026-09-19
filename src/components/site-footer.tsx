@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { shopT } from "@/lib/shop-entry";
-import { uiT } from "@/lib/shop-copy";
 import { useShopLang } from "@/lib/shop-lang";
 import { TELEGRAM_BOT_URL } from "@/lib/telegram";
 
@@ -14,7 +13,7 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 sm:flex-row sm:items-start sm:justify-between sm:px-6">
         <div>
           <p className="font-heading text-sm font-semibold tracking-wide">
-            Jumaboev Signs
+            usprint
           </p>
           <p className="mt-1 max-w-sm text-sm text-white/75">
             {shopT(lang, "lead")}
@@ -50,11 +49,6 @@ export function SiteFooter() {
             >
               Telegram
             </a>
-          </p>
-          <p className="mt-1">
-            <Link className="underline-offset-4 hover:underline" href="/admin">
-              {uiT(lang, "adminNav")}
-            </Link>
           </p>
         </div>
       </div>

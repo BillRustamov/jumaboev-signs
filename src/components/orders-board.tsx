@@ -21,12 +21,14 @@ import { isPrintOnly } from "@/lib/order";
 import { payT } from "@/lib/order-copy";
 import { uiT } from "@/lib/shop-copy";
 import { localizeNote } from "@/lib/shop-labels";
+import { useAccount } from "@/lib/use-account";
 import { useShopOrders } from "@/lib/use-shop-orders";
 import { useShopLang } from "@/lib/shop-lang";
 
 export function OrdersBoard() {
   const lang = useShopLang();
   const username = useUsername();
+  const { user } = useAccount();
   const { loading, error, orders } = useShopOrders();
 
   if (loading) {
@@ -49,6 +51,23 @@ export function OrdersBoard() {
         </h1>
         <p className="mt-2 text-muted-foreground">{payT(lang, "ordersSiteLead")}</p>
       </div>
+
+      {user ? (
+        <p className="text-sm text-muted-foreground">
+          {uiT(lang, "accountSignedInAs", { email: user.email })}
+        </p>
+      ) : (
+        <Alert>
+          <AlertCircle />
+          <AlertTitle>{uiT(lang, "signIn")}</AlertTitle>
+          <AlertDescription className="flex flex-wrap items-center gap-2">
+            <span>{uiT(lang, "ordersSignInHint")}</span>
+            <Button size="sm" asChild>
+              <Link href="/account?next=/orders">{uiT(lang, "createAccount")}</Link>
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {error ? (
         <Alert variant="destructive">

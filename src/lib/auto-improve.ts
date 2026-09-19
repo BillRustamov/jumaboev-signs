@@ -9,6 +9,7 @@ import {
 import { clampLogoSize, type LogoSize } from "@/lib/logo-size";
 import type { SignFields } from "@/lib/order";
 import { applyPreset, contrastWarnings } from "@/lib/sign-style";
+import { REGULATORY } from "@/lib/design/layout";
 
 export type ImproveResult = {
   fields: SignFields;
@@ -109,6 +110,19 @@ function requiredIdOnBoard(doc: DesignDocument): boolean {
   );
 }
 
+function idSize(doc: DesignDocument, role: "usdot" | "mc"): number {
+  const el = doc.elements.find(
+    (item) => item.type === "text" && item.role === role,
+  );
+  return el && el.type === "text" ? el.fontSizeIn : 0;
+}
+
+function idsProtected(doc: DesignDocument, showMc: boolean): boolean {
+  if (idSize(doc, "usdot") + 0.001 < REGULATORY.usdotMinIn) return false;
+  if (showMc && idSize(doc, "mc") + 0.001 < REGULATORY.mcMinIn) return false;
+  return requiredIdOnBoard(doc);
+}
+
 function cloneFields(fields: SignFields): SignFields {
   return {
     ...fields,
@@ -127,20 +141,18 @@ export function autoImprove(fields: SignFields): ImproveResult {
   }
 
   const suggested = suggestTemplate(next);
-  if (next.artworkRole !== "existing-sign" && next.templateId !== suggested) {
-    next.templateId = suggested;
-    notes.push(
-      `Moved to ${templateLabel(suggested)} so the mark and name share the 20 × 12 in board.`,
-    );
-  }
-
-  if (
-    next.artworkRole !== "existing-sign" &&
-    next.logoDataUrl.trim() &&
-    clampLogoSize(next.logoSize) < 4
-  ) {
-    next.logoSize = 4;
-    notes.push("Enlarged the logo so it reads as a major mark.");
+  if (next.artworkRole !== "existing-sign" && next.logoDataUrl.trim() && next.templateId !== suggested) {
+    const keep =
+      next.templateId === "white-minimal" ||
+      next.templateId === "white-premium" ||
+      next.templateId === "classic-plaque" ||
+      next.templateId === "direct-truck";
+    if (!keep) {
+      next.templateId = suggested;
+      notes.push(
+        `Moved to ${templateLabel(suggested)} so the mark and name share the 20 × 12 in board.`,
+      );
+    }
   }
 
   if (contrastWarnings(next.colors).length) {
@@ -170,10 +182,12 @@ export function autoImprove(fields: SignFields): ImproveResult {
   }
 
   if (next.artworkRole !== "existing-sign" && next.logoDataUrl.trim()) {
-    const logo = doc.elements.find((item) => item.type === "logo");
-    if (logo && logo.heightIn < 1.35 && clampLogoSize(next.logoSize) < 5) {
-      next.logoSize = 5;
-      notes.push("Pushed the logo to full-face so it is not a postage stamp.");
+    while (
+      clampLogoSize(next.logoSize) > 1 &&
+      (hasLogoTextCollision(doc) || !idsProtected(doc, next.showMc))
+    ) {
+      next.logoSize = (clampLogoSize(next.logoSize) - 1) as LogoSize;
+      notes.push("Reduced the logo so USDOT and MC stay at a readable size.");
       doc = compileDesign(layoutInputFrom(next));
     }
   }
@@ -184,16 +198,12 @@ export function autoImprove(fields: SignFields): ImproveResult {
     const trial = cloneFields(next);
     trial.templateId = fallback;
     const trialDoc = compileDesign(layoutInputFrom(trial));
-    if (!hasLogoTextCollision(trialDoc)) {
+    if (!hasLogoTextCollision(trialDoc) && idsProtected(trialDoc, next.showMc)) {
       next.templateId = fallback;
       notes.push(
         `Changed layout to ${templateLabel(fallback)} so the logo does not cover required lettering.`,
       );
       doc = trialDoc;
-    } else if (clampLogoSize(next.logoSize) > 3) {
-      next.logoSize = (clampLogoSize(next.logoSize) - 1) as LogoSize;
-      notes.push("Nudged the logo down one size so it does not cover USDOT.");
-      doc = compileDesign(layoutInputFrom(next));
     }
   }
 

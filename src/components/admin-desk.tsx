@@ -27,7 +27,7 @@ import { useShopLang } from "@/lib/shop-lang";
 
 export function AdminDesk() {
   const lang = useShopLang();
-  const { loading, error, orders, setOrders } = useShopOrders();
+  const { loading, error, orders, setOrders } = useShopOrders({ all: true });
 
   if (loading) {
     return (
